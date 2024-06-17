@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Verse;
 
-class VerseController extends Controller
+class VerseCommentaryController extends Controller
 {
     public function index()
     {

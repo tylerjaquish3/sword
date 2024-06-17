@@ -7,6 +7,8 @@
 	<title>@yield('title', 'Sword of the Spirit')</title>
 
 	<link rel="shortcut icon" href="images/favicon.png" />
+    @vite('resources/js/app.js')
+
 </head>
 <body>
     <div class="container-scroller">
@@ -18,14 +20,15 @@
 				<div class="content-wrapper">
                     @yield('content')
 
-                    @include('base.footer')
+                    {{-- @include('base.footer') --}}
                 </div>
             </div>
         </div>
 
     </div>
 
-    @vite('resources/js/app.js')
+
+    @stack('js')
 
 </body>
 </html>

@@ -14,4 +14,5 @@ class Translation extends Model
     {
         return $this->hasMany(Verse::class);
     }
+
 }
