@@ -48,14 +48,14 @@
 <div class="row">
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
+            <div class="line-chart-row-title">Eph. 6:17</div>
             <div class="card-body pb-0">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-success font-weight-bold">18390</h2>
-                    <i class="mdi mdi-account-outline mdi-18px text-dark"></i>
+                    <h2 class="text-secondary font-weight-bold">
+                        Take the helmet of salvation and the sword of the Spirit, which is the word of God.
+                    </h2>
                 </div>
             </div>
-            <canvas id="newClient"></canvas>
-            <div class="line-chart-row-title">MY NEW CLIENTS</div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
@@ -63,11 +63,9 @@
             <div class="card-body pb-0">
                 <div class="d-flex align-items-center justify-content-between">
                     <h2 class="text-danger font-weight-bold">839</h2>
-                    <i class="mdi mdi-refresh mdi-18px text-dark"></i>
                 </div>
             </div>
-            <canvas id="allProducts"></canvas>
-            <div class="line-chart-row-title">All Products</div>
+            <div class="line-chart-row-title">All Prayer Entries</div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
@@ -78,44 +76,36 @@
                     <i class="mdi mdi-file-document-outline mdi-18px text-dark"></i>
                 </div>
             </div>
-            <canvas id="invoices"></canvas>
-            <div class="line-chart-row-title">NEW INVOICES</div>
+            <div class="line-chart-row-title">Commentary Entries</div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
             <div class="card-body pb-0">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-warning font-weight-bold">3259</h2>
+                    <h2 class="text-warning font-weight-bold">259</h2>
                     <i class="mdi mdi-folder-outline mdi-18px text-dark"></i>
                 </div>
             </div>
-            <canvas id="projects"></canvas>
-            <div class="line-chart-row-title">All PROJECTS</div>
+            <div class="line-chart-row-title">Verses Memorized</div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
             <div class="card-body pb-0">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-secondary font-weight-bold">586</h2>
+                    <h2 class="text-success font-weight-bold">58</h2>
                     <i class="mdi mdi-cart-outline mdi-18px text-dark"></i>
                 </div>
             </div>
-            <canvas id="orderRecieved"></canvas>
-            <div class="line-chart-row-title">Orders Received</div>
+            <div class="line-chart-row-title">Topics Studied</div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
             <div class="card-body pb-0">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-dark font-weight-bold">7826</h2>
-                    <i class="mdi mdi-cash text-dark mdi-18px"></i>
-                </div>
+                <a class="navbar-brand brand-logo" href="index.html"><img src="/bible-sword.png" alt="logo"/></a>
             </div>
-            <canvas id="transactions"></canvas>
-            <div class="line-chart-row-title">TRANSACTIONS</div>
         </div>
     </div>
 </div>

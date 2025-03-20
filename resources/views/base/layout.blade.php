@@ -27,6 +27,10 @@
 
     </div>
 
+    <script src="{{ asset('js/all.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('js/daterangepicker.js') }}"></script>
 
     @stack('js')
 

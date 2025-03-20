@@ -81,14 +81,34 @@
     </div>
     <div class="col-sm-6 grid-margin grid-margin-md-0 stretch-card">
         <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="card-title">Compare Translation</h4>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <select class="form-control" id="translation2_select">
+                            @foreach ($translations as $translation)
+                                <option value="{{ $translation->id }}">{{ $translation->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <select class="form-control" id="book2_select">
+                            @foreach ($books as $book)
+                                <option value="{{ $book->id }}">{{ $book->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <select class="form-control" id="chapter2_select">
+                            <option value=1>1</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="card-body">
-                <div class="d-lg-flex align-items-center justify-content-between mb-4">
-                    <h4 class="card-title">Product Orders</h4>
-                    <p class="text-dark">+5.2% vs last 7 days</p>
-                </div>
-                <div class="product-order-wrap padding-reduced">
-                    <div id="productorder-gage" class="gauge productorder-gage"></div>
-                </div>
+                <div id="chapter2_content"></div>
             </div>
         </div>
     </div>
@@ -140,21 +160,58 @@ setTimeout(function() {
         lookupVerses();
     });
 
-    lookupVerses();
+    // When translation changes, update book options
+    $('#translation2_select').change(function() {
+        translation_id = $(this).val();
+        book_id = $('#book2_select').val();
+        $.ajax({
+            url: '/chapters/lookup?book_id='+book_id,
+            type: 'GET',
+            success: function(response) {
+                $('#chapter2_select').empty();
+                response.forEach(function(chapter) {
+                    $('#chapter2_select').append('<option value="' + chapter.number + '">' + chapter.number + '</option>');
+                });
+            }
+        });
+    });
+    
+    // When book changes, update chapter options
+    $('#book2_select').change(function() {
+        book_id = $(this).val();
+        translation_id = $('#translation2_select').val();
+        $.ajax({
+            url: '/chapters/lookup?book_id='+book_id,
+            type: 'GET',
+            success: function(response) {
+                $('#chapter2_select').empty();
+                response.forEach(function(chapter) {
+                    $('#chapter2_select').append('<option value="' + chapter.number + '">' + chapter.number + '</option>');
+                });
+            }
+        });
+    });
+
+    // When chapter changes, update verses in chapter_content
+    $('#chapter2_select').change(function() {
+        lookupVerses(2);
+    });
+
+    lookupVerses('');
 
 }, 2000);
 
-    function lookupVerses()
+    function lookupVerses(side)
     {
-        translation_id = $('#translation_select').val();
-        chapter_id = $('#chapter_select').val();
+        translation_id = $('#translation'+side+'_select').val();
+        chapter_id = $('#chapter'+side+'_select').val();
         $.ajax({
             url: '/translations/verses?translation_id='+translation_id+'&chapter_id='+chapter_id,
             type: 'GET',
             success: function(response) {
-                $('#chapter_content').empty();
+                $('#chapter'+side+'_content').empty();
                 response.forEach(function(verse) {
-                    $('#chapter_content').append('<p>'+verse.number +' '+verse.text+'</p>');
+                    $('#chapter'+side+'_content').append('<p>'+verse.number +' '+verse.text+'</p>');
                 });
             }
         });

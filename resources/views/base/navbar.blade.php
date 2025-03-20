@@ -104,20 +104,19 @@
                         </div>
                     </li>	
                 </ul>
-                <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-                    <a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo"/></a>
-                    <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
-                </div>
+                {{-- <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                    <a class="navbar-brand brand-logo" href="index.html"><img src="/bible-sword.png" alt="logo"/></a>
+                    <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/bible-sword.png" alt="logo"/></a>
+                </div> --}}
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item dropdown  d-lg-flex d-none">
-                        <button type="button" class="btn btn-inverse-primary btn-sm">Product </button>
+                        <button type="button" class="btn btn-inverse-primary btn-sm">Research</button>
                     </li>
                     <li class="nav-item dropdown d-lg-flex d-none">
                         <a class="dropdown-toggle show-dropdown-arrow btn btn-inverse-primary btn-sm" id="nreportDropdown" href="#" data-bs-toggle="dropdown">
                             Reports
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="nreportDropdown">
-                            <p class="mb-0 font-weight-medium float-left dropdown-header">Reports</p>
                             <a class="dropdown-item">
                                 <i class="mdi mdi-file-pdf text-primary"></i>
                                 Pdf
@@ -133,7 +132,7 @@
                     </li>
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-                            <span class="nav-profile-name">Johnson</span>
+                            <span class="nav-profile-name">Tyler</span>
                             <span class="online-status"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
@@ -171,7 +170,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/forms/basic_elements.html" class="nav-link">
+                    <a href="{{ route('prayers.index') }}" class="nav-link">
+                        <i class="mdi mdi-cube-outline menu-icon"></i>
+                        <span class="menu-title">Prayer</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('topics.index') }}" class="nav-link">
                         <i class="mdi mdi-chart-areaspline menu-icon"></i>
                         <span class="menu-title">Topics</span>
                         <i class="menu-arrow"></i>
@@ -185,7 +191,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/tables/basic-table.html" class="nav-link">
+                    <a href="{{ route('commentary.index') }}" class="nav-link">
                         <i class="mdi mdi-grid menu-icon"></i>
                         <span class="menu-title">Commentary</span>
                         <i class="menu-arrow"></i>
