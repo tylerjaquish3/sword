@@ -29,7 +29,21 @@ Route::group(['prefix' => 'chapters'], function () {
     Route::get('/lookup', [ChapterController::class, 'lookup']);
 });
 
-Route::resource('commentary', CommentaryController::class);
+// Commentary routes
+Route::get('/commentary', [CommentaryController::class, 'index'])->name('commentary.index');
+Route::get('/commentary/create', [CommentaryController::class, 'create'])->name('commentary.create');
+Route::post('/commentary', [CommentaryController::class, 'store'])->name('commentary.store');
+
+// Chapter comment routes
+Route::get('/commentary/chapter/{chapterComment}/edit', [CommentaryController::class, 'editChapter'])->name('commentary.edit-chapter');
+Route::put('/commentary/chapter/{chapterComment}', [CommentaryController::class, 'updateChapter'])->name('commentary.update-chapter');
+Route::delete('/commentary/chapter/{chapterComment}', [CommentaryController::class, 'destroyChapter'])->name('commentary.destroy-chapter');
+
+// Verse comment routes
+Route::get('/commentary/verse/{verseComment}/edit', [CommentaryController::class, 'editVerse'])->name('commentary.edit-verse');
+Route::put('/commentary/verse/{verseComment}', [CommentaryController::class, 'updateVerse'])->name('commentary.update-verse');
+Route::delete('/commentary/verse/{verseComment}', [CommentaryController::class, 'destroyVerse'])->name('commentary.destroy-verse');
+
 Route::resource('prayers', PrayerController::class);
 Route::resource('topics', TopicController::class);
 
@@ -37,6 +51,3 @@ Route::group(['prefix' => 'translations'], function () {
     Route::get('/verses', [TranslationController::class, 'verses']);
 });
 Route::resource('translations', TranslationController::class);
-
-    
-Route::resource('verses', CommentaryController::class);

@@ -13,16 +13,24 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use Illuminate\Support\Facades\Log;
 
 class KeplinVerses implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * Auth token for Keplin API
+     */
+    private ?string $authToken = null;
+
+    /**
      * Execute the job.
      */
     public function handle(): void
     {
+        // Get auth token before making requests
+        // $this->authToken = $this->getAuthToken();
         $success        = true;
         $message        = "";
 
@@ -42,70 +50,117 @@ class KeplinVerses implements ShouldQueue
 
         try {
 
+            // Note: my local db now has NLT and NIV!!
+
             // Available versions
-            // $translationId = 'NIV';
-            // $translationId = 'ESV';
             // $translationId = 'NLT';
+            // $translationId = 'NIV';
             $translationId = 'KJV';
 
             // Insert translation if not already in database
             $translationModel = Translation::firstOrCreate([
                 'name' => $translationId,
             ]);
+            Log::info('Using translation: ' . $translationId);
 
             // Get all books
+            Log::info('Fetching books from API...');
             $books = $this->makeApiRequest('/books', 'GET', $translationId);
+            Log::info('Retrieved ' . count($books) . ' books from API');
 
             foreach ($books as $book) {
-
-                $bookModel = Book::where('name', $book->name)->first();
 
                 // Only update specific books
                 if (!in_array($book->name, $booksToUpdate)) {
                     continue;
                 }
 
-                // Get all chapters
-                $chapters = Chapter::where('book_id', $bookModel->id)->get();
+                // Determine if New Testament (books 40-66 are NT)
+                $isNewTestament = isset($book->id) && $book->id >= 40 ? 1 : 0;
 
-                foreach ($chapters as $chapter) {
+                $bookModel = Book::firstOrCreate(
+                    ['name' => $book->name],
+                    [
+                        'abbr' => $book->abbr ?? $book->abbreviation ?? substr($book->name, 0, 3),
+                        'new_testament' => $isNewTestament,
+                    ]
+                );
 
-                    echo $bookModel->name.' '.$chapter->number.PHP_EOL;
+                Log::info('Processing book: ' . $bookModel->name);
+
+                // Fetch chapters from API and create if needed
+                $chaptersUrl = '/books/' . $book->id . '/chapters';
+                $apiChapters = $this->makeApiRequest($chaptersUrl, 'GET', $translationId);
+                Log::info('Found ' . count($apiChapters) . ' chapters for ' . $bookModel->name . ' from API');
+
+                foreach ($apiChapters as $apiChapter) {
+
+                    $chapter = Chapter::firstOrCreate(
+                        [
+                            'book_id' => $bookModel->id,
+                            'number' => $apiChapter->id ?? $apiChapter->chapterId ?? $apiChapter->number,
+                        ]
+                    );
+
+                    Log::debug('Fetching verses for ' . $bookModel->name . ' ' . $chapter->number);
                     // Get all verses
-                    $verseUrl = '/books/'.$bookModel->id.'/chapters/'.$chapter->number;
+                    $verseUrl = '/books/'.$book->id.'/chapters/'.$chapter->number;
                     $allVerses = $this->makeApiRequest($verseUrl, 'GET', $translationId);
-// dd($allVerses);
+
+                    $versesCreated = 0;
                     foreach ($allVerses as $allVerse) {
-// dd($allVerse);
 
                         // Save verse
-                        Verse::firstOrCreate([
+                        $verse = Verse::firstOrCreate([
                             'chapter_id' => $chapter->id,
                             'translation_id' => $translationModel->id,
                             'number' => $allVerse->verseId,
                             'reference' => $bookModel->name.' '.$allVerse->chapterId.':'.$allVerse->verseId,
                             'text' => $allVerse->verse
                         ]);
+
+                        if ($verse->wasRecentlyCreated) {
+                            $versesCreated++;
+                        }
                     }
+
+                    Log::debug('Chapter ' . $chapter->number . ': ' . count($allVerses) . ' verses fetched, ' . $versesCreated . ' new verses created');
                 }
+
+                Log::info('Completed book: ' . $bookModel->name);
             }
 
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
-            $message = json_decode($response->getBody()->getContents());
+            $statusCode = $response->getStatusCode();
+            $message = $response->getBody()->getContents();
             $success = false;
-            dd($e);
+
+            if ($statusCode === 429) {
+                Log::error('API RATE LIMIT HIT! Status: 429 Too Many Requests', [
+                    'response' => $message,
+                    'headers' => $response->getHeaders(),
+                ]);
+            } else {
+                Log::error('API Client Error', [
+                    'status' => $statusCode,
+                    'message' => $message,
+                ]);
+            }
         } catch (\Exception $e) {
             $success = false;
             $message = $e->getMessage();
-            dd($e);
+            Log::error('KeplinVerses job failed with exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
 
         if ($success) {
-            echo 'Finished!'.PHP_EOL;
+            Log::info('KeplinVerses job finished successfully!');
+        } else {
+            Log::error('KeplinVerses job finished with errors: ' . $message);
         }
-
-        echo $message;
     }
 
     /**
@@ -118,12 +173,56 @@ class KeplinVerses implements ShouldQueue
         $client     = new GuzzleClient();
         $endpoint   = $baseUrl.$endpoint.'?translation='.$translationId; 
 
+        // $headers = [
+        //     'X-Authorization' => $this->authToken,
+        // ];
+
         $request        = new GuzzleRequest($method, $endpoint);
         $response       = $client->send($request);
+
+        // Check for rate limit headers
+        $remainingRequests = $response->getHeader('X-RateLimit-Remaining');
+        $rateLimit = $response->getHeader('X-RateLimit-Limit');
+        if (!empty($remainingRequests)) {
+            $remaining = $remainingRequests[0] ?? null;
+            $limit = $rateLimit[0] ?? null;
+            if ($remaining !== null && (int)$remaining < 10) {
+                Log::warning('API rate limit warning: ' . $remaining . ' requests remaining out of ' . $limit);
+            }
+        }
+
         $contents       = $response->getBody()->getContents();
         $contentArray   = json_decode($contents);
 
         return $contentArray;
+    }
+
+    /**
+     * Get auth token from Keplin API
+     */
+    private function getAuthToken(): string
+    {
+        $baseUrl = env('KEPLIN_API_HOST');
+        $email = env('KEPLIN_API_EMAIL');
+        $domain = env('APP_URL');
+
+        Log::debug('Authenticating with Keplin API', ['email' => $email, 'domain' => $domain]);
+
+        $client = new GuzzleClient();
+        $endpoint = $baseUrl.'/auth';
+
+        $response = $client->post($endpoint, [
+            'json' => [
+                'email' => $email,
+                'domain' => $domain,
+            ],
+        ]);
+
+        $contents = json_decode($response->getBody()->getContents());
+
+        Log::debug('Auth token received');
+
+        return $contents->token;
     }
 
 }

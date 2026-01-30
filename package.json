@@ -11,6 +11,13 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
-        "datatables.net-dt": "^2.1.7"
+        "@popperjs/core": "^2.11.8",
+        "bootstrap": "^5.3.8",
+        "chart.js": "^4.5.1",
+        "chartjs-plugin-datalabels": "^2.2.0",
+        "datatables.net": "^2.3.7",
+        "datatables.net-dt": "^2.1.7",
+        "jquery": "^4.0.0",
+        "moment": "^2.30.1"
     }
 }

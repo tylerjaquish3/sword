@@ -1,0 +1,148 @@
+{
+  "resources/fonts/materialdesignicons-webfont.eot": {
+    "file": "assets/materialdesignicons-webfont-5a1dlndG.eot",
+    "src": "resources/fonts/materialdesignicons-webfont.eot"
+  },
+  "resources/fonts/materialdesignicons-webfont.ttf": {
+    "file": "assets/materialdesignicons-webfont-CCj2fJ0-.ttf",
+    "src": "resources/fonts/materialdesignicons-webfont.ttf"
+  },
+  "resources/fonts/materialdesignicons-webfont.woff": {
+    "file": "assets/materialdesignicons-webfont-Cgx4s7Bs.woff",
+    "src": "resources/fonts/materialdesignicons-webfont.woff"
+  },
+  "resources/fonts/materialdesignicons-webfont.woff2": {
+    "file": "assets/materialdesignicons-webfont-8bl4yDSL.woff2",
+    "src": "resources/fonts/materialdesignicons-webfont.woff2"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Black.eot": {
+    "file": "assets/SourceSansPro-Black-CLltSxVe.eot",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Black.eot"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Black.ttf": {
+    "file": "assets/SourceSansPro-Black-GKUSkdTL.ttf",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Black.ttf"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Black.woff": {
+    "file": "assets/SourceSansPro-Black-aIggIK6Z.woff",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Black.woff"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Black.woff2": {
+    "file": "assets/SourceSansPro-Black-C9qMJ194.woff2",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Black.woff2"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Bold.eot": {
+    "file": "assets/SourceSansPro-Bold-C_A7k8-Y.eot",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Bold.eot"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Bold.ttf": {
+    "file": "assets/SourceSansPro-Bold-kVqatK5B.ttf",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Bold.ttf"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Bold.woff": {
+    "file": "assets/SourceSansPro-Bold-CXXqQvPS.woff",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Bold.woff"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Bold.woff2": {
+    "file": "assets/SourceSansPro-Bold-BxXTUAh8.woff2",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Bold.woff2"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.eot": {
+    "file": "assets/SourceSansPro-ExtraLight-B9fL9pQ1.eot",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.eot"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.ttf": {
+    "file": "assets/SourceSansPro-ExtraLight-BfnL_Nwi.ttf",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.ttf"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.woff": {
+    "file": "assets/SourceSansPro-ExtraLight-CLniXPNZ.woff",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.woff"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.woff2": {
+    "file": "assets/SourceSansPro-ExtraLight-CXVJQSzZ.woff2",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-ExtraLight.woff2"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Light.eot": {
+    "file": "assets/SourceSansPro-Light-ClcKbjen.eot",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Light.eot"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Light.woff": {
+    "file": "assets/SourceSansPro-Light-BVAsYCYd.woff",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Light.woff"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Light.woff2": {
+    "file": "assets/SourceSansPro-Light-C9QjM2DO.woff2",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Light.woff2"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Regular.eot": {
+    "file": "assets/SourceSansPro-Regular-CQKQDnla.eot",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Regular.eot"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Regular.ttf": {
+    "file": "assets/SourceSansPro-Regular-C9OP-xpW.ttf",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Regular.ttf"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Regular.woff": {
+    "file": "assets/SourceSansPro-Regular-CSsrcCmc.woff",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Regular.woff"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-Regular.woff2": {
+    "file": "assets/SourceSansPro-Regular-BZboCXhv.woff2",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-Regular.woff2"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.eot": {
+    "file": "assets/SourceSansPro-SemiBold-DslUT9jT.eot",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.eot"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.ttf": {
+    "file": "assets/SourceSansPro-SemiBold-LvDKn8Fm.ttf",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.ttf"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff": {
+    "file": "assets/SourceSansPro-SemiBold-F-otpQ5y.woff",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff"
+  },
+  "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff2": {
+    "file": "assets/SourceSansPro-SemiBold-cZDC-ZS9.woff2",
+    "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-D9zm5MDM.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-DCcZ2ob0.css"
+    ],
+    "assets": [
+      "assets/materialdesignicons-webfont-5a1dlndG.eot",
+      "assets/materialdesignicons-webfont-8bl4yDSL.woff2",
+      "assets/materialdesignicons-webfont-Cgx4s7Bs.woff",
+      "assets/materialdesignicons-webfont-CCj2fJ0-.ttf",
+      "assets/SourceSansPro-Black-CLltSxVe.eot",
+      "assets/SourceSansPro-Black-C9qMJ194.woff2",
+      "assets/SourceSansPro-Black-aIggIK6Z.woff",
+      "assets/SourceSansPro-Black-GKUSkdTL.ttf",
+      "assets/SourceSansPro-Bold-C_A7k8-Y.eot",
+      "assets/SourceSansPro-Bold-BxXTUAh8.woff2",
+      "assets/SourceSansPro-Bold-CXXqQvPS.woff",
+      "assets/SourceSansPro-Bold-kVqatK5B.ttf",
+      "assets/SourceSansPro-ExtraLight-B9fL9pQ1.eot",
+      "assets/SourceSansPro-ExtraLight-CXVJQSzZ.woff2",
+      "assets/SourceSansPro-ExtraLight-CLniXPNZ.woff",
+      "assets/SourceSansPro-ExtraLight-BfnL_Nwi.ttf",
+      "assets/SourceSansPro-Light-ClcKbjen.eot",
+      "assets/SourceSansPro-Light-C9QjM2DO.woff2",
+      "assets/SourceSansPro-Light-BVAsYCYd.woff",
+      "assets/SourceSansPro-SemiBold-DslUT9jT.eot",
+      "assets/SourceSansPro-SemiBold-cZDC-ZS9.woff2",
+      "assets/SourceSansPro-SemiBold-F-otpQ5y.woff",
+      "assets/SourceSansPro-SemiBold-LvDKn8Fm.ttf",
+      "assets/SourceSansPro-Regular-CQKQDnla.eot",
+      "assets/SourceSansPro-Regular-BZboCXhv.woff2",
+      "assets/SourceSansPro-Regular-CSsrcCmc.woff",
+      "assets/SourceSansPro-Regular-C9OP-xpW.ttf"
+    ]
+  }
+}

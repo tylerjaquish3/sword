@@ -1,11 +1,21 @@
-// import './vendor.bundle.base.js';
-// import './jquery.min.js';
-// import './bootstrap.js';
-import './datatables.min.js';
-// import DataTable from 'datatables.net-dt';
-import './Chart.min.js';
-import './chartjs-plugin-datalabels.min.js';
-// import './justgage.js';
-// import './raphael-2.1.4.min.js';
+// Import dependencies from npm packages
+import jQuery from 'jquery';
+window.$ = window.jQuery = jQuery;
+
+// Import Bootstrap (must be after jQuery is set on window)
+import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;
+
+import 'datatables.net-dt';
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import moment from 'moment';
+
+// Register the datalabels plugin
+Chart.register(ChartDataLabels);
+
+// Make Chart and moment available globally if needed
+window.Chart = Chart;
+window.moment = moment;
 
 import '../css/app.css'; 
