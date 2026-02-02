@@ -27,6 +27,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 
 Route::group(['prefix' => 'chapters'], function () {
     Route::get('/lookup', [ChapterController::class, 'lookup']);
+    Route::get('/comments', [ChapterController::class, 'getComments']);
+    Route::post('/{chapter}/comment', [ChapterController::class, 'storeComment']);
 });
 
 // Commentary routes
@@ -49,5 +51,8 @@ Route::resource('topics', TopicController::class);
 
 Route::group(['prefix' => 'translations'], function () {
     Route::get('/verses', [TranslationController::class, 'verses']);
+    Route::get('/verse/{verse}', [TranslationController::class, 'getVerse']);
+    Route::get('/verse-by-location', [TranslationController::class, 'getVerseByLocation']);
+    Route::put('/verse/{verse}', [TranslationController::class, 'updateVerse']);
 });
 Route::resource('translations', TranslationController::class);

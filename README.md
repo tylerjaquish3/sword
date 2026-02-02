@@ -123,6 +123,10 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - Personal commentary, save for user
 - Timeline of books written
 - Look into missing books, verses
+- settings page, set default translation
+- fix the search in navbar
+- set up notifications
+- keep track of streaks?
 
 ## Security Vulnerabilities
 

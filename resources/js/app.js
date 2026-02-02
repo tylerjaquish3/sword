@@ -1,12 +1,5 @@
-// Import dependencies from npm packages
-import jQuery from 'jquery';
-window.$ = window.jQuery = jQuery;
+// jQuery, Bootstrap, and DataTables are loaded via CDN in the layout for immediate availability
 
-// Import Bootstrap (must be after jQuery is set on window)
-import * as bootstrap from 'bootstrap';
-window.bootstrap = bootstrap;
-
-import 'datatables.net-dt';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';

@@ -12,8 +12,19 @@ class CommentaryController extends Controller
 {
     public function index()
     {
-        $chapterComments = ChapterComment::with(['chapter.book'])->get();
-        $verseComments = VerseComment::with(['verse.chapter.book'])->get();
+        $chapterComments = ChapterComment::with(['chapter.book'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Get verse comments with chapter relationship, grouped by chapter_id and verse_number
+        $verseComments = VerseComment::with(['chapter.book'])
+            ->whereNotNull('chapter_id')
+            ->whereNotNull('verse_number')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique(function ($item) {
+                return $item->chapter_id . '-' . $item->verse_number . '-' . $item->comment;
+            });
 
         return view('commentary.index', compact('chapterComments', 'verseComments'));
     }
@@ -42,6 +53,12 @@ class CommentaryController extends Controller
                 'verse_id' => 'required|exists:verses,id',
                 'comment' => 'required',
             ]);
+            
+            // Get the verse to extract chapter_id and verse_number
+            $verse = Verse::find($data['verse_id']);
+            
+            $data['chapter_id'] = $verse->chapter_id;
+            $data['verse_number'] = $verse->number;
             $data['user_id'] = 1; // Default user for now
             
             VerseComment::create($data);
@@ -73,7 +90,7 @@ class CommentaryController extends Controller
     {
         $chapterComment->delete();
 
-        return redirect()->route('commentary.index');
+        return response()->json(['success' => true]);
     }
 
     public function editVerse(VerseComment $verseComment)
@@ -89,6 +106,11 @@ class CommentaryController extends Controller
             'verse_id' => 'required|exists:verses,id',
             'comment' => 'required',
         ]);
+        
+        // Get the verse to extract chapter_id and verse_number
+        $verse = Verse::find($data['verse_id']);
+        $data['chapter_id'] = $verse->chapter_id;
+        $data['verse_number'] = $verse->number;
 
         $verseComment->update($data);
 
@@ -99,6 +121,6 @@ class CommentaryController extends Controller
     {
         $verseComment->delete();
 
-        return redirect()->route('commentary.index');
+        return response()->json(['success' => true]);
     }
 }

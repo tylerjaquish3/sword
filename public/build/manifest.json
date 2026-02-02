@@ -1,4 +1,9 @@
 {
+  "resources/css/sword.css": {
+    "file": "css/sword.css",
+    "src": "resources/css/sword.css",
+    "isEntry": true
+  },
   "resources/fonts/materialdesignicons-webfont.eot": {
     "file": "assets/materialdesignicons-webfont-5a1dlndG.eot",
     "src": "resources/fonts/materialdesignicons-webfont.eot"
@@ -108,12 +113,12 @@
     "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-D9zm5MDM.js",
+    "file": "assets/app-CyhNSbwb.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-DCcZ2ob0.css"
+      "css/app.css"
     ],
     "assets": [
       "assets/materialdesignicons-webfont-5a1dlndG.eot",
