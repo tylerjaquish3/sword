@@ -75,7 +75,7 @@
             <div class="card-body">
                 @if($topic->keywords)
                     @foreach(explode(',', $topic->keywords) as $keyword)
-                        <span class="badge bg-primary me-1 mb-1 keyword-filter" style="cursor: pointer;" data-keyword="{{ trim($keyword) }}">{{ trim($keyword) }}</span>
+                        <span class="badge btn-success me-1 mb-1 keyword-filter" style="cursor: pointer;" data-keyword="{{ trim($keyword) }}">{{ trim($keyword) }}</span>
                     @endforeach
                 @else
                     <p class="text-muted mb-0">No keywords defined</p>
@@ -108,8 +108,8 @@
                         <tbody>
                             @foreach ($matchingVerses as $verse)
                                 <tr>
-                                    <td><span class="badge bg-primary">{{ $verse->matched_keyword }}</span></td>
-                                    <td><span class="badge {{ $verse->chapter->book->new_testament ? 'bg-success' : 'bg-warning' }}">{{ $verse->chapter->book->new_testament ? 'NT' : 'OT' }}</span></td>
+                                    <td><span class="badge btn-success">{{ $verse->matched_keyword }}</span></td>
+                                    <td><span class="badge {{ $verse->chapter->book->new_testament ? 'btn-info' : 'btn-warning' }}">{{ $verse->chapter->book->new_testament ? 'NT' : 'OT' }}</span></td>
                                     <td><a href="{{ route('translations.index') }}?translation={{ $verse->translation_id }}&book={{ $verse->chapter->book->id }}&chapter={{ $verse->chapter->number }}">{{ $verse->reference }}</a></td>
                                     <td><span class="verse-clickable" data-verse-id="{{ $verse->id }}" style="cursor: pointer;">{{ $verse->text }}</span></td>
                                     <td>{{ $verse->translation->name ?? 'N/A' }}</td>

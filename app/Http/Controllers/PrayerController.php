@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prayer;
+use App\Models\PrayerType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -11,8 +12,9 @@ class PrayerController extends Controller
     public function index()
     {
         $prayers = Prayer::with('type')->get()->groupBy('date');
+        $prayerTypes = PrayerType::all();
 
-        return view('prayers.index', compact('prayers'));
+        return view('prayers.index', compact('prayers', 'prayerTypes'));
     }
 
     public function create()

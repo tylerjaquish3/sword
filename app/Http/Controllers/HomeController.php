@@ -19,7 +19,7 @@ class HomeController extends Controller
         $books = Book::all();
         
         // Dashboard metrics
-        $prayerCount = Prayer::count();
+        $prayerCount = Prayer::distinct('date')->count('date');
         $topicCount = Topic::count();
         $chapterCommentCount = ChapterComment::count();
         $verseCommentCount = VerseComment::count();
@@ -38,7 +38,7 @@ class HomeController extends Controller
             ->get();
         
         // Recent activity counts (last 7 days)
-        $recentPrayers = Prayer::where('created_at', '>=', now()->subDays(7))->count();
+        $recentPrayers = Prayer::where('created_at', '>=', now()->subDays(7))->distinct('date')->count('date');
         $recentComments = ChapterComment::where('created_at', '>=', now()->subDays(7))->count() 
             + VerseComment::where('created_at', '>=', now()->subDays(7))->count();
 

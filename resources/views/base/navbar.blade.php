@@ -2,10 +2,11 @@
     <nav class="navbar top-navbar col-lg-12 col-12 p-0">
         <div class="container-fluid">
             <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between">
+                <div class="navbar-brand-wrapper d-flex align-items-center justify-content-start">
+                    <a class="navbar-brand brand-logo" href="{{ route('home.index') }}"><img src="/images/logo.png" alt="logo"/></a>
+                    <a class="navbar-brand brand-logo-mini" href="{{ route('home.index') }}"><img src="/images/logo.png" alt="logo"/></a>
+                </div>
                 <ul class="navbar-nav navbar-nav-left">
-                    <li class="nav-item ms-0 me-5 d-lg-flex d-none">
-                        <a href="#" class="nav-link horizontal-nav-left-menu"><i class="mdi mdi-format-list-bulleted"></i></a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                             <i class="mdi mdi-bell mx-0"></i>
@@ -104,28 +105,10 @@
                         </div>
                     </li>	
                 </ul>
-                {{-- <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-                    <a class="navbar-brand brand-logo" href="index.html"><img src="/bible-sword.png" alt="logo"/></a>
-                    <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/bible-sword.png" alt="logo"/></a>
-                </div> --}}
+
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item dropdown  d-lg-flex d-none">
-                        <button type="button" class="btn btn-inverse-primary btn-sm">Research</button>
-                    </li>
-                    <li class="nav-item dropdown d-lg-flex d-none">
-                        <a class="dropdown-toggle show-dropdown-arrow btn btn-inverse-primary btn-sm" id="nreportDropdown" href="#" data-bs-toggle="dropdown">
-                            Reports
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="nreportDropdown">
-                            <a class="dropdown-item">
-                                <i class="mdi mdi-file-pdf text-primary"></i>
-                                Pdf
-                            </a>
-                            <a class="dropdown-item">
-                                <i class="mdi mdi-file-excel text-primary"></i>
-                                Exel
-                            </a>
-                        </div>
+                        <button type="button" class="btn btn-inverse-primary btn-sm">Reports</button>
                     </li>
                     <li class="nav-item dropdown d-lg-flex d-none">
                         <button type="button" class="btn btn-inverse-primary btn-sm">Settings</button>
@@ -156,43 +139,43 @@
     <nav class="bottom-navbar">
         <div class="container">
             <ul class="nav page-navigation">
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('home.*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('home.index') }}">
-                        <i class="mdi mdi-file-document-box menu-icon"></i>
+                        <i class="mdi mdi-view-dashboard menu-icon"></i>
                         <span class="menu-title">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('translations.*') || request()->routeIs('books.*') || request()->routeIs('chapters.*') ? 'active' : '' }}">
                     <a href="{{ route('translations.index') }}" class="nav-link">
-                        <i class="mdi mdi-cube-outline menu-icon"></i>
+                        <i class="mdi mdi-book-open-page-variant menu-icon"></i>
                         <span class="menu-title">Translations</span>
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('prayers.*') ? 'active' : '' }}">
                     <a href="{{ route('prayers.index') }}" class="nav-link">
-                        <i class="mdi mdi-cube-outline menu-icon"></i>
-                        <span class="menu-title">Prayer</span>
+                        <i class="mdi mdi-heart menu-icon"></i>
+                        <span class="menu-title">Prayers</span>
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('topics.*') ? 'active' : '' }}">
                     <a href="{{ route('topics.index') }}" class="nav-link">
-                        <i class="mdi mdi-chart-areaspline menu-icon"></i>
+                        <i class="mdi mdi-tag-multiple menu-icon"></i>
                         <span class="menu-title">Topics</span>
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="pages/charts/chartjs.html" class="nav-link">
-                        <i class="mdi mdi-finance menu-icon"></i>
+                <li class="nav-item {{ request()->routeIs('memory.*') ? 'active' : '' }}">
+                    <a href="{{ route('memory.index') }}" class="nav-link">
+                        <i class="mdi mdi-brain menu-icon"></i>
                         <span class="menu-title">Memory</span>
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('commentary.*') ? 'active' : '' }}">
                     <a href="{{ route('commentary.index') }}" class="nav-link">
-                        <i class="mdi mdi-grid menu-icon"></i>
+                        <i class="mdi mdi-file-document-outline menu-icon"></i>
                         <span class="menu-title">Commentary</span>
                         <i class="menu-arrow"></i>
                     </a>

@@ -12,10 +12,10 @@
                 <h6 class="font-weight-normal mb-2">Last entry was 23 hours ago. View details</h6>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
-                    <button type="button" class="btn bg-white btn-icon">
+                    <button type="button" class="btn bg-white btn-icon view-toggle active" id="card-view-btn" data-view="card">
                         <i class="mdi mdi-view-grid text-success"></i>
                 </button>
-                    <button type="button" class="btn bg-white btn-icon ms-2">
+                    <button type="button" class="btn bg-white btn-icon ms-2 view-toggle" id="table-view-btn" data-view="table">
                         <i class="mdi mdi-format-list-bulleted font-weight-bold text-primary"></i>
                     </button>
             </div>
@@ -37,38 +37,8 @@
     </div>
 </div>
 
-<div class="row">
-    @foreach ($prayers as $date => $dayPrayers)
-        <div class="col-lg-6 col-xl-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4 class="card-title mb-0">{{ \Carbon\Carbon::parse($date)->format('l, M j, Y') }}</h4>
-                    </div>
-                    <hr class="mt-0">
-                    @foreach ($dayPrayers as $prayer)
-                        <div class="mb-3">
-                            <h6 class="text-primary mb-2">
-                                <i class="mdi mdi-circle-medium"></i>
-                                {{ $prayer->type->name }}
-                            </h6>
-                            <p class="text-muted mb-0 ps-3">{{ $prayer->content }}</p>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="card-footer bg-transparent border-top d-flex justify-content-between align-items-center">
-                    <small class="text-muted">
-                        <i class="mdi mdi-clock-outline me-1"></i>
-                        {{ \Carbon\Carbon::parse($dayPrayers[0]->created_at)->format('g:i A') }}
-                    </small>
-                    <button type="button" class="btn btn-sm btn-outline-primary btn-icon" data-bs-toggle="modal" data-bs-target="#sendPrayerModal" data-date="{{ $date }}" data-prayers='@json($dayPrayers)'>
-                        <i class="mdi mdi-email-outline"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endforeach
-</div>
+@include('prayers.partials.card-view')
+@include('prayers.partials.table-view')
 
 <!-- Send Prayer Modal -->
 <div class="modal fade" id="sendPrayerModal" tabindex="-1" aria-labelledby="sendPrayerModalLabel" aria-hidden="true">
@@ -108,19 +78,26 @@
 @push('js')
 <script>
 
-// Wait for jQuery and Bootstrap to be available (loaded via Vite)
-(function checkDeps() {
-    if (typeof $ !== 'undefined' && typeof bootstrap !== 'undefined') {
-        initPrayerPage();
-    } else {
-        setTimeout(checkDeps, 50);
-    }
-})();
-
-function initPrayerPage() {
+    // View toggle functionality
+    $('.view-toggle').click(function() {
+        var view = $(this).data('view');
+        
+        // Update button states
+        $('.view-toggle').removeClass('active');
+        $(this).addClass('active');
+        
+        // Toggle views
+        if (view === 'card') {
+            $('#card-view').show();
+            $('#table-view').hide();
+        } else {
+            $('#card-view').hide();
+            $('#table-view').show();
+        }
+    });
 
     // Handle Send Prayer Modal click
-    $('.btn-icon[data-bs-target="#sendPrayerModal"]').click(function(e) {
+    $(document).on('click', '.btn-icon[data-bs-target="#sendPrayerModal"]', function(e) {
         var modal = new bootstrap.Modal(document.getElementById('sendPrayerModal'));
         var button = $(this);
         var date = button.data('date');
@@ -164,8 +141,6 @@ function initPrayerPage() {
         alert('Email functionality coming soon! Would send to: ' + email);
         bootstrap.Modal.getInstance(document.getElementById('sendPrayerModal')).hide();
     });
-
-}
 
 </script>
 @endpush

@@ -114,19 +114,18 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 
 - Fill in author & description for each book
 - Look for similiarities between stories
-- Build themes with supporting verses such as:
-    - the word
-    - patience
-    - fruits of the spirit, etc.
 - Memory verses, track for user
 - History of how it was put together
-- Personal commentary, save for user
 - Timeline of books written
 - Look into missing books, verses
 - settings page, set default translation
+- if i'm studying a certain book, make that default
 - fix the search in navbar
 - set up notifications
 - keep track of streaks?
+- monthly/weekly report to show what i've added
+- navbar replace top left with logo
+- mark books/chapters as read and keep a log of them
 
 ## Security Vulnerabilities
 

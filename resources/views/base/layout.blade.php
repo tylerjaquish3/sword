@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>@yield('title', 'Home') | Sword</title>
 
-	<link rel="shortcut icon" href="/bible-sword.png" />
+	<link rel="shortcut icon" href="/images/logo.png" />
     
     <!-- Load jQuery and Bootstrap before Vite so they're immediately available -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

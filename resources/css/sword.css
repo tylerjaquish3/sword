@@ -3,6 +3,9 @@
  * Custom CSS for the Sword of the Spirit application
  */
 
+/* Import the main theme styles (Kapella Admin template) */
+@import './style.css';
+
 /* ==========================================================================
    DataTables Custom Styling
    ========================================================================== */

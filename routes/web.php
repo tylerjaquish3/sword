@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\PrayerController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\CommentaryController;
@@ -24,7 +25,7 @@ Route::redirect('/', '/home');
 
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 
-
+// Chapter routes
 Route::group(['prefix' => 'chapters'], function () {
     Route::get('/lookup', [ChapterController::class, 'lookup']);
     Route::get('/comments', [ChapterController::class, 'getComments']);
@@ -48,6 +49,12 @@ Route::delete('/commentary/verse/{verseComment}', [CommentaryController::class, 
 
 Route::resource('prayers', PrayerController::class);
 Route::resource('topics', TopicController::class);
+
+// Memory routes
+Route::resource('memory', MemoryController::class)->except(['create', 'show', 'edit']);
+Route::post('/memory/{memory}/complete', [MemoryController::class, 'complete'])->name('memory.complete');
+Route::post('/memory/{memory}/uncomplete', [MemoryController::class, 'uncomplete'])->name('memory.uncomplete');
+Route::get('/memory/verses', [MemoryController::class, 'getVerses'])->name('memory.verses');
 
 Route::group(['prefix' => 'translations'], function () {
     Route::get('/verses', [TranslationController::class, 'verses']);

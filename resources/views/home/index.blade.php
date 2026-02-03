@@ -40,64 +40,54 @@
 <div class="row">
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
-            <div class="line-chart-row-title">Eph. 6:17</div>
-            <div class="card-body pb-0">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-secondary font-weight-bold">
-                        Take the helmet of salvation and the sword of the Spirit, which is the word of God.
-                    </h2>
-                </div>
+            <div class="card-body text-center py-4">
+                <p class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Eph. 6:17</p>
+                <p class="text-secondary mb-0" style="font-size: 0.85rem; line-height: 1.4;">
+                    Take the helmet of salvation and the sword of the Spirit, which is the word of God.
+                </p>
             </div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body pb-0">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-danger font-weight-bold">{{ $prayerCount }}</h2>
-                    <i class="mdi mdi-hands-pray mdi-18px text-dark"></i>
-                </div>
+        <a href="{{ route('prayers.index') }}" class="card text-decoration-none">
+            <div class="card-body text-center py-4">
+                <i class="mdi mdi-heart mdi-36px text-danger mb-2"></i>
+                <h2 class="text-danger font-weight-bold mb-1">{{ $prayerCount }}</h2>
+                <p class="text-muted mb-0 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Prayer Entries</p>
             </div>
-            <div class="line-chart-row-title">Prayer Entries</div>
-        </div>
+        </a>
+    </div>
+    <div class="col-lg-2 grid-margin stretch-card">
+        <a href="{{ route('commentary.index') }}" class="card text-decoration-none">
+            <div class="card-body text-center py-4">
+                <i class="mdi mdi-file-document-outline mdi-36px text-info mb-2"></i>
+                <h2 class="text-info font-weight-bold mb-1">{{ $commentaryCount }}</h2>
+                <p class="text-muted mb-0 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Commentary Entries</p>
+            </div>
+        </a>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
-            <div class="card-body pb-0">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-info font-weight-bold">{{ $commentaryCount }}</h2>
-                    <i class="mdi mdi-file-document-outline mdi-18px text-dark"></i>
-                </div>
+            <div class="card-body text-center py-4">
+                <i class="mdi mdi-brain mdi-36px text-warning mb-2"></i>
+                <h2 class="text-warning font-weight-bold mb-1">0</h2>
+                <p class="text-muted mb-0 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Verses Memorized</p>
             </div>
-            <div class="line-chart-row-title">Commentary Entries</div>
         </div>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body pb-0">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-warning font-weight-bold">0</h2>
-                    <i class="mdi mdi-brain mdi-18px text-dark"></i>
-                </div>
+        <a href="{{ route('topics.index') }}" class="card text-decoration-none">
+            <div class="card-body text-center py-4">
+                <i class="mdi mdi-tag-multiple mdi-36px text-success mb-2"></i>
+                <h2 class="text-success font-weight-bold mb-1">{{ $topicCount }}</h2>
+                <p class="text-muted mb-0 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Topics Studied</p>
             </div>
-            <div class="line-chart-row-title">Verses Memorized</div>
-        </div>
+        </a>
     </div>
     <div class="col-lg-2 grid-margin stretch-card">
         <div class="card">
-            <div class="card-body pb-0">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h2 class="text-success font-weight-bold">{{ $topicCount }}</h2>
-                    <i class="mdi mdi-tag-multiple mdi-18px text-dark"></i>
-                </div>
-            </div>
-            <div class="line-chart-row-title">Topics Studied</div>
-        </div>
-    </div>
-    <div class="col-lg-2 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body pb-0">
-                <a class="navbar-brand brand-logo" href="index.html"><img src="/bible-sword.png" alt="logo"/></a>
+            <div class="card-body d-flex align-items-center justify-content-center py-4">
+                <img src="/images/logo.png" alt="logo" style="max-width: 100%; max-height: 80px; object-fit: contain;"/>
             </div>
         </div>
     </div>
@@ -174,7 +164,7 @@
                     </div>
                 @else
                     <div class="text-center py-4">
-                        <i class="mdi mdi-hands-pray mdi-48px text-muted"></i>
+                        <i class="mdi mdi-heart mdi-48px text-muted"></i>
                         <p class="text-muted mt-2">No prayers recorded yet</p>
                         <a href="{{ route('prayers.create') }}" class="btn btn-primary btn-sm">Add Your First Prayer</a>
                     </div>
