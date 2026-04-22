@@ -141,9 +141,8 @@ class TranslationController extends Controller
             VerseComment::create([
                 'chapter_id' => $verse->chapter_id,
                 'verse_number' => $verse->number,
-                'verse_id' => $verse->id, // Keep for backwards compatibility
+                'verse_id' => $verse->id,
                 'comment' => $request->commentary,
-                'user_id' => 1 // TODO: use auth user
             ]);
         }
 

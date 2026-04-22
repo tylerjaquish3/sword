@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Memory extends Model
@@ -13,6 +14,17 @@ class Memory extends Model
         'end_date' => 'date',
         'completed_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('user', function (Builder $builder) {
+            $builder->where('user_id', auth()->id());
+        });
+
+        static::creating(function (self $model) {
+            $model->user_id ??= auth()->id();
+        });
+    }
 
     public function user()
     {

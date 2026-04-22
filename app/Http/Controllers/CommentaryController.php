@@ -45,8 +45,6 @@ class CommentaryController extends Controller
                 'chapter_id' => 'required|exists:chapters,id',
                 'comment' => 'required',
             ]);
-            $data['user_id'] = 1; // Default user for now
-            
             ChapterComment::create($data);
         } else {
             $data = request()->validate([
@@ -59,8 +57,6 @@ class CommentaryController extends Controller
             
             $data['chapter_id'] = $verse->chapter_id;
             $data['verse_number'] = $verse->number;
-            $data['user_id'] = 1; // Default user for now
-            
             VerseComment::create($data);
         }
 

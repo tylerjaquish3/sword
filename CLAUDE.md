@@ -103,17 +103,20 @@ The application uses a hierarchical Bible structure:
 Controllers follow resource patterns where applicable:
 
 - `HomeController` - Dashboard with statistics and recent activity
+- `BookController` - Bible book management
 - `ChapterController` - Chapter lookup and comment retrieval
 - `TranslationController` - CRUD for translations, verse viewing/editing
 - `CommentaryController` - Manages both verse and chapter comments
 - `PrayerController` - Resource controller for prayers
 - `TopicController` - Resource controller for topics
+- `MemoryController` - Memory verse tracking with complete/uncomplete actions
 
 Routes are defined in [routes/web.php](routes/web.php) with route groups for:
 - `/chapters/*` - Chapter operations
 - `/commentary/*` - Commentary CRUD with separate routes for verse/chapter comments
 - `/prayers` - Resource routes
 - `/topics` - Resource routes
+- `/memory` - Resource routes (excludes `create/show/edit`); custom `complete`, `uncomplete`, `verses` endpoints
 - `/translations/*` - Translation and verse operations
 
 ### Background Jobs
@@ -143,7 +146,7 @@ Views are organized by feature in [resources/views/](resources/views/):
 - `topics/` - Topic management with partials
 - `translations/` - Translation and verse views with partials
 - `verses/` - Verse display components
-- `memory/` - Memory verse tracking (new feature)
+- `memory/` - Memory verse tracking
 
 **JavaScript Libraries** (loaded via Vite):
 - jQuery 4 for DOM manipulation
@@ -176,6 +179,7 @@ All models use `protected $guarded = []` for mass assignment flexibility:
 - `ChapterComment` - User commentary on chapters
 - `Prayer` - User prayers (belongs to PrayerType)
 - `Topic` - User-defined topics
+- `Memory` - Memory verse sets (many-to-many with Verse; tracks `completed_at`, `scopeActive`/`scopeCompleted`)
 - `VerseLink` - Cross-reference links between verses
 
 ## Development Notes

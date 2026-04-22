@@ -57,7 +57,6 @@ class ChapterController extends Controller
         ChapterComment::create([
             'chapter_id' => $chapter->id,
             'comment' => $request->comment,
-            'user_id' => 1 // TODO: use auth user
         ]);
 
         return response()->json(['success' => true]);

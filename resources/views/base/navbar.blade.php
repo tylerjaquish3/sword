@@ -115,7 +115,7 @@
                     </li>
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-                            <span class="nav-profile-name">Tyler</span>
+                            <span class="nav-profile-name">{{ auth()->user()->name }}</span>
                             <span class="online-status"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
@@ -123,10 +123,13 @@
                                 <i class="mdi mdi-settings text-primary"></i>
                                 Settings
                             </a>
-                            <a class="dropdown-item">
-                                <i class="mdi mdi-logout text-primary"></i>
-                                Logout
-                            </a>
+                            <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                                @csrf
+                                <button type="submit" class="dropdown-item">
+                                    <i class="mdi mdi-logout text-primary"></i>
+                                    Logout
+                                </button>
+                            </form>
                         </div>
                     </li>
                 </ul>

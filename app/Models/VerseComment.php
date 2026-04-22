@@ -2,11 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class VerseComment extends Model
 {
     protected $guarded = [];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('user', function (Builder $builder) {
+            $builder->where('user_id', auth()->id());
+        });
+
+        static::creating(function (self $model) {
+            $model->user_id ??= auth()->id();
+        });
+    }
 
     public function verse()
     {
@@ -18,9 +30,6 @@ class VerseComment extends Model
         return $this->belongsTo(Chapter::class);
     }
 
-    /**
-     * Scope to get comments for a specific verse (by chapter and verse number)
-     */
     public function scopeForVerse($query, $chapterId, $verseNumber)
     {
         return $query->where('chapter_id', $chapterId)

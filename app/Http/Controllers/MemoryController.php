@@ -11,17 +11,12 @@ class MemoryController extends Controller
 {
     public function index()
     {
-        // For now, using user_id = 1 since we don't have auth
-        $userId = 1;
-        
         $activeMemories = Memory::with(['verses.chapter.book', 'verses.translation'])
-            ->where('user_id', $userId)
             ->active()
             ->orderBy('start_date', 'desc')
             ->get();
-            
+
         $completedMemories = Memory::with(['verses.chapter.book', 'verses.translation'])
-            ->where('user_id', $userId)
             ->completed()
             ->orderBy('completed_at', 'desc')
             ->get();
@@ -43,7 +38,6 @@ class MemoryController extends Controller
         ]);
 
         $memory = Memory::create([
-            'user_id' => 1, // Hardcoded for now
             'title' => $request->title,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
