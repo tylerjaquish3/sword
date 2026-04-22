@@ -1,0 +1,43 @@
+name: Push-to-EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Push to EC2 Instance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v1
+
+      - name: Deploy to my EC2 instance
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          SOURCE: ""
+          REMOTE_HOST: ${{ secrets.EC2_SSH_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_SSH_USER }}
+          TARGET: "/home/tyler_admin/sword"
+          EXCLUDE: ".env, database/database.sqlite"
+
+      - name: Run post-deploy steps
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_SSH_HOST }}
+          username: ${{ secrets.EC2_SSH_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/tyler_admin/sword
+
+            npm ci
+            npm run build
+            composer update --no-dev --optimize-autoloader --no-interaction
+            php artisan migrate --force
+            php artisan route:clear
+            php artisan view:clear
+            php artisan config:clear
+            php artisan cache:clear
