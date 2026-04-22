@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Chapter;
 use App\Models\ChapterComment;
+use App\Models\UserRead;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChapterController extends Controller
 {
@@ -60,5 +62,54 @@ class ChapterController extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function markRead(Request $request)
+    {
+        $request->validate([
+            'book_id'        => 'required|exists:books,id',
+            'chapter_number' => 'required|integer|min:1',
+            'translation_id' => 'required|exists:translations,id',
+        ]);
+
+        UserRead::updateOrCreate(
+            [
+                'user_id'        => Auth::id(),
+                'book_id'        => $request->book_id,
+                'chapter_number' => $request->chapter_number,
+                'translation_id' => $request->translation_id,
+            ],
+            ['read_at' => now()]
+        );
+
+        return response()->json(['success' => true]);
+    }
+
+    public function readStatus(Request $request)
+    {
+        $read = UserRead::where('user_id', Auth::id())
+            ->where('book_id', $request->book_id)
+            ->where('chapter_number', $request->chapter_number)
+            ->where('translation_id', $request->translation_id)
+            ->first();
+
+        return response()->json(['read_at' => $read ? $read->read_at : null]);
+    }
+
+    public function lastRead()
+    {
+        $last = UserRead::where('user_id', Auth::id())
+            ->orderByDesc('read_at')
+            ->first();
+
+        if (!$last) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'book_id'        => $last->book_id,
+            'chapter_number' => $last->chapter_number,
+            'translation_id' => $last->translation_id,
+        ]);
     }
 }

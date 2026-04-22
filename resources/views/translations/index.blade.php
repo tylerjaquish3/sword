@@ -9,27 +9,30 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">All Translations</h3>
-                <h6 class="font-weight-normal mb-2">Last login was 23 hours ago. View details</h6>
+                <h6 class="font-weight-normal mb-2">
+                    @if($lastLogin)
+                        Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
+                    @else
+                        Welcome!
+                    @endif
+                </h6>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
-                    <button type="button" class="btn bg-white btn-icon">
-                        <i class="mdi mdi-view-grid text-success"></i>
+                <button type="button" id="btn-single-col" class="btn btn-primary btn-icon" title="Single column">
+                    <i class="mdi mdi-rectangle-outline"></i>
                 </button>
-                    <button type="button" class="btn bg-white btn-icon ms-2">
-                        <i class="mdi mdi-format-list-bulleted font-weight-bold text-primary"></i>
-                    </button>
+                <button type="button" id="btn-double-col" class="btn bg-white btn-icon ms-2" title="Compare columns">
+                    <i class="mdi mdi-view-split-vertical"></i>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-sm-6 grid-margin grid-margin-md-0 stretch-card">
+    <div id="reading-col" class="col-sm-12 grid-margin grid-margin-md-0 stretch-card">
         <div class="card">
             <div class="card-header">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="card-title">List of Translations</h4>
-                </div>
                 <div class="row">
                     <div class="col-4">
                         <select class="form-select" id="translation_select">
@@ -51,6 +54,17 @@
                         </select>
                     </div>
                 </div>
+                <div id="book-info" class="mt-3">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <div id="book-author" class="text-muted small mb-1"></div>
+                            <div id="book-description" class="small"></div>
+                        </div>
+                        <button type="button" id="btn-edit-book" class="btn btn-sm btn-secondary ms-3 flex-shrink-0" data-bs-toggle="modal" data-bs-target="#bookEditModal">
+                            <i class="mdi mdi-pencil"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div id="chapter_content"></div>
@@ -64,10 +78,12 @@
                     </div>
                 </div>
                 <a href="#" id="chapter_comment_link" class="btn btn-outline-primary btn-sm"><i class="mdi mdi-plus"></i> Add Chapter Note</a>
+                <button type="button" id="btn-mark-read" class="btn btn-outline-success btn-sm ms-2"><i class="mdi mdi-check"></i> Mark as Read</button>
+                <small id="read-status-display" class="text-muted ms-2"></small>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 grid-margin grid-margin-md-0 stretch-card">
+    <div id="compare-col" class="col-sm-6 grid-margin grid-margin-md-0 stretch-card d-none">
         <div class="card">
             <div class="card-header">
                 <div class="d-flex align-items-center justify-content-between">
@@ -93,6 +109,32 @@
 @include('commentary.modals.verse')
 @include('commentary.modals.chapter')
 
+<div class="modal fade" id="bookEditModal" tabindex="-1" aria-labelledby="bookEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookEditModalLabel">Edit Book Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6 id="book-edit-title" class="fw-bold mb-3"></h6>
+                <div class="mb-3">
+                    <label for="book-edit-author" class="form-label">Author</label>
+                    <input type="text" class="form-control" id="book-edit-author" placeholder="e.g. Moses">
+                </div>
+                <div class="mb-3">
+                    <label for="book-edit-description" class="form-label">Description</label>
+                    <textarea class="form-control" id="book-edit-description" rows="4" placeholder="Brief overview of the book..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-book">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 
@@ -100,6 +142,45 @@
 <script>
 
 $(document).ready(function() {
+
+    $('#btn-mark-read').on('click', function() {
+        const btn = $(this);
+        $.ajax({
+            url: '/chapters/mark-read',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                book_id: $('#book_select').val(),
+                chapter_number: $('#chapter_select').val(),
+                translation_id: $('#translation_select').val(),
+            },
+            success: function() {
+                btn.removeClass('btn-outline-success').addClass('btn-success');
+                setTimeout(function() {
+                    btn.removeClass('btn-success').addClass('btn-outline-success');
+                }, 2000);
+                const now = new Date();
+                const formatted = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                $('#read-status-display').text('Last read: ' + formatted);
+            }
+        });
+    });
+
+    $('#btn-single-col').on('click', function() {
+        $('#compare-col').addClass('d-none');
+        $('#reading-col').removeClass('col-sm-6').addClass('col-sm-12');
+        $('#btn-single-col').addClass('btn-primary').removeClass('bg-white');
+        $('#btn-double-col').addClass('bg-white').removeClass('btn-primary');
+    });
+
+    $('#btn-double-col').on('click', function() {
+        $('#compare-col').removeClass('d-none');
+        $('#reading-col').removeClass('col-sm-12').addClass('col-sm-6');
+        $('#btn-double-col').addClass('btn-primary').removeClass('bg-white');
+        $('#btn-single-col').addClass('bg-white').removeClass('btn-primary');
+        lookupVerses(2);
+    });
+
 
     // Read query parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -121,9 +202,10 @@ $(document).ready(function() {
         loadChapters(book_id, function() {
             lookupVerses('');
             lookupVerses(2);
+            loadReadStatus();
         });
     });
-    
+
     // When book changes, update chapter options and both sides
     $('#book_select').change(function() {
         book_id = $(this).val();
@@ -131,7 +213,9 @@ $(document).ready(function() {
             lookupVerses('');
             lookupVerses(2);
             loadChapterComments();
+            loadReadStatus();
         });
+        loadBookInfo(book_id);
     });
 
     // When chapter changes, update verses in both sides
@@ -139,6 +223,7 @@ $(document).ready(function() {
         lookupVerses('');
         lookupVerses(2);
         loadChapterComments();
+        loadReadStatus();
     });
 
     // When translation2 changes, update the compare side
@@ -146,16 +231,53 @@ $(document).ready(function() {
         lookupVerses(2);
     });
 
-    // Load chapters for the initially selected book on page load
-    loadChapters($('#book_select').val(), function() {
-        // Set chapter from query param after chapters are loaded
-        if (paramChapter) {
-            $('#chapter_select').val(paramChapter);
-        }
-        lookupVerses('');
-        lookupVerses(2);
-        loadChapterComments();
-    });
+    function initWithDefaults() {
+        var bookId = $('#book_select').val();
+        if (!bookId) return;
+        loadChapters(bookId, function() {
+            lookupVerses('');
+            lookupVerses(2);
+            loadChapterComments();
+            loadReadStatus();
+        });
+        loadBookInfo(bookId);
+    }
+
+    // Load chapters for the initially selected book on page load,
+    // defaulting to last-read position unless query params override.
+    if (paramTranslation || paramBook || paramChapter) {
+        loadChapters($('#book_select').val(), function() {
+            if (paramChapter) {
+                $('#chapter_select').val(paramChapter);
+            }
+            lookupVerses('');
+            lookupVerses(2);
+            loadChapterComments();
+            loadReadStatus();
+        });
+        loadBookInfo($('#book_select').val());
+    } else {
+        $.get('/chapters/last-read')
+            .done(function(last) {
+                if (last && last.book_id) {
+                    $('#translation_select').val(last.translation_id);
+                    $('#book_select').val(last.book_id);
+                    loadChapters(last.book_id, function() {
+                        $('#chapter_select').val(last.chapter_number);
+                        lookupVerses('');
+                        lookupVerses(2);
+                        loadChapterComments();
+                        loadReadStatus();
+                    });
+                    loadBookInfo(last.book_id);
+                } else {
+                    initWithDefaults();
+                }
+            })
+            .fail(function() {
+                initWithDefaults();
+            });
+    }
 
 });
 
@@ -201,6 +323,59 @@ $(document).ready(function() {
                     commentsHtml = '<p class="text-muted mb-0">No chapter notes yet.</p>';
                 }
                 $('#chapter_comments_display').html(commentsHtml);
+            }
+        });
+    }
+
+    function loadBookInfo(bookId) {
+        if (!bookId) return;
+        $.get('/books/' + bookId, function(book) {
+            var desc = book.description || '';
+            $('#book-author').text('Author: ' + (book.author || ''));
+            $('#book-description').text('Description: ' + (desc.length > 50 ? desc.substring(0, 50) + '…' : desc));
+            // Pre-populate modal fields
+            $('#book-edit-title').text(book.name);
+            $('#book-edit-author').val(book.author || '');
+            $('#book-edit-description').val(book.description || '');
+        });
+    }
+
+    $('#btn-save-book').on('click', function() {
+        var bookId = $('#book_select').val();
+        if (!bookId) return;
+        $.ajax({
+            url: '/books/' + bookId,
+            type: 'PUT',
+            data: {
+                _token: '{{ csrf_token() }}',
+                author: $('#book-edit-author').val(),
+                description: $('#book-edit-description').val(),
+            },
+            success: function() {
+                var savedDesc = $('#book-edit-description').val();
+                $('#book-author').text('Author: ' + $('#book-edit-author').val());
+                $('#book-description').text('Description: ' + (savedDesc.length > 50 ? savedDesc.substring(0, 50) + '…' : savedDesc));
+                bootstrap.Modal.getInstance(document.getElementById('bookEditModal')).hide();
+            }
+        });
+    });
+
+    function loadReadStatus() {
+        var bookId = $('#book_select').val();
+        var chapterNumber = $('#chapter_select').val();
+        var translationId = $('#translation_select').val();
+        if (!bookId || !chapterNumber || !translationId) return;
+        $.get('/chapters/read-status', {
+            book_id: bookId,
+            chapter_number: chapterNumber,
+            translation_id: translationId,
+        }, function(response) {
+            if (response && response.read_at) {
+                var date = new Date(response.read_at);
+                var formatted = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                $('#read-status-display').text('Last read: ' + formatted);
+            } else {
+                $('#read-status-display').text('');
             }
         });
     }

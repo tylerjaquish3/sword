@@ -1,4 +1,13 @@
 <div id="table-view" style="display: none;">
+    @if($prayers->isEmpty())
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="mdi mdi-heart-outline mdi-48px mb-3 d-block" style="color: var(--sword-gold);"></i>
+                <h5 class="text-muted mb-1">No prayers recorded yet</h5>
+                <p class="text-muted small">Click <strong>Create New</strong> to add your first entry.</p>
+            </div>
+        </div>
+    @else
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -44,4 +53,5 @@
             </div>
         </div>
     </div>
+    @endif
 </div>

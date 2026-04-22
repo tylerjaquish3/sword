@@ -31,7 +31,7 @@
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="search">
-                                <i class="mdi mdi-magnify"></i>
+                                    <i class="mdi mdi-magnify"></i>
                                 </span>
                             </div>
                             <input type="text" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
@@ -46,9 +46,9 @@
                             <span class="online-status"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item">
-                                <i class="mdi mdi-settings text-primary"></i>
-                                Settings
+                            <a class="dropdown-item" href="{{ route('profile.index') }}">
+                                <i class="mdi mdi-account-circle text-primary"></i>
+                                Profile
                             </a>
                             <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
                                 @csrf
@@ -151,7 +151,6 @@
     <div class="mob-drawer-header">
         <a href="{{ route('home.index') }}" class="mob-drawer-logo">
             <img src="/images/logo.png" alt="Sword">
-            <span class="mob-drawer-logo-text">Sword</span>
         </a>
         <button id="mobDrawerClose" class="mob-drawer-close" aria-label="Close navigation">
             <i class="mdi mdi-close"></i>
@@ -224,10 +223,13 @@
         <div class="mob-drawer-divider"></div>
         <p class="mob-drawer-section-label">Account</p>
         <ul class="mob-drawer-nav mob-drawer-nav-footer">
-            <li>
-                <a href="#">
-                    <span class="mob-nav-icon"><i class="mdi mdi-cog-outline"></i></span>
-                    <span class="mob-nav-label">Settings</span>
+            <li class="{{ request()->routeIs('profile.*') ? 'mob-active' : '' }}">
+                <a href="{{ route('profile.index') }}">
+                    <span class="mob-nav-icon"><i class="mdi mdi-account-circle-outline"></i></span>
+                    <span class="mob-nav-label">Profile</span>
+                    @if(request()->routeIs('profile.*'))
+                        <span class="mob-nav-pip"></span>
+                    @endif
                 </a>
             </li>
             <li>

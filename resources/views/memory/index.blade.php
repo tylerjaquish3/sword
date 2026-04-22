@@ -240,11 +240,23 @@
                     </div>
 
                     <hr>
-                    
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="translation_select" class="form-label">Translation</label>
+                            <select class="form-select" id="translation_select">
+                                <option value="">Select Translation</option>
+                                @foreach($translations as $translation)
+                                    <option value="{{ $translation->id }}">{{ $translation->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="book_select" class="form-label">Book</label>
-                            <select class="form-select" id="book_select">
+                            <select class="form-select" id="book_select" disabled>
                                 <option value="">Select Book</option>
                                 @foreach($books as $book)
                                     <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
@@ -264,7 +276,13 @@
                             </select>
                         </div>
                     </div>
-                    
+
+                    <div class="row mb-3" id="verse-preview-row" style="display: none;">
+                        <div class="col-12">
+                            <div id="verse-preview" class="border rounded p-3" style="background: #f8f9fc; font-size: 0.9rem; line-height: 1.6;"></div>
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-12">
                             <button type="button" class="btn btn-outline-primary" id="addVersesBtn" disabled>
@@ -368,6 +386,16 @@ $(document).ready(function() {
         });
     }
 
+    // Translation selection change
+    $('#translation_select').change(function() {
+        const translationId = $(this).val();
+        $('#book_select').prop('disabled', !translationId).val('');
+        $('#chapter_select').empty().append('<option value="">Select Chapter</option>').prop('disabled', true);
+        $('#verse_select').empty().append('<option value="">Select Book & Chapter first</option>').prop('disabled', true);
+        $('#addVersesBtn').prop('disabled', true);
+        $('#verse-preview-row').hide();
+    });
+
     // Book selection change
     $('#book_select').change(function() {
         const bookId = $(this).val();
@@ -393,10 +421,12 @@ $(document).ready(function() {
         const bookId = $('#book_select').val();
         const chapterNumber = $(this).val();
         
+        $('#verse-preview-row').hide();
         if (bookId && chapterNumber) {
             $.get('{{ route("memory.verses") }}', {
                 book_id: bookId,
-                chapter_number: chapterNumber
+                chapter_number: chapterNumber,
+                translation_id: $('#translation_select').val(),
             }, function(verses) {
                 $('#verse_select').empty();
                 versesData = {};
@@ -410,6 +440,26 @@ $(document).ready(function() {
                 $('#addVersesBtn').prop('disabled', false);
             });
         }
+    });
+
+    // Preview selected verse text
+    $('#verse_select').on('change', function() {
+        const selected = $(this).val() || [];
+        if (selected.length === 0) {
+            $('#verse-preview-row').hide();
+            return;
+        }
+        const bookName = $('#book_select option:selected').text();
+        const chapterNum = $('#chapter_select').val();
+        let html = '';
+        selected.forEach(function(id) {
+            const verse = versesData[id];
+            if (verse) {
+                html += `<div class="mb-2"><sup class="text-muted fw-bold me-1">${bookName} ${chapterNum}:${verse.number}</sup>${verse.text}</div>`;
+            }
+        });
+        $('#verse-preview').html(html);
+        $('#verse-preview-row').show();
     });
 
     // Add selected verses
@@ -483,11 +533,14 @@ $(document).ready(function() {
         selectedVerseIds = [];
         $('#selectedVerses .selected-verse-badge').remove();
         $('#noVersesText').show();
-        $('#book_select').val('');
+        $('#translation_select').val('');
+        $('#book_select').val('').prop('disabled', true);
         $('#chapter_select').empty().append('<option value="">Select Chapter</option>').prop('disabled', true);
         $('#verse_select').empty().append('<option value="">Select Book & Chapter first</option>').prop('disabled', true);
         $('#addVersesBtn').prop('disabled', true);
         $('#submitMemoryBtn').prop('disabled', true);
+        $('#verse-preview-row').hide();
+        $('#verse-preview').html('');
     });
 });
 </script>

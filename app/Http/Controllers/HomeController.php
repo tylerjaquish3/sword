@@ -9,8 +9,10 @@ use App\Models\Prayer;
 use App\Models\PrayerType;
 use App\Models\Topic;
 use App\Models\Translation;
+use App\Models\UserLogin;
 use App\Models\Verse;
 use App\Models\VerseComment;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -39,8 +41,13 @@ class HomeController extends Controller
         
         // Recent activity counts (last 7 days)
         $recentPrayers = Prayer::where('created_at', '>=', now()->subDays(7))->distinct('date')->count('date');
-        $recentComments = ChapterComment::where('created_at', '>=', now()->subDays(7))->count() 
+        $recentComments = ChapterComment::where('created_at', '>=', now()->subDays(7))->count()
             + VerseComment::where('created_at', '>=', now()->subDays(7))->count();
+
+        $lastLogin = UserLogin::where('user_id', Auth::id())
+            ->orderByDesc('logged_in_at')
+            ->skip(1)
+            ->first();
 
         return view('home.index', compact(
             'books',
@@ -55,7 +62,8 @@ class HomeController extends Controller
             'translationCount',
             'prayersByType',
             'recentPrayers',
-            'recentComments'
+            'recentComments',
+            'lastLogin'
         ));
     }
     

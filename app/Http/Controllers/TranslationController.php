@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\Translation;
+use App\Models\UserLogin;
 use App\Models\Verse;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TranslationController extends Controller
 {
@@ -16,7 +18,12 @@ class TranslationController extends Controller
         $translations = Translation::all();
         $books = Book::all();
 
-        return view('translations.index', compact('translations', 'books'));
+        $lastLogin = UserLogin::where('user_id', Auth::id())
+            ->orderByDesc('logged_in_at')
+            ->skip(1)
+            ->first();
+
+        return view('translations.index', compact('translations', 'books', 'lastLogin'));
     }
 
     public function show(Translation $translation)

@@ -5,9 +5,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ChapterController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\PrayerController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\CommentaryController;
 use App\Http\Controllers\TopicController;
@@ -34,11 +36,19 @@ Route::middleware('auth')->group(function () {
     Route::redirect('/', '/home');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+    // Book routes
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+    Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
 
     // Chapter routes
     Route::group(['prefix' => 'chapters'], function () {
         Route::get('/lookup', [ChapterController::class, 'lookup']);
         Route::get('/comments', [ChapterController::class, 'getComments']);
+        Route::get('/read-status', [ChapterController::class, 'readStatus']);
+        Route::post('/mark-read', [ChapterController::class, 'markRead']);
+        Route::get('/last-read', [ChapterController::class, 'lastRead']);
         Route::post('/{chapter}/comment', [ChapterController::class, 'storeComment']);
     });
 

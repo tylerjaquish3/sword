@@ -98,16 +98,12 @@ php artisan route:list
 
 ## Feature Ideas
 
-- Fill in author & description for each book
 - Look for similiarities between stories, new page for that
 - Memory verses, track for user
 - History of how it was put together
 - Timeline of books written
 - Look into missing books, verses
 - settings page, set default translation
-- if i'm studying a certain book, make that default
 - fix the search in navbar
 - set up notifications
 - keep track of streaks?
-- monthly/weekly report to show what i've added
-- mark books/chapters as read and keep a log of them

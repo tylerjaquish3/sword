@@ -9,7 +9,13 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="font-weight-bold mb-2" style="color: var(--sword-navy);">Hi, welcome back!</h3>
-                <h6 class="font-weight-normal mb-2" style="color: #6b7280;">Last login was 23 hours ago.</h6>
+                <h6 class="font-weight-normal mb-2" style="color: #6b7280;">
+                    @if($lastLogin)
+                        Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
+                    @else
+                        Welcome!
+                    @endif
+                </h6>
             </div>
         </div>
     </div>
@@ -29,7 +35,7 @@
     </div>
 
     {{-- Prayer Entries --}}
-    <div class="col-lg-2 grid-margin stretch-card">
+    <div class="col-6 col-lg-2 grid-margin stretch-card">
         <a href="{{ route('prayers.index') }}" class="card text-decoration-none dash-stat-card">
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-heart mdi-36px mb-2" style="color: var(--sword-gold);"></i>
@@ -40,7 +46,7 @@
     </div>
 
     {{-- Commentary Entries --}}
-    <div class="col-lg-2 grid-margin stretch-card">
+    <div class="col-6 col-lg-2 grid-margin stretch-card">
         <a href="{{ route('commentary.index') }}" class="card text-decoration-none dash-stat-card">
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-file-document-outline mdi-36px mb-2" style="color: var(--sword-gold);"></i>
@@ -51,7 +57,7 @@
     </div>
 
     {{-- Verses Memorized --}}
-    <div class="col-lg-2 grid-margin stretch-card">
+    <div class="col-6 col-lg-2 grid-margin stretch-card">
         <div class="card dash-stat-card">
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-brain mdi-36px mb-2" style="color: var(--sword-gold);"></i>
@@ -62,7 +68,7 @@
     </div>
 
     {{-- Topics Studied --}}
-    <div class="col-lg-2 grid-margin stretch-card">
+    <div class="col-6 col-lg-2 grid-margin stretch-card">
         <a href="{{ route('topics.index') }}" class="card text-decoration-none dash-stat-card">
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-tag-multiple mdi-36px mb-2" style="color: var(--sword-gold);"></i>
@@ -97,19 +103,19 @@
                 <div class="row mt-4">
                     <div class="col-4 text-center">
                         <div class="rounded p-3" style="border: 1px solid rgba(14,22,40,0.12); background: rgba(14,22,40,0.02);">
-                            <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">{{ $bookCount }}</h2>
+                            <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy); font-size: clamp(1.1rem, 5vw, 1.75rem); white-space: nowrap;">{{ $bookCount }}</h2>
                             <p class="mb-0" style="color: #9ca3af; font-size: 0.8rem;">Books</p>
                         </div>
                     </div>
                     <div class="col-4 text-center">
                         <div class="rounded p-3" style="border: 1px solid rgba(14,22,40,0.12); background: rgba(14,22,40,0.02);">
-                            <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">{{ number_format($chapterCount) }}</h2>
+                            <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy); font-size: clamp(1.1rem, 5vw, 1.75rem); white-space: nowrap;">{{ number_format($chapterCount) }}</h2>
                             <p class="mb-0" style="color: #9ca3af; font-size: 0.8rem;">Chapters</p>
                         </div>
                     </div>
                     <div class="col-4 text-center">
                         <div class="rounded p-3" style="border: 1px solid rgba(14,22,40,0.12); background: rgba(14,22,40,0.02);">
-                            <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">{{ number_format($verseCount) }}</h2>
+                            <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy); font-size: clamp(1.1rem, 5vw, 1.75rem); white-space: nowrap;">{{ number_format($verseCount) }}</h2>
                             <p class="mb-0" style="color: #9ca3af; font-size: 0.8rem;">Verses</p>
                         </div>
                     </div>

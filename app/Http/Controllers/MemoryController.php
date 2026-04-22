@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Memory;
 use App\Models\Book;
+use App\Models\Translation;
 use App\Models\Verse;
 use Illuminate\Http\Request;
 
@@ -22,8 +23,9 @@ class MemoryController extends Controller
             ->get();
 
         $books = Book::orderBy('id')->get();
+        $translations = Translation::all();
 
-        return view('memory.index', compact('activeMemories', 'completedMemories', 'books'));
+        return view('memory.index', compact('activeMemories', 'completedMemories', 'books', 'translations'));
     }
 
     public function store(Request $request)

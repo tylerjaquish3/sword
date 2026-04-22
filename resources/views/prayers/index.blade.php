@@ -9,7 +9,13 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">All Prayers</h3>
-                <h6 class="font-weight-normal mb-2">Last entry was 23 hours ago. View details</h6>
+                <h6 class="font-weight-normal mb-2">
+                    @if($lastPrayer)
+                        Last entry {{ $lastPrayer->created_at->diffForHumans() }}
+                    @else
+                        No entries yet
+                    @endif
+                </h6>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
                     <button type="button" class="btn bg-white btn-icon view-toggle active" id="card-view-btn" data-view="card">
@@ -24,9 +30,9 @@
     <div class="col-sm-6">
         <div class="d-flex align-items-center justify-content-md-end">
             <div class="pe-1 mb-3 mb-xl-0">
-                <a type="button" href="{{ route('prayers.create') }}" class="btn btn-outline-inverse-info btn-icon-text">
-                    Create New                        
-                </a>
+                <button type="button" class="btn btn-outline-inverse-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#createPrayerModal">
+                    Create New
+                </button>
             </div>
         </div>
     </div>
@@ -34,6 +40,54 @@
 
 @include('prayers.partials.card-view')
 @include('prayers.partials.table-view')
+
+<!-- Create Prayer Modal -->
+<div class="modal fade" id="createPrayerModal" tabindex="-1" aria-labelledby="createPrayerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPrayerModalLabel">New Prayer Journal Entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row mb-3">
+                    <label for="prayer-date" class="col-sm-3 col-form-label">Date</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="prayer-date" value="{{ $today }}">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="prayer-adoration" class="col-sm-3 col-form-label">Adoration</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="prayer-adoration" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="prayer-confession" class="col-sm-3 col-form-label">Confession</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="prayer-confession" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="prayer-thanksgiving" class="col-sm-3 col-form-label">Thanksgiving</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="prayer-thanksgiving" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="prayer-supplication" class="col-sm-3 col-form-label">Supplication</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="prayer-supplication" rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-prayer">Save Entry</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Send Prayer Modal -->
 <div class="modal fade" id="sendPrayerModal" tabindex="-1" aria-labelledby="sendPrayerModalLabel" aria-hidden="true">
@@ -72,6 +126,25 @@
 
 @push('js')
 <script>
+
+    // Save new prayer entry
+    $('#btn-save-prayer').on('click', function () {
+        $.ajax({
+            url: '/prayers',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                date:  $('#prayer-date').val(),
+                type1: $('#prayer-adoration').val(),
+                type2: $('#prayer-confession').val(),
+                type3: $('#prayer-thanksgiving').val(),
+                type4: $('#prayer-supplication').val(),
+            },
+            success: function () {
+                window.location.reload();
+            }
+        });
+    });
 
     // View toggle functionality
     $('.view-toggle').click(function() {

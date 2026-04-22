@@ -13,8 +13,10 @@ class PrayerController extends Controller
     {
         $prayers = Prayer::with('type')->get()->groupBy('date');
         $prayerTypes = PrayerType::all();
+        $today = Carbon::now()->format('m/d/Y');
+        $lastPrayer = Prayer::orderByDesc('created_at')->first();
 
-        return view('prayers.index', compact('prayers', 'prayerTypes'));
+        return view('prayers.index', compact('prayers', 'prayerTypes', 'today', 'lastPrayer'));
     }
 
     public function create()
@@ -33,16 +35,17 @@ class PrayerController extends Controller
                 continue;
             }
 
-            // remove the word type from the key
             $key = str_replace('type', '', $key);
 
-            $values = [
-                'date' => $data['date'],
-                'content' => $value,
+            Prayer::create([
+                'date'           => $data['date'],
+                'content'        => $value,
                 'prayer_type_id' => $key,
-            ];
+            ]);
+        }
 
-            Prayer::create($values);
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['success' => true]);
         }
 
         return redirect()->route('prayers.index');

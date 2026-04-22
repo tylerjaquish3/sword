@@ -247,18 +247,24 @@ div.dataTables_paginate {
 }
 
 /* Search box on dark bg */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group {
+    border: 1px solid rgba(255,255,255,0.35) !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+}
 .horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .input-group-text {
-    background: rgba(255,255,255,0.06) !important;
-    border-color: rgba(201,168,76,0.22) !important;
-    color: var(--sword-gold-dim) !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--sword-gold) !important;
 }
 .horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .form-control {
-    background: rgba(255,255,255,0.06) !important;
-    border-color: rgba(201,168,76,0.22) !important;
-    color: rgba(220,228,248,0.9) !important;
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
 }
 .horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .form-control::placeholder {
-    color: rgba(220,228,248,0.3) !important;
+    color: rgba(255,255,255,0.45) !important;
 }
 
 /* ── Top navbar dropdowns ─────────────────────────────────────── */
