@@ -111,3 +111,4 @@ php artisan route:list
 - keep track of streaks?
 - monthly/weekly report to show what i've added
 - mark books/chapters as read and keep a log of them
+- add documentation? or change it to something useful or remove it
