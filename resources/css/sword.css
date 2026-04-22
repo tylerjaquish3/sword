@@ -126,6 +126,269 @@ div.dataTables_paginate {
     opacity: 0.6 !important;
 }
 
+/* ==========================================================================
+   Mobile Navbar Fixes
+   ========================================================================== */
+
+/* Mobile bell button */
+.mob-bell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: #27367f;
+    font-size: 1.15rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.mob-bell:hover { background: rgba(70, 77, 238, 0.08); color: #27367f; }
+.mob-bell-count {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2ec551;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* Mobile: keep logo legible, hide the old bottom-navbar entirely */
+@media (max-width: 991px) {
+    .horizontal-menu .top-navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini img {
+        width: 110px !important;
+        height: auto !important;
+    }
+    .horizontal-menu .top-navbar .navbar-brand-wrapper .navbar-brand {
+        width: auto !important;
+    }
+    /* The drawer replaces the bottom-navbar on mobile */
+    .horizontal-menu .bottom-navbar {
+        display: none !important;
+    }
+    /* Remove dropdown caret from profile on mobile */
+    .nav-item.nav-profile .nav-link.dropdown-toggle::after {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   SWORD NAVY & GOLD THEME
+   Deep navy (#0e1628) + aged gold (#c9a84c) — replaces Kapella's scattered
+   purple (#464dee), teal (#0ddbb9), and green (#1bcfb4) accents throughout.
+   ========================================================================== */
+
+:root {
+    --sword-navy:        #0e1628;
+    --sword-navy-mid:    #152035;
+    --sword-navy-border: rgba(201, 168, 76, 0.14);
+    --sword-gold:        #c9a84c;
+    --sword-gold-dim:    rgba(201, 168, 76, 0.55);
+    --sword-gold-glow:   rgba(201, 168, 76, 0.12);
+    --sword-ink:         rgba(220, 228, 248, 0.80);
+    --sword-parchment:   #f6f3ee;
+}
+
+/* ── Page content area — warm parchment ───────────────────────── */
+.main-panel {
+    background: var(--sword-parchment) !important;
+}
+
+/* ── Top navbar ───────────────────────────────────────────────── */
+.horizontal-menu .top-navbar {
+    background: var(--sword-navy) !important;
+    border-bottom: 1px solid var(--sword-navy-border) !important;
+}
+.horizontal-menu .top-navbar .navbar-brand-wrapper {
+    background: var(--sword-navy) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper {
+    background: var(--sword-navy) !important;
+    border-left-color: var(--sword-navy-border) !important;
+}
+
+/* Nav link icons */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item .nav-link {
+    color: var(--sword-ink) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper .count-indicator i {
+    color: var(--sword-ink) !important;
+}
+
+/* Notification / message count badge → gold */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .count-indicator .count {
+    background: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+}
+/* Override Bootstrap's bg-success on the count span */
+.count.bg-success, .count.bg-primary, .count.bg-warning {
+    background-color: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+}
+
+/* Profile name */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-profile .nav-profile-name {
+    color: var(--sword-ink) !important;
+}
+
+/* Online status dot → gold */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-profile .online-status {
+    background-color: var(--sword-gold) !important;
+    border-color: var(--sword-navy) !important;
+}
+
+/* Search box on dark bg */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .input-group-text {
+    background: rgba(255,255,255,0.06) !important;
+    border-color: rgba(201,168,76,0.22) !important;
+    color: var(--sword-gold-dim) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .form-control {
+    background: rgba(255,255,255,0.06) !important;
+    border-color: rgba(201,168,76,0.22) !important;
+    color: rgba(220,228,248,0.9) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .form-control::placeholder {
+    color: rgba(220,228,248,0.3) !important;
+}
+
+/* ── Top navbar dropdowns ─────────────────────────────────────── */
+.horizontal-menu .top-navbar .navbar-menu-wrapper .dropdown .dropdown-menu,
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-dropdown {
+    background: var(--sword-navy-mid) !important;
+    border: 1px solid var(--sword-navy-border) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.45) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper .dropdown .dropdown-menu .dropdown-header,
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-dropdown .dropdown-header {
+    color: var(--sword-gold-dim) !important;
+    border-bottom-color: var(--sword-navy-border) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper .dropdown .dropdown-menu .dropdown-item,
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-dropdown .dropdown-item {
+    color: var(--sword-ink) !important;
+}
+.horizontal-menu .top-navbar .navbar-menu-wrapper .dropdown .dropdown-menu .dropdown-item:hover,
+.horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-dropdown .dropdown-item:hover {
+    background: var(--sword-gold-glow) !important;
+    color: #fff !important;
+}
+/* Profile dropdown icons */
+.navbar-dropdown .mdi-settings,
+.navbar-dropdown .mdi-logout,
+.navbar-dropdown .text-primary {
+    color: var(--sword-gold) !important;
+}
+/* Notification preview icons */
+.horizontal-menu .top-navbar .preview-icon.bg-success,
+.horizontal-menu .top-navbar .preview-icon.bg-primary,
+.horizontal-menu .top-navbar .preview-icon.bg-warning,
+.horizontal-menu .top-navbar .preview-icon.bg-info {
+    background: var(--sword-gold-glow) !important;
+    color: var(--sword-gold) !important;
+}
+.horizontal-menu .top-navbar .preview-subject {
+    color: rgba(220,228,248,0.9) !important;
+}
+.horizontal-menu .top-navbar small,
+.horizontal-menu .top-navbar .small-text,
+.horizontal-menu .top-navbar .text-muted {
+    color: rgba(220,228,248,0.4) !important;
+}
+
+/* ── Bottom navbar ────────────────────────────────────────────── */
+.horizontal-menu .bottom-navbar {
+    background: var(--sword-navy-mid) !important;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.28) !important;
+    border-top: 1px solid var(--sword-navy-border) !important;
+    border-bottom: 1px solid rgba(201,168,76,0.06) !important;
+}
+
+/* All inactive items */
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item > .nav-link .menu-icon,
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item > .nav-link .menu-title,
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item > .nav-link i {
+    color: rgba(220,228,248,0.52) !important;
+    transition: color 0.2s ease !important;
+}
+
+/* Hover → gold */
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item:hover > .nav-link .menu-icon,
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item:hover > .nav-link .menu-title,
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item:hover > .nav-link i {
+    color: var(--sword-gold) !important;
+}
+
+/* Active underline: replace teal (#0ddbb9) with gold */
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item.active > .nav-link:after {
+    border-bottom-color: var(--sword-gold) !important;
+}
+
+/* Active icon and title: replace purple (#464dee) with gold */
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item.active > .nav-link .menu-icon {
+    color: var(--sword-gold) !important;
+}
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item.active > .nav-link .menu-title,
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item.active > .nav-link i,
+.horizontal-menu .bottom-navbar .page-navigation > .nav-item.active > .nav-link .menu-arrow {
+    color: var(--sword-gold) !important;
+}
+
+/* ── Mobile hamburger → light bars on dark top navbar ─────────── */
+.mob-ham-bar {
+    background: rgba(220,228,248,0.82) !important;
+}
+.mob-hamburger:hover {
+    background: var(--sword-gold-glow) !important;
+}
+
+/* ── Mobile bell → light on dark bg ──────────────────────────── */
+.mob-bell {
+    color: rgba(220,228,248,0.82) !important;
+}
+.mob-bell:hover {
+    background: var(--sword-gold-glow) !important;
+    color: var(--sword-gold) !important;
+}
+.mob-bell-count {
+    background: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+}
+
+/* ── DataTable → gold accents, navy header ────────────────────── */
+#datatable-topics thead th {
+    background-color: var(--sword-navy) !important;
+    border-color: var(--sword-navy-mid) !important;
+}
+#datatable-topics_wrapper .dt-paging-button.current,
+#datatable-topics_wrapper .paginate_button.current,
+.dataTables_paginate .paginate_button.current {
+    background: var(--sword-gold) !important;
+    border-color: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+}
+#datatable-topics_wrapper .dt-paging-button:hover,
+#datatable-topics_wrapper .paginate_button:hover,
+.dataTables_paginate .paginate_button:hover {
+    border-color: var(--sword-gold) !important;
+    color: var(--sword-navy-mid) !important;
+}
+#datatable-topics_wrapper .dt-search input:focus,
+#datatable-topics_wrapper .dataTables_filter input:focus,
+div.dataTables_filter input:focus {
+    border-color: var(--sword-gold) !important;
+    box-shadow: 0 0 0 2px rgba(201,168,76,0.18) !important;
+}
+
 /* Info Text Styling */
 #datatable-topics_wrapper .dt-info,
 #datatable-topics_wrapper .dataTables_info,
@@ -143,3 +406,164 @@ div.dataTables_info {
     align-items: center;
     margin-top: 15px;
 }
+
+/* ==========================================================================
+   CONTENT AREA — NAVY & GOLD COLOR OVERRIDES
+   Scoped to .content-wrapper so navbar is unaffected.
+   Replaces Bootstrap's scattered primary/success/info/warning with theme.
+   ========================================================================== */
+
+/* ── text-* utilities ────────────────────────────────────────── */
+.content-wrapper .text-primary   { color: var(--sword-navy)  !important; }
+.content-wrapper .text-success   { color: var(--sword-gold)  !important; }
+.content-wrapper .text-info      { color: var(--sword-navy)  !important; }
+.content-wrapper .text-warning   { color: var(--sword-gold)  !important; }
+/* text-danger keeps red — semantic for destructive actions */
+
+/* ── Solid buttons ────────────────────────────────────────────── */
+.content-wrapper .btn-primary {
+    background-color: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+.content-wrapper .btn-primary:hover,
+.content-wrapper .btn-primary:focus {
+    background-color: var(--sword-navy-mid) !important;
+    border-color: var(--sword-gold) !important;
+    color: var(--sword-gold) !important;
+    box-shadow: 0 0 0 0.2rem rgba(201,168,76,0.2) !important;
+}
+.content-wrapper .btn-success {
+    background-color: var(--sword-gold) !important;
+    border-color: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+    font-weight: 600 !important;
+}
+.content-wrapper .btn-success:hover {
+    background-color: #b8962e !important;
+    border-color: #b8962e !important;
+    color: var(--sword-navy) !important;
+}
+.content-wrapper .btn-info {
+    background-color: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: rgba(220,228,248,0.9) !important;
+}
+
+/* ── Outline buttons ──────────────────────────────────────────── */
+.content-wrapper .btn-outline-primary {
+    color: var(--sword-navy) !important;
+    border-color: rgba(14,22,40,0.35) !important;
+}
+.content-wrapper .btn-outline-primary:hover,
+.content-wrapper .btn-outline-primary:focus {
+    background-color: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+.content-wrapper .btn-outline-success {
+    color: var(--sword-gold) !important;
+    border-color: rgba(201,168,76,0.5) !important;
+}
+.content-wrapper .btn-outline-success:hover {
+    background-color: var(--sword-gold) !important;
+    border-color: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+}
+.content-wrapper .btn-outline-info {
+    color: var(--sword-navy) !important;
+    border-color: rgba(14,22,40,0.3) !important;
+}
+.content-wrapper .btn-outline-info:hover {
+    background-color: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: rgba(220,228,248,0.9) !important;
+}
+/* Inverse variants used in Kapella template */
+.content-wrapper .btn-inverse-primary {
+    background-color: rgba(14,22,40,0.08) !important;
+    color: var(--sword-navy) !important;
+    border-color: transparent !important;
+}
+.content-wrapper .btn-inverse-primary:hover {
+    background-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+
+/* ── Badges ────────────────────────────────────────────────────── */
+.content-wrapper .badge.bg-primary,
+.content-wrapper .badge.btn-primary  { background-color: var(--sword-navy) !important; color: #fff !important; }
+.content-wrapper .badge.bg-success,
+.content-wrapper .badge.btn-success  { background-color: var(--sword-gold) !important; color: var(--sword-navy) !important; }
+.content-wrapper .badge.bg-info,
+.content-wrapper .badge.btn-info     { background-color: var(--sword-navy) !important; color: rgba(220,228,248,0.9) !important; }
+.content-wrapper .badge.bg-warning,
+.content-wrapper .badge.btn-warning  { background-color: var(--sword-gold) !important; color: var(--sword-navy) !important; }
+.content-wrapper .badge.bg-secondary { background-color: rgba(14,22,40,0.14) !important; color: var(--sword-navy) !important; }
+
+/* success-subtle badge (memory page completed verses) */
+.content-wrapper .badge.bg-success-subtle { background-color: rgba(201,168,76,0.12) !important; color: var(--sword-gold) !important; border-color: rgba(201,168,76,0.3) !important; }
+
+/* ── bg-* utility backgrounds ─────────────────────────────────── */
+.content-wrapper .bg-primary        { background-color: var(--sword-navy) !important; }
+.content-wrapper .bg-success        { background-color: var(--sword-gold) !important; color: var(--sword-navy) !important; }
+.content-wrapper .bg-info           { background-color: var(--sword-navy) !important; }
+.content-wrapper .bg-warning        { background-color: var(--sword-gold) !important; color: var(--sword-navy) !important; }
+
+/* Semi-transparent bg-* (used in modal card headers) */
+.content-wrapper .bg-primary.bg-opacity-10 { background-color: rgba(14,22,40,0.06) !important; }
+.content-wrapper .bg-success.bg-opacity-10 { background-color: rgba(201,168,76,0.08) !important; }
+.content-wrapper .bg-warning.bg-opacity-10 { background-color: rgba(201,168,76,0.06) !important; }
+
+/* Danger card headers — keep recognisably red but soften */
+.content-wrapper .card-header.bg-danger { background-color: #b91c1c !important; }
+
+/* ── Spinners ──────────────────────────────────────────────────── */
+.content-wrapper .spinner-border.text-primary { color: var(--sword-gold) !important; }
+
+/* ── Focus rings ───────────────────────────────────────────────── */
+.content-wrapper .form-control:focus,
+.content-wrapper .form-select:focus {
+    border-color: var(--sword-gold) !important;
+    box-shadow: 0 0 0 0.2rem rgba(201,168,76,0.18) !important;
+}
+
+/* ── Links ─────────────────────────────────────────────────────── */
+.content-wrapper a.text-primary { color: var(--sword-navy) !important; }
+.content-wrapper a.text-success { color: var(--sword-gold) !important; }
+
+/* ── Progress bars ─────────────────────────────────────────────── */
+.content-wrapper .progress-bar.bg-primary { background-color: var(--sword-navy) !important; }
+.content-wrapper .progress-bar.bg-success { background-color: var(--sword-gold) !important; }
+.content-wrapper .progress-bar.bg-info    { background-color: var(--sword-navy) !important; }
+
+/* ── Kapella custom btn-outline-inverse-info ("Create New" buttons) ─ */
+.content-wrapper .btn-outline-inverse-info {
+    color: var(--sword-navy) !important;
+    border-color: rgba(14,22,40,0.35) !important;
+    background-color: transparent !important;
+}
+.content-wrapper .btn-outline-inverse-info:hover,
+.content-wrapper .btn-outline-inverse-info:focus {
+    background-color: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+    box-shadow: 0 0 0 0.2rem rgba(201,168,76,0.2) !important;
+}
+
+/* ── View-toggle icons (grid/list used across pages) ──────────── */
+.content-wrapper .mdi-view-grid.text-success,
+.content-wrapper .mdi-format-list-bulleted.text-primary {
+    color: var(--sword-navy) !important;
+    opacity: 0.5;
+}
+.content-wrapper button.active .mdi-view-grid,
+.content-wrapper button.active .mdi-format-list-bulleted,
+.content-wrapper .btn.active .mdi-view-grid,
+.content-wrapper .btn.active .mdi-format-list-bulleted {
+    color: var(--sword-gold) !important;
+    opacity: 1;
+}
+
+/* ── Card title ────────────────────────────────────────────────── */
+.content-wrapper .card-title { color: var(--sword-navy) !important; }

@@ -17,7 +17,7 @@
         <div class="d-flex align-items-center justify-content-md-end">
             <div class="pe-1 mb-3 mb-xl-0">
                 <button type="button" class="btn btn-outline-inverse-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#createMemoryModal">
-                    <i class="mdi mdi-plus me-1"></i> Create New                        
+                    Create New                        
                 </button>
             </div>
         </div>

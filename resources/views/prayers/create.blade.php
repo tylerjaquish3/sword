@@ -22,11 +22,6 @@
             </div>
             <div class="pe-1 mb-3 mb-xl-0">
                 <button type="button" class="btn btn-outline-inverse-info btn-icon-text">
-                    Help                       
-                </button>
-            </div>
-            <div class="pe-1 mb-3 mb-xl-0">
-                <button type="button" class="btn btn-outline-inverse-info btn-icon-text">
                     Send                        
                 </button>
             </div>

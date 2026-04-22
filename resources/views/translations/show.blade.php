@@ -31,12 +31,6 @@
             </div>
             <div class="pe-1 mb-3 mb-xl-0">
                     <button type="button" class="btn btn-outline-inverse-info btn-icon-text">
-                        Help
-                        <i class="mdi mdi-help-circle-outline btn-icon-append"></i>                          
-                </button>
-            </div>
-            <div class="pe-1 mb-3 mb-xl-0">
-                    <button type="button" class="btn btn-outline-inverse-info btn-icon-text">
                         Print
                         <i class="mdi mdi-printer btn-icon-append"></i>                          
                     </button>
