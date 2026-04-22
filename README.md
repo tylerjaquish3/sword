@@ -99,7 +99,7 @@ php artisan route:list
 ## Feature Ideas
 
 - Fill in author & description for each book
-- Look for similiarities between stories
+- Look for similiarities between stories, new page for that
 - Memory verses, track for user
 - History of how it was put together
 - Timeline of books written
