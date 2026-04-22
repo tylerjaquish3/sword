@@ -124,5 +124,4 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - set up notifications
 - keep track of streaks?
 - monthly/weekly report to show what i've added
-- navbar replace top left with logo
 - mark books/chapters as read and keep a log of them
