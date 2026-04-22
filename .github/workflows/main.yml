@@ -23,6 +23,7 @@ jobs:
           REMOTE_USER: ${{ secrets.EC2_SSH_USER }}
           TARGET: "/home/tyler_admin/sword"
           EXCLUDE: ".env, database/database.sqlite"
+          ARGS: "-rlzvc --no-perms --no-owner --no-group"
 
       - name: Run post-deploy steps
         uses: appleboy/ssh-action@master
