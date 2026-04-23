@@ -12,6 +12,7 @@ use App\Http\Controllers\PrayerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\CommentaryController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::redirect('/', '/home');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
 

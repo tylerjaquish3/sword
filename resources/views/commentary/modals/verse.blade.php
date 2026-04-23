@@ -201,7 +201,7 @@
                     });
                 },
                 error: function(xhr, status, error) {
-                    alert('Error deleting comment');
+                    Swal.fire({ icon: 'error', text: 'Error deleting comment' });
                 }
             });
         });

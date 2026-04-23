@@ -124,7 +124,12 @@
 
 @endsection
 
+@push('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
     // Save new prayer entry
@@ -217,11 +222,11 @@
     $('#sendPrayerBtn').click(function() {
         var email = $('#recipientEmail').val();
         if (!email) {
-            alert('Please enter a recipient email address');
+            Swal.fire({ icon: 'warning', text: 'Please enter a recipient email address' });
             return;
         }
         // TODO: Implement actual send functionality
-        alert('Email functionality coming soon! Would send to: ' + email);
+        Swal.fire({ icon: 'info', text: 'Email functionality coming soon! Would send to: ' + email });
         bootstrap.Modal.getInstance(document.getElementById('sendPrayerModal')).hide();
     });
 

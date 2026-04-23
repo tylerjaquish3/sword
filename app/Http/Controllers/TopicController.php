@@ -22,7 +22,7 @@ class TopicController extends Controller
 
     public function create()
     {
-        return view('topics.create');
+        return redirect()->route('topics.index');
     }
 
     /**
@@ -41,6 +41,10 @@ class TopicController extends Controller
             'description' => $request->description,
             'keywords' => $request->keywords,
         ]);
+
+        if ($request->ajax()) {
+            return response()->json(['redirect' => route('topics.index')]);
+        }
 
         return redirect()->route('topics.index')->with('success', 'Topic created successfully.');
     }

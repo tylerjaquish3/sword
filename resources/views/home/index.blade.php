@@ -183,6 +183,31 @@
     </div>
 </div>
 
+{{-- Mobile-only search card --}}
+<div class="row mt-4 d-lg-none">
+    <div class="col-12">
+        <div class="card" style="border-top: 3px solid var(--sword-gold);">
+            <div class="card-body py-4">
+                <p class="mb-3 text-uppercase font-weight-bold text-center" style="font-size: 0.7rem; letter-spacing: 0.1em; color: var(--sword-gold);">Search God's Word</p>
+                <form method="GET" action="{{ route('search.index') }}">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            name="q"
+                            class="form-control"
+                            placeholder="Search verses…"
+                            style="border-color: rgba(14,22,40,0.2);"
+                        >
+                        <button class="btn" type="submit" style="background: var(--sword-navy); color: var(--sword-gold); border-color: var(--sword-navy);">
+                            <i class="mdi mdi-magnify"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 .dash-stat-card {
     border-top: 3px solid transparent;

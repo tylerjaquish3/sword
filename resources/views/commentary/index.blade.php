@@ -127,7 +127,12 @@
 
 @endsection
 
+@push('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $('#datatable-chapter-comments').DataTable({
@@ -203,7 +208,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching verse:', error);
-                    alert('Error loading verse data');
+                    Swal.fire({ icon: 'error', text: 'Error loading verse data' });
                 }
             });
         });
@@ -252,7 +257,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching chapter:', error);
-                    alert('Error loading chapter data');
+                    Swal.fire({ icon: 'error', text: 'Error loading chapter data' });
                 }
             });
         });
@@ -276,7 +281,7 @@
                             $('#modal_comments_list').html('<p class="text-muted mb-0">No comments yet.</p>');
                         }
                     } else {
-                        alert('Error deleting comment');
+                        Swal.fire({ icon: 'error', text: 'Error deleting comment' });
                     }
                 }
             });
@@ -301,7 +306,7 @@
                             $('#modal_chapter_comments_list').html('<p class="text-muted mb-0">No comments yet.</p>');
                         }
                     } else {
-                        alert('Error deleting comment');
+                        Swal.fire({ icon: 'error', text: 'Error deleting comment' });
                     }
                 }
             });
