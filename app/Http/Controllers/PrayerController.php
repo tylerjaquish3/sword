@@ -50,4 +50,11 @@ class PrayerController extends Controller
 
         return redirect()->route('prayers.index');
     }
+
+    public function destroyByDate(Request $request)
+    {
+        Prayer::where('date', $request->date)->delete();
+
+        return response()->json(['success' => true]);
+    }
 }

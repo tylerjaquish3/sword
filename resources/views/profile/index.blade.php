@@ -11,6 +11,38 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0"><i class="mdi mdi-cog-outline me-2"></i>Preferences</h4>
+            </div>
+            <div class="card-body">
+                @if(session('success'))
+                    <div class="alert alert-success py-2 mb-3">{{ session('success') }}</div>
+                @endif
+                <form method="POST" action="{{ route('profile.default-translation') }}">
+                    @csrf
+                    @method('PATCH')
+                    <div class="mb-3">
+                        <label for="translation_id" class="form-label fw-semibold">Default Translation</label>
+                        <select name="translation_id" id="translation_id" class="form-select">
+                            <option value="">— None —</option>
+                            @foreach($translations as $translation)
+                                <option value="{{ $translation->id }}" {{ auth()->user()->default_translation_id == $translation->id ? 'selected' : '' }}>
+                                    {{ $translation->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="form-text">Used as the default when opening the reader.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-lg-8 grid-margin stretch-card">
         <div class="card">

@@ -19,7 +19,6 @@
                                 <a href="{{ route('login') }}">
                                     <img src="/images/logo.png" alt="Sword" style="height: 60px;">
                                 </a>
-                                <h4 class="mt-3 mb-1">Sword</h4>
                                 <h6 class="font-weight-light">@yield('subtitle')</h6>
                             </div>
 

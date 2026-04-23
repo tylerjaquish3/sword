@@ -16,14 +16,14 @@
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h4 class="card-title mb-0">{{ \Carbon\Carbon::parse($date)->format('l, M j, Y') }}</h4>
                         </div>
-                        <hr class="mt-0">
+                        <div class="reading-section-divider mt-0 mb-3"></div>
                         @foreach ($dayPrayers as $prayer)
                             <div class="mb-3">
-                                <h6 class="text-primary mb-2">
-                                    <i class="mdi mdi-circle-medium"></i>
-                                    {{ $prayer->type->name }}
-                                </h6>
-                                <p class="text-muted mb-0 ps-3">{{ $prayer->content }}</p>
+                                <div class="prayer-type-header">
+                                    <span class="prayer-type-dot"></span>
+                                    <span class="prayer-type-label">{{ $prayer->type->name }}</span>
+                                </div>
+                                <p class="text-muted mb-0 ps-3" style="font-size: 0.875rem; line-height: 1.6;">{{ $prayer->content }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -32,9 +32,14 @@
                             <i class="mdi mdi-clock-outline me-1"></i>
                             {{ \Carbon\Carbon::parse($dayPrayers[0]->created_at)->format('g:i A') }}
                         </small>
-                        <button type="button" class="btn btn-sm btn-outline-primary btn-icon" data-bs-toggle="modal" data-bs-target="#sendPrayerModal" data-date="{{ $date }}" data-prayers='@json($dayPrayers)'>
-                            <i class="mdi mdi-email-outline"></i>
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-icon" data-bs-toggle="modal" data-bs-target="#sendPrayerModal" data-date="{{ $date }}" data-prayers='@json($dayPrayers)'>
+                                <i class="mdi mdi-email-outline"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-icon btn-delete-prayer" data-date="{{ $date }}">
+                                <i class="mdi mdi-trash-can-outline"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

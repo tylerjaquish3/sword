@@ -23,7 +23,9 @@ class TranslationController extends Controller
             ->skip(1)
             ->first();
 
-        return view('translations.index', compact('translations', 'books', 'lastLogin'));
+        $defaultTranslationId = Auth::user()->default_translation_id;
+
+        return view('translations.index', compact('translations', 'books', 'lastLogin', 'defaultTranslationId'));
     }
 
     public function show(Translation $translation)

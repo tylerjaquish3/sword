@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
 
     // Book routes
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
@@ -67,8 +68,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/commentary/verse/{verseComment}', [CommentaryController::class, 'updateVerse'])->name('commentary.update-verse');
     Route::delete('/commentary/verse/{verseComment}', [CommentaryController::class, 'destroyVerse'])->name('commentary.destroy-verse');
 
+    Route::delete('prayers/date', [PrayerController::class, 'destroyByDate'])->name('prayers.destroyByDate');
     Route::resource('prayers', PrayerController::class);
+    Route::get('/topics/verse-search', [TopicController::class, 'verseSearch'])->name('topics.verse-search');
     Route::resource('topics', TopicController::class);
+    Route::post('/topics/{topic}/notes', [TopicController::class, 'storeNote'])->name('topics.notes.store');
+    Route::delete('/topics/notes/{note}', [TopicController::class, 'destroyNote'])->name('topics.notes.destroy');
 
     // Memory routes
     Route::resource('memory', MemoryController::class)->except(['create', 'show', 'edit']);

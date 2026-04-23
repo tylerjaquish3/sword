@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Topic;
+use App\Models\TopicNote;
 use App\Models\Verse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -72,7 +73,9 @@ class TopicController extends Controller
             $matchingVerses = $matchingVerses->unique('id');
         }
         
-        return view('topics.edit', compact('topic', 'matchingVerses'));
+        $notes = $topic->notes()->with('verses.chapter.book')->get();
+
+        return view('topics.edit', compact('topic', 'matchingVerses', 'notes'));
     }
 
     /**
@@ -93,6 +96,67 @@ class TopicController extends Controller
         ]);
 
         return redirect()->route('topics.edit', $topic)->with('success', 'Topic updated successfully.');
+    }
+
+    public function storeNote(Request $request, Topic $topic)
+    {
+        $request->validate(['note' => 'required|string']);
+
+        $note = $topic->notes()->create(['note' => $request->note]);
+
+        if ($request->filled('verse_ids')) {
+            $note->verses()->attach(
+                array_filter(array_map('intval', explode(',', $request->verse_ids)))
+            );
+        }
+
+        $note->load('verses.chapter.book');
+
+        return response()->json([
+            'id'         => $note->id,
+            'note'       => $note->note,
+            'created_at' => $note->created_at->format('M j, Y g:i A'),
+            'verses'     => $note->verses->map(fn($v) => [
+                'id'        => $v->id,
+                'reference' => $v->reference,
+                'url'       => route('translations.index') . '?translation=' . $v->translation_id
+                             . '&book=' . $v->chapter->book->id
+                             . '&chapter=' . $v->chapter->number,
+            ]),
+        ]);
+    }
+
+    public function destroyNote(TopicNote $note)
+    {
+        $note->delete();
+        return response()->json(['ok' => true]);
+    }
+
+    public function verseSearch(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $verses = Verse::with(['chapter.book', 'translation'])
+            ->where(function ($query) use ($q) {
+                $query->where('reference', 'LIKE', '%' . $q . '%')
+                      ->orWhere('text', 'LIKE', '%' . $q . '%');
+            })
+            ->limit(20)
+            ->get()
+            ->map(fn($v) => [
+                'id'          => $v->id,
+                'reference'   => $v->reference,
+                'translation' => $v->translation->name ?? '',
+                'text'        => mb_strimwidth($v->text, 0, 120, '…'),
+                'url'         => route('translations.index') . '?translation=' . $v->translation_id
+                               . '&book=' . $v->chapter->book->id
+                               . '&chapter=' . $v->chapter->number,
+            ]);
+
+        return response()->json($verses);
     }
 
     /**

@@ -8,5 +8,8 @@ class Topic extends Model
 {
     protected $guarded = [];
 
-
+    public function notes()
+    {
+        return $this->hasMany(TopicNote::class)->latest();
+    }
 }

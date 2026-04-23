@@ -13,20 +13,6 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
-        <div class="d-flex align-items-center justify-content-md-end">
-            <div class="pe-1 mb-3 mb-xl-0">
-                <a href="{{ route('topics.index') }}" type="button" class="btn btn-outline-inverse-info btn-icon-text">
-                    Index                         
-                </a>
-            </div>
-            <div class="pe-1 mb-3 mb-xl-0">
-                <button type="button" class="btn btn-outline-inverse-info btn-icon-text">
-                    Send                        
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="row">

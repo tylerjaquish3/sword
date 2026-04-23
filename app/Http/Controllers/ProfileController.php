@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChapterComment;
+use App\Models\Translation;
 use App\Models\UserLogin;
 use App\Models\UserRead;
 use App\Models\VerseComment;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
@@ -44,6 +46,15 @@ class ProfileController extends Controller
 
         $commentary = $verseComments->concat($chapterComments)->sortByDesc('created_at')->values();
 
-        return view('profile.index', compact('reads', 'logins', 'commentary'));
+        $translations = Translation::orderBy('name')->get();
+
+        return view('profile.index', compact('reads', 'logins', 'commentary', 'translations'));
+    }
+
+    public function updateDefaultTranslation(Request $request)
+    {
+        $request->validate(['translation_id' => 'nullable|exists:translations,id']);
+        Auth::user()->update(['default_translation_id' => $request->translation_id ?: null]);
+        return back()->with('success', 'Default translation saved.');
     }
 }

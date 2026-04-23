@@ -9,7 +9,7 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">Memory Goals</h3>
-                <h6 class="font-weight-normal mb-2">{{ count($activeMemories) }} active, {{ count($completedMemories) }} completed</h6>
+                <p class="page-subtitle mb-0">{{ count($activeMemories) }} active &middot; {{ count($completedMemories) }} completed</p>
             </div>
         </div>
     </div>
@@ -34,7 +34,10 @@
 <!-- Active Memory Goals Section -->
 <div class="row mt-4">
     <div class="col-12">
-        <h4 class="mb-3"><i class="mdi mdi-book-open-page-variant text-primary me-2"></i>Active Goals</h4>
+        <div class="sword-section-header">
+            <span class="section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+            <span class="section-title">Active Goals</span>
+        </div>
     </div>
 </div>
 
@@ -42,7 +45,7 @@
 <div class="row">
     @foreach($activeMemories as $memory)
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 border-left-primary">
+        <div class="card h-100 border-left-gold">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <h5 class="card-title mb-0">
@@ -128,7 +131,10 @@
 <!-- Completed Memory Goals Section -->
 <div class="row mt-5">
     <div class="col-12">
-        <h4 class="mb-3"><i class="mdi mdi-check-circle text-success me-2"></i>Completed Goals</h4>
+        <div class="sword-section-header">
+            <span class="section-icon"><i class="mdi mdi-check-circle"></i></span>
+            <span class="section-title">Completed Goals</span>
+        </div>
     </div>
 </div>
 
@@ -247,7 +253,7 @@
                             <select class="form-select" id="translation_select">
                                 <option value="">Select Translation</option>
                                 @foreach($translations as $translation)
-                                    <option value="{{ $translation->id }}">{{ $translation->name }}</option>
+                                    <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -256,7 +262,7 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="book_select" class="form-label">Book</label>
-                            <select class="form-select" id="book_select" disabled>
+                            <select class="form-select" id="book_select">
                                 <option value="">Select Book</option>
                                 @foreach($books as $book)
                                     <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
@@ -338,37 +344,7 @@
 
 @push('css')
 <style>
-    .border-left-primary {
-        border-left: 4px solid #007bff !important;
-    }
-    .min-height-100 {
-        min-height: 100px;
-    }
-    .selected-verse-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .selected-verse-badge .remove-verse {
-        cursor: pointer;
-        opacity: 0.7;
-    }
-    .selected-verse-badge .remove-verse:hover {
-        opacity: 1;
-    }
-    #verse_select {
-        height: 120px;
-    }
-    .verse-display {
-        padding: 10px;
-        margin-bottom: 10px;
-        background: #f8f9fa;
-        border-radius: 5px;
-    }
-    .verse-display .reference {
-        font-weight: bold;
-        color: #007bff;
-    }
+    .min-height-100 { min-height: 100px; }
 </style>
 @endpush
 
@@ -386,14 +362,15 @@ $(document).ready(function() {
         });
     }
 
-    // Translation selection change
+    // Translation selection change — reload verses for current chapter if one is selected
     $('#translation_select').change(function() {
-        const translationId = $(this).val();
-        $('#book_select').prop('disabled', !translationId).val('');
-        $('#chapter_select').empty().append('<option value="">Select Chapter</option>').prop('disabled', true);
         $('#verse_select').empty().append('<option value="">Select Book & Chapter first</option>').prop('disabled', true);
         $('#addVersesBtn').prop('disabled', true);
         $('#verse-preview-row').hide();
+        // Re-trigger chapter change to reload verses in the new translation
+        if ($('#chapter_select').val()) {
+            $('#chapter_select').trigger('change');
+        }
     });
 
     // Book selection change

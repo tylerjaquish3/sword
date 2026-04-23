@@ -60,6 +60,9 @@ class CommentaryController extends Controller
             VerseComment::create($data);
         }
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
         return redirect()->route('commentary.index');
     }
 

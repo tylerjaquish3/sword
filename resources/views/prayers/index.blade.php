@@ -9,13 +9,13 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">All Prayers</h3>
-                <h6 class="font-weight-normal mb-2">
+                <p class="page-subtitle mb-0">
                     @if($lastPrayer)
                         Last entry {{ $lastPrayer->created_at->diffForHumans() }}
                     @else
                         No entries yet
                     @endif
-                </h6>
+                </p>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
                     <button type="button" class="btn bg-white btn-icon view-toggle active" id="card-view-btn" data-view="card">
@@ -162,6 +162,21 @@
             $('#card-view').hide();
             $('#table-view').show();
         }
+    });
+
+    // Delete prayer entry by date
+    $(document).on('click', '.btn-delete-prayer', function() {
+        var date = $(this).data('date');
+        if (!confirm('Delete all prayers for this date?')) return;
+
+        $.ajax({
+            url: '/prayers/date',
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}', date: date },
+            success: function() {
+                window.location.reload();
+            }
+        });
     });
 
     // Handle Send Prayer Modal click

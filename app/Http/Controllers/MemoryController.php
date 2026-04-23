@@ -24,8 +24,9 @@ class MemoryController extends Controller
 
         $books = Book::orderBy('id')->get();
         $translations = Translation::all();
+        $defaultTranslationId = auth()->user()->default_translation_id;
 
-        return view('memory.index', compact('activeMemories', 'completedMemories', 'books', 'translations'));
+        return view('memory.index', compact('activeMemories', 'completedMemories', 'books', 'translations', 'defaultTranslationId'));
     }
 
     public function store(Request $request)

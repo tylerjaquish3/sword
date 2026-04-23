@@ -9,7 +9,7 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">Commentary</h3>
-                <h6 class="font-weight-normal mb-2">{{ count($chapterComments) }} chapter comments, {{ count($verseComments) }} verse comments</h6>
+                <p class="page-subtitle mb-0">{{ count($chapterComments) }} chapter &middot; {{ count($verseComments) }} verse</p>
             </div>
         </div>
     </div>
@@ -29,7 +29,10 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Chapter Comments</h4>
+                <div class="sword-section-header mb-0">
+                    <span class="section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                    <span class="section-title">Chapter Comments</span>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -46,7 +49,7 @@
                             @foreach ($chapterComments as $comment)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('translations.index', ['book' => $comment->chapter->book_id ?? '', 'chapter' => $comment->chapter->number ?? '']) }}">
+                                        <a class="sword-link" href="{{ route('translations.index', ['book' => $comment->chapter->book_id ?? '', 'chapter' => $comment->chapter->number ?? '']) }}">
                                             {{ $comment->chapter->book->name ?? 'N/A' }} {{ $comment->chapter->number ?? '' }}
                                         </a>
                                     </td>
@@ -57,7 +60,7 @@
                                             data-chapter-id="{{ $comment->chapter_id }}"
                                             data-book-id="{{ $comment->chapter->book_id ?? '' }}"
                                             data-chapter-number="{{ $comment->chapter->number ?? '' }}">
-                                            <i class="mdi mdi-pencil"></i> Edit
+                                            <i class="mdi mdi-pencil"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -75,7 +78,10 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Verse Comments</h4>
+                <div class="sword-section-header mb-0">
+                    <span class="section-icon"><i class="mdi mdi-comment-text-outline"></i></span>
+                    <span class="section-title">Verse Comments</span>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -92,7 +98,7 @@
                             @foreach ($verseComments as $comment)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('translations.index', ['book' => $comment->chapter->book_id ?? '', 'chapter' => $comment->chapter->number ?? '']) }}">
+                                        <a class="sword-link" href="{{ route('translations.index', ['book' => $comment->chapter->book_id ?? '', 'chapter' => $comment->chapter->number ?? '']) }}">
                                             {{ $comment->chapter->book->name ?? 'N/A' }} {{ $comment->chapter->number ?? '' }}:{{ $comment->verse_number ?? '' }}
                                         </a>
                                     </td>
@@ -102,7 +108,7 @@
                                         <button type="button" class="btn btn-sm btn-outline-primary open-verse-modal" 
                                             data-chapter-id="{{ $comment->chapter_id }}"
                                             data-verse-number="{{ $comment->verse_number }}">
-                                            <i class="mdi mdi-pencil"></i> Edit
+                                            <i class="mdi mdi-pencil"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -256,27 +262,22 @@
             if (!confirm('Are you sure you want to delete this comment?')) {
                 return;
             }
-            
+
             let commentId = $(this).data('comment-id');
-            let verseId = $('#modal_verse_id').val();
             let btn = $(this);
-            
+
             $.ajax({
                 url: '/commentary/verse/' + commentId,
                 type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    // Remove the comment from the list
-                    btn.closest('.d-flex').remove();
-                    // Check if no comments left
-                    if ($('#modal_comments_list .d-flex').length === 0) {
-                        $('#modal_comments_list').html('<p class="text-muted mb-0">No comments yet.</p>');
+                complete: function(xhr) {
+                    if (xhr.status === 200 || xhr.status === 204) {
+                        btn.closest('.d-flex').remove();
+                        if ($('#modal_comments_list .d-flex').length === 0) {
+                            $('#modal_comments_list').html('<p class="text-muted mb-0">No comments yet.</p>');
+                        }
+                    } else {
+                        alert('Error deleting comment');
                     }
-                },
-                error: function(xhr, status, error) {
-                    alert('Error deleting comment');
                 }
             });
         });
@@ -286,26 +287,22 @@
             if (!confirm('Are you sure you want to delete this comment?')) {
                 return;
             }
-            
+
             let commentId = $(this).data('comment-id');
             let btn = $(this);
-            
+
             $.ajax({
                 url: '/commentary/chapter/' + commentId,
                 type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    // Remove the comment from the list
-                    btn.closest('.d-flex').remove();
-                    // Check if no comments left
-                    if ($('#modal_chapter_comments_list .d-flex').length === 0) {
-                        $('#modal_chapter_comments_list').html('<p class="text-muted mb-0">No comments yet.</p>');
+                complete: function(xhr) {
+                    if (xhr.status === 200 || xhr.status === 204) {
+                        btn.closest('.d-flex').remove();
+                        if ($('#modal_chapter_comments_list .d-flex').length === 0) {
+                            $('#modal_chapter_comments_list').html('<p class="text-muted mb-0">No comments yet.</p>');
+                        }
+                    } else {
+                        alert('Error deleting comment');
                     }
-                },
-                error: function(xhr, status, error) {
-                    alert('Error deleting comment');
                 }
             });
         });

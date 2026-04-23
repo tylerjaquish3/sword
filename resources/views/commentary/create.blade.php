@@ -2,7 +2,11 @@
 
 @section('title', 'Add Commentary')
 
-@section('content')  
+@push('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+@section('content')
 
 <div class="row">
     <div class="col-sm-6 mb-4 mb-xl-0">
@@ -15,39 +19,37 @@
     </div>
     <div class="col-sm-6">
         <div class="d-flex align-items-center justify-content-md-end">
-            <div class="pe-1 mb-3 mb-xl-0">
-                <a href="{{ route('commentary.index') }}" type="button" class="btn btn-outline-inverse-info btn-icon-text">
-                    <i class="mdi mdi-arrow-left me-1"></i> Back to Commentary                         
-                </a>
-            </div>
+            <a href="{{ route('commentary.index') }}" class="btn btn-outline-secondary">
+                <i class="mdi mdi-arrow-left me-1"></i> Back to Commentary
+            </a>
         </div>
     </div>
 </div>
 
-<div class="row">
+<div class="row mt-3">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Commentary Details</h4>
+                <h4 class="card-title mb-0">Commentary Details</h4>
             </div>
             <div class="card-body">
-                <form action="{{ route('commentary.store') }}" method="POST">
+                <form id="commentary-form" action="{{ route('commentary.store') }}" method="POST">
                     @csrf
-                    
-                    <div class="form-group row mb-3">
-                        <label for="type" class="col-sm-3 col-form-label">Comment Type</label>
+
+                    <div class="row mb-3 align-items-center">
+                        <label for="type" class="col-sm-3 col-form-label fw-semibold">Comment Type</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="type" name="type" onchange="toggleCommentType()">
+                            <select class="form-select" id="type" name="type">
                                 <option value="chapter">Chapter Comment</option>
                                 <option value="verse">Verse Comment</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
-                        <label for="book_id" class="col-sm-3 col-form-label">Book</label>
+                    <div class="row mb-3 align-items-center">
+                        <label for="book_id" class="col-sm-3 col-form-label fw-semibold">Book</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="book_id" name="book_id" onchange="updateChapters()">
+                            <select class="form-select" id="book_id" name="book_id" required>
                                 <option value="">Select a Book</option>
                                 @foreach ($books as $book)
                                     <option value="{{ $book->id }}" data-chapters="{{ json_encode($book->chapters) }}">{{ $book->name }}</option>
@@ -56,34 +58,35 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
-                        <label for="chapter_id" class="col-sm-3 col-form-label">Chapter</label>
+                    <div class="row mb-3 align-items-center">
+                        <label for="chapter_id" class="col-sm-3 col-form-label fw-semibold">Chapter</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="chapter_id" name="chapter_id" onchange="updateVerses()">
+                            <select class="form-select" id="chapter_id" name="chapter_id" required disabled>
                                 <option value="">Select a Chapter</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3" id="verse_row" style="display: none;">
-                        <label for="verse_id" class="col-sm-3 col-form-label">Verse</label>
+                    <div class="row mb-3 align-items-center" id="verse_row" style="display: none;">
+                        <label for="verse_id" class="col-sm-3 col-form-label fw-semibold">Verse</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="verse_id" name="verse_id">
+                            <select class="form-select" id="verse_id" name="verse_id" disabled>
                                 <option value="">Select a Verse</option>
                             </select>
+                            <div id="verse_preview" class="mt-2 p-3 rounded border bg-light text-muted small lh-base" style="display: none;"></div>
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
-                        <label for="comment" class="col-sm-3 col-form-label">Comment</label>
+                    <div class="row mb-4 align-items-start">
+                        <label for="comment" class="col-sm-3 col-form-label fw-semibold">Comment</label>
                         <div class="col-sm-9">
-                            <textarea class="form-control" id="comment" name="comment" rows="6" placeholder="Enter your commentary..."></textarea>
+                            <textarea class="form-control" id="comment" name="comment" rows="6" placeholder="Enter your commentary..." required></textarea>
                         </div>
                     </div>
-                    
-                    <div class="d-flex justify-content-end">
-                        <a href="{{ route('commentary.index') }}" class="btn btn-light me-2">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Save Commentary</button>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('commentary.index') }}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="save-btn">Save Commentary</button>
                     </div>
                 </form>
             </div>
@@ -92,7 +95,7 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Tips</h4>
+                <h4 class="card-title mb-0">Tips</h4>
             </div>
             <div class="card-body">
                 <p class="text-muted mb-2"><strong>Chapter Comments:</strong> Use for commentary on an entire chapter's theme or context.</p>
@@ -104,61 +107,98 @@
 
 @endsection
 
-@section('scripts')
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Store books data for JavaScript
-    var booksData = @json($books);
+$(document).ready(function () {
 
-    function toggleCommentType() {
-        var type = document.getElementById('type').value;
-        var verseRow = document.getElementById('verse_row');
-        
-        if (type === 'verse') {
-            verseRow.style.display = 'flex';
+    // Show/hide verse row based on type
+    $('#type').on('change', function () {
+        var isVerse = $(this).val() === 'verse';
+        $('#verse_row').toggle(isVerse);
+        $('#verse_id').prop('required', isVerse).prop('disabled', isVerse ? !$('#chapter_id').val() : true);
+    });
+
+    // Populate chapters when a book is selected
+    $('#book_id').on('change', function () {
+        var $chapterSelect = $('#chapter_id');
+        var $verseSelect   = $('#verse_id');
+
+        $chapterSelect.html('<option value="">Select a Chapter</option>').prop('disabled', true);
+        $verseSelect.html('<option value="">Select a Verse</option>').prop('disabled', true);
+
+        var chapters = $(this).find(':selected').data('chapters') || [];
+        if (chapters.length) {
+            chapters.forEach(function (chapter) {
+                $chapterSelect.append(
+                    $('<option>').val(chapter.id)
+                        .text('Chapter ' + chapter.number)
+                        .data('verses', chapter.verses || [])
+                );
+            });
+            $chapterSelect.prop('disabled', false);
+        }
+    });
+
+    // Populate verses when a chapter is selected
+    $('#chapter_id').on('change', function () {
+        var $verseSelect = $('#verse_id');
+        $verseSelect.html('<option value="">Select a Verse</option>').prop('disabled', true);
+        $('#verse_preview').hide().text('');
+
+        var verses = $(this).find(':selected').data('verses') || [];
+        $('#verse_preview').hide().text('');
+        if (verses.length && $('#type').val() === 'verse') {
+            verses.forEach(function (verse) {
+                $verseSelect.append(
+                    $('<option>').val(verse.id).text('Verse ' + verse.number).data('text', verse.text || '')
+                );
+            });
+            $verseSelect.prop('disabled', false);
+        }
+    });
+
+    // Show verse text below the select when a verse is chosen
+    $('#verse_id').on('change', function () {
+        var text = $(this).find(':selected').data('text');
+        if (text) {
+            $('#verse_preview').text(text).show();
         } else {
-            verseRow.style.display = 'none';
+            $('#verse_preview').hide().text('');
         }
-    }
+    });
 
-    function updateChapters() {
-        var bookSelect = document.getElementById('book_id');
-        var chapterSelect = document.getElementById('chapter_id');
-        var verseSelect = document.getElementById('verse_id');
-        
-        // Clear existing options
-        chapterSelect.innerHTML = '<option value="">Select a Chapter</option>';
-        verseSelect.innerHTML = '<option value="">Select a Verse</option>';
-        
-        var selectedBook = bookSelect.options[bookSelect.selectedIndex];
-        if (selectedBook.value) {
-            var chapters = JSON.parse(selectedBook.getAttribute('data-chapters'));
-            chapters.forEach(function(chapter) {
-                var option = document.createElement('option');
-                option.value = chapter.id;
-                option.textContent = 'Chapter ' + chapter.number;
-                option.setAttribute('data-verses', JSON.stringify(chapter.verses || []));
-                chapterSelect.appendChild(option);
-            });
-        }
-    }
+    // AJAX submit
+    $('#commentary-form').on('submit', function (e) {
+        e.preventDefault();
 
-    function updateVerses() {
-        var chapterSelect = document.getElementById('chapter_id');
-        var verseSelect = document.getElementById('verse_id');
-        
-        // Clear existing options
-        verseSelect.innerHTML = '<option value="">Select a Verse</option>';
-        
-        var selectedChapter = chapterSelect.options[chapterSelect.selectedIndex];
-        if (selectedChapter.value) {
-            var verses = JSON.parse(selectedChapter.getAttribute('data-verses') || '[]');
-            verses.forEach(function(verse) {
-                var option = document.createElement('option');
-                option.value = verse.id;
-                option.textContent = 'Verse ' + verse.number;
-                verseSelect.appendChild(option);
-            });
-        }
-    }
+        var $btn = $('#save-btn').prop('disabled', true).text('Saving…');
+
+        $.ajax({
+            url:  $(this).attr('action'),
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved!',
+                    text: 'Your commentary has been saved.',
+                    timer: 1800,
+                    showConfirmButton: false,
+                }).then(function () {
+                    window.location.href = '{{ route('commentary.index') }}';
+                });
+            },
+            error: function (xhr) {
+                $btn.prop('disabled', false).text('Save Commentary');
+                var errors = xhr.responseJSON && xhr.responseJSON.errors
+                    ? Object.values(xhr.responseJSON.errors).flat().join('\n')
+                    : 'Something went wrong. Please try again.';
+                Swal.fire({ icon: 'error', title: 'Error', text: errors });
+            }
+        });
+    });
+
+});
 </script>
-@endsection
+@endpush

@@ -21,7 +21,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'default_translation_id',
     ];
+
+    public function defaultTranslation()
+    {
+        return $this->belongsTo(\App\Models\Translation::class, 'default_translation_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

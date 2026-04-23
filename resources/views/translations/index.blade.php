@@ -9,13 +9,6 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">All Translations</h3>
-                <h6 class="font-weight-normal mb-2">
-                    @if($lastLogin)
-                        Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
-                    @else
-                        Welcome!
-                    @endif
-                </h6>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
                 <button type="button" id="btn-single-col" class="btn btn-primary btn-icon" title="Single column">
@@ -37,7 +30,7 @@
                     <div class="col-4">
                         <select class="form-select" id="translation_select">
                             @foreach ($translations as $translation)
-                                <option value="{{ $translation->id }}">{{ $translation->name }}</option>
+                                <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -54,43 +47,64 @@
                         </select>
                     </div>
                 </div>
-                <div id="book-info" class="mt-3">
-                    <div class="d-flex align-items-start justify-content-between">
-                        <div>
-                            <div id="book-author" class="text-muted small mb-1"></div>
-                            <div id="book-description" class="small"></div>
-                        </div>
-                        <button type="button" id="btn-edit-book" class="btn btn-sm btn-secondary ms-3 flex-shrink-0" data-bs-toggle="modal" data-bs-target="#bookEditModal">
-                            <i class="mdi mdi-pencil"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
             <div class="card-body">
                 <div id="chapter_content"></div>
-                
-                <hr class="my-3">
-                
-                <div class="mb-3">
-                    <h6 class="fw-bold"><i class="mdi mdi-comment-text-outline"></i> Chapter Notes</h6>
-                    <div id="chapter_comments_display" class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
-                        <p class="text-muted mb-0">No chapter notes yet.</p>
+
+                <div class="reading-section-divider my-4"></div>
+
+                <div id="book-info" class="reading-book-info mb-4">
+                    <div class="reading-book-meta">
+                        <div class="reading-meta-row">
+                            <span class="reading-meta-label">Author</span>
+                            <span id="book-author" class="reading-meta-value"></span>
+                        </div>
+                        <div class="reading-meta-row">
+                            <span class="reading-meta-label">About</span>
+                            <span id="book-description" class="reading-meta-value"></span>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-edit-book" class="reading-edit-btn btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#bookEditModal">
+                        <i class="mdi mdi-pencil-outline"></i>
+                    </button>
+                </div>
+
+                <div class="reading-notes-section mb-3">
+                    <div class="reading-notes-header">
+                        <span class="notes-icon"><i class="mdi mdi-note-text-outline"></i></span>
+                        <span class="notes-title">Chapter Notes</span>
+                    </div>
+                    <div id="chapter_comments_display" class="reading-notes-body">
+                        <p class="reading-notes-empty mb-0">No chapter notes yet.</p>
                     </div>
                 </div>
-                <a href="#" id="chapter_comment_link" class="btn btn-outline-primary btn-sm"><i class="mdi mdi-plus"></i> Add Chapter Note</a>
-                <button type="button" id="btn-mark-read" class="btn btn-outline-success btn-sm ms-2"><i class="mdi mdi-check"></i> Mark as Read</button>
-                <small id="read-status-display" class="text-muted ms-2"></small>
+
+                <div class="reading-actions">
+                    <a href="#" id="chapter_comment_link" class="reading-action-link"><i class="mdi mdi-plus-circle-outline"></i> Add Chapter Note</a>
+                    <button type="button" id="btn-mark-read" class="btn btn-outline-success btn-sm"><i class="mdi mdi-check"></i> Mark as Read</button>
+                    <small id="read-status-display" class="reading-read-status"></small>
+                </div>
+
+                <div class="reading-nav mt-4">
+                    <button type="button" id="btn-prev-chapter" class="btn btn-outline-secondary reading-nav-btn">
+                        <i class="mdi mdi-chevron-left"></i> Prev
+                    </button>
+                    <span id="chapter-nav-label" class="reading-nav-label"></span>
+                    <button type="button" id="btn-next-chapter" class="btn btn-outline-secondary reading-nav-btn">
+                        Next <i class="mdi mdi-chevron-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     <div id="compare-col" class="col-sm-6 grid-margin grid-margin-md-0 stretch-card d-none">
         <div class="card">
             <div class="card-header">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="card-title">Compare</h4>
-                </div>
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-4 d-flex align-items-center">
+                        <span class="fw-semibold text-nowrap">Compare with</span>
+                    </div>
+                    <div class="col-8">
                         <select class="form-select" id="translation2_select">
                             @foreach ($translations as $translation)
                                 <option value="{{ $translation->id }}" {{ $translation->name == 'NIV' ? 'selected' : '' }}>{{ $translation->name }}</option>
@@ -140,6 +154,8 @@
 
 @push('js')
 <script>
+
+const defaultTranslationId = {{ $defaultTranslationId ?? 'null' }};
 
 $(document).ready(function() {
 
@@ -234,6 +250,9 @@ $(document).ready(function() {
     function initWithDefaults() {
         var bookId = $('#book_select').val();
         if (!bookId) return;
+        if (defaultTranslationId) {
+            $('#translation_select').val(defaultTranslationId);
+        }
         loadChapters(bookId, function() {
             lookupVerses('');
             lookupVerses(2);
@@ -331,8 +350,8 @@ $(document).ready(function() {
         if (!bookId) return;
         $.get('/books/' + bookId, function(book) {
             var desc = book.description || '';
-            $('#book-author').text('Author: ' + (book.author || ''));
-            $('#book-description').text('Description: ' + (desc.length > 50 ? desc.substring(0, 50) + '…' : desc));
+            $('#book-author').text(book.author || '—');
+            $('#book-description').text(desc.length > 120 ? desc.substring(0, 120) + '…' : (desc || '—'));
             // Pre-populate modal fields
             $('#book-edit-title').text(book.name);
             $('#book-edit-author').val(book.author || '');
@@ -353,8 +372,8 @@ $(document).ready(function() {
             },
             success: function() {
                 var savedDesc = $('#book-edit-description').val();
-                $('#book-author').text('Author: ' + $('#book-edit-author').val());
-                $('#book-description').text('Description: ' + (savedDesc.length > 50 ? savedDesc.substring(0, 50) + '…' : savedDesc));
+                $('#book-author').text($('#book-edit-author').val() || '—');
+                $('#book-description').text(savedDesc.length > 120 ? savedDesc.substring(0, 120) + '…' : (savedDesc || '—'));
                 bootstrap.Modal.getInstance(document.getElementById('bookEditModal')).hide();
             }
         });
@@ -379,6 +398,70 @@ $(document).ready(function() {
             }
         });
     }
+
+    function updateChapterNavLabel() {
+        var bookName = $('#book_select option:selected').text();
+        var chapter  = $('#chapter_select').val();
+        $('#chapter-nav-label').text(bookName + ' ' + chapter);
+
+        var isFirstBook    = $('#book_select option:selected').is(':first-child');
+        var isLastBook     = $('#book_select option:selected').is(':last-child');
+        var isFirstChapter = $('#chapter_select option:selected').is(':first-child');
+        var isLastChapter  = $('#chapter_select option:selected').is(':last-child');
+
+        $('#btn-prev-chapter').prop('disabled', isFirstBook && isFirstChapter);
+        $('#btn-next-chapter').prop('disabled', isLastBook  && isLastChapter);
+    }
+
+    $('#btn-prev-chapter').on('click', function() {
+        var $chapterSelect = $('#chapter_select');
+        var $bookSelect    = $('#book_select');
+
+        if (!$chapterSelect.find('option:selected').is(':first-child')) {
+            // Stay in book, go to previous chapter
+            $chapterSelect.find('option:selected').prev().prop('selected', true);
+            $chapterSelect.trigger('change');
+        } else {
+            // Cross book boundary — go to last chapter of previous book
+            var $prevBook = $bookSelect.find('option:selected').prev();
+            if (!$prevBook.length) return;
+            $bookSelect.val($prevBook.val());
+            loadBookInfo($prevBook.val());
+            loadChapters($prevBook.val(), function() {
+                $chapterSelect.find('option:last-child').prop('selected', true);
+                lookupVerses('');
+                lookupVerses(2);
+                loadChapterComments();
+                loadReadStatus();
+                updateChapterNavLabel();
+            });
+        }
+    });
+
+    $('#btn-next-chapter').on('click', function() {
+        var $chapterSelect = $('#chapter_select');
+        var $bookSelect    = $('#book_select');
+
+        if (!$chapterSelect.find('option:selected').is(':last-child')) {
+            // Stay in book, go to next chapter
+            $chapterSelect.find('option:selected').next().prop('selected', true);
+            $chapterSelect.trigger('change');
+        } else {
+            // Cross book boundary — go to chapter 1 of next book
+            var $nextBook = $bookSelect.find('option:selected').next();
+            if (!$nextBook.length) return;
+            $bookSelect.val($nextBook.val());
+            loadBookInfo($nextBook.val());
+            loadChapters($nextBook.val(), function() {
+                $chapterSelect.find('option:first-child').prop('selected', true);
+                lookupVerses('');
+                lookupVerses(2);
+                loadChapterComments();
+                loadReadStatus();
+                updateChapterNavLabel();
+            });
+        }
+    });
 
     function lookupVerses(side)
     {
@@ -408,6 +491,7 @@ $(document).ready(function() {
                 });
                 html += '</p>';
                 $('#chapter'+side+'_content').html(html);
+                if (!side) updateChapterNavLabel();
             }
         });
     }

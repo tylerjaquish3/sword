@@ -99,11 +99,18 @@ php artisan route:list
 ## Feature Ideas
 
 - Look for similiarities between stories, new page for that
-- Memory verses, track for user
-- History of how it was put together
+- History of how a translation/book was put together
 - Timeline of books written
 - Look into missing books, verses
-- settings page, set default translation
-- fix the search in navbar
+- fix the search in navbar to search verses
+   - allow search on mobile
 - set up notifications
 - keep track of streaks?
+- add swal() instead of alerts
+- topic show make text fit better on mobile
+- tablet size, allow compare
+- make memory goals editable
+- create topic
+   - make cancel go back to index
+   - handle validation with swal()
+   - remove "last entry" 

@@ -565,6 +565,9 @@ body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:n
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.25s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.28s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-footer   { opacity: 1; transform: none; transition-delay: 0.32s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-footer .mob-drawer-section-label { opacity: 1; transform: none; transition-delay: 0.32s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.35s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.38s; }
 </style>
 
 <script>

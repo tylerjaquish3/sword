@@ -573,3 +573,360 @@ div.dataTables_info {
 
 /* ── Card title ────────────────────────────────────────────────── */
 .content-wrapper .card-title { color: var(--sword-navy) !important; }
+.content-wrapper .card-header .card-title { margin-bottom: 0; }
+
+/* ==========================================================================
+   READING PAGE — BOOK INFO, NOTES & NAVIGATION
+   ========================================================================== */
+
+/* Elegant gradient divider */
+.reading-section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.35), transparent);
+}
+
+/* Book Info Panel */
+.reading-book-info {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(201, 168, 76, 0.04);
+    border-left: 3px solid var(--sword-gold);
+    border-radius: 0 6px 6px 0;
+}
+
+.reading-book-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+}
+
+.reading-meta-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.reading-meta-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sword-gold);
+    min-width: 44px;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.reading-meta-value {
+    font-size: 0.825rem;
+    color: #4a5568;
+    line-height: 1.45;
+}
+
+.reading-edit-btn {
+    padding: 3px 8px !important;
+    font-size: 0.75rem !important;
+    opacity: 0.45;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    background: transparent !important;
+    border-color: rgba(14,22,40,0.15) !important;
+    color: var(--sword-navy) !important;
+}
+
+.reading-edit-btn:hover {
+    opacity: 1 !important;
+    background: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+
+/* Chapter Notes Section */
+.reading-notes-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+}
+
+.notes-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: rgba(201, 168, 76, 0.12);
+    border-radius: 4px;
+    color: var(--sword-gold);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.notes-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sword-navy);
+}
+
+.reading-notes-body {
+    background: #faf9f6;
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    border-radius: 6px;
+    padding: 12px 14px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.reading-notes-empty {
+    color: #a0aec0;
+    font-style: italic;
+    font-size: 0.825rem;
+}
+
+/* Action Row */
+.reading-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 2px;
+}
+
+.reading-action-link {
+    font-size: 0.825rem;
+    color: var(--sword-navy) !important;
+    text-decoration: none;
+    opacity: 0.65;
+    transition: opacity 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.reading-action-link:hover {
+    opacity: 1;
+    color: var(--sword-navy) !important;
+}
+
+.reading-read-status {
+    font-size: 0.75rem;
+    color: #a0aec0;
+    font-style: italic;
+}
+
+/* Navigation */
+.reading-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(201, 168, 76, 0.15);
+    padding-top: 14px;
+}
+
+.reading-nav-btn {
+    font-size: 0.78rem !important;
+    padding: 5px 14px !important;
+    letter-spacing: 0.03em;
+    color: var(--sword-navy) !important;
+    border-color: rgba(14, 22, 40, 0.2) !important;
+}
+
+.reading-nav-btn:hover:not(:disabled) {
+    background: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+
+.reading-nav-btn:disabled {
+    opacity: 0.25 !important;
+}
+
+.reading-nav-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sword-navy);
+    opacity: 0.4;
+}
+
+.reading-nav-btn i,
+.reading-actions .btn i,
+.reading-action-link i {
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* ==========================================================================
+   GLOBAL SITE-WIDE DESIGN SYSTEM
+   ========================================================================== */
+
+/* Icon alignment in all buttons and dropdown items */
+.btn i.mdi,
+.btn-group button i.mdi,
+.dropdown-item i.mdi {
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* Page subtitle — counts/metadata below h3 page titles */
+.page-subtitle {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sword-navy);
+    opacity: 0.4;
+    margin-bottom: 0.5rem;
+}
+
+/* Reusable section header — icon chip + uppercase title */
+.sword-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.sword-section-header .section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(201, 168, 76, 0.12);
+    border-radius: 6px;
+    color: var(--sword-gold);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.sword-section-header .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sword-navy);
+}
+
+/* Active memory goal card — gold left accent */
+.border-left-gold {
+    border-left: 4px solid var(--sword-gold) !important;
+}
+
+/* Memory verse display blocks */
+.verse-display {
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    background: #faf9f6;
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    border-left: 3px solid var(--sword-gold);
+    border-radius: 0 6px 6px 0;
+}
+
+.verse-display .reference {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sword-gold) !important;
+}
+
+/* Memory modal verse badges */
+.selected-verse-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.selected-verse-badge .remove-verse {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.selected-verse-badge .remove-verse:hover {
+    opacity: 1;
+}
+
+#verse_select {
+    height: 120px;
+}
+
+/* Prayer type label */
+.prayer-type-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 6px;
+}
+
+.prayer-type-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--sword-gold);
+    flex-shrink: 0;
+}
+
+.prayer-type-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sword-navy);
+}
+
+/* Table headers — themed */
+.content-wrapper .table thead th {
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--sword-navy);
+    background: rgba(14, 22, 40, 0.03);
+    border-bottom: 2px solid rgba(201, 168, 76, 0.2) !important;
+}
+
+/* Commentary filter buttons */
+.content-wrapper .filter-btn.active {
+    background: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+
+.content-wrapper .filter-btn:not(.active):hover {
+    background: transparent !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-navy) !important;
+}
+
+/* Card footer — subtle warm tone */
+.content-wrapper .card-footer.bg-transparent {
+    background: rgba(14, 22, 40, 0.015) !important;
+    border-top-color: rgba(201, 168, 76, 0.12) !important;
+}
+
+/* Sword reference link — dotted navy underline */
+.sword-link {
+    color: var(--sword-navy) !important;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    opacity: 0.75;
+    transition: opacity 0.15s;
+}
+
+.sword-link:hover {
+    opacity: 1;
+    text-decoration-style: solid;
+    color: var(--sword-navy) !important;
+}
