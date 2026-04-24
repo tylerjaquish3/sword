@@ -140,33 +140,66 @@
 
 </div>
 
-{{-- Create Topic Modal (unchanged) --}}
+{{-- Create Topic Modal --}}
 <div class="modal fade" id="createTopicModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Create Topic</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="create-topic-name">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-tag-multiple"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">New Topic</h5>
+                        <p class="sword-modal-subtitle mb-0">Organize verses around a theme or idea</p>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-control" id="create-topic-description" rows="3"></textarea>
-                </div>
-                <div class="mb-0">
-                    <label class="form-label">Keywords</label>
-                    <textarea class="form-control" id="create-topic-keywords" rows="2" placeholder="Comma-separated keywords"></textarea>
-                    <small class="text-muted">Enter keywords separated by commas</small>
-                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="create-topic-save">Save Topic</button>
+
+            <div class="modal-body sword-modal-body">
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                        <span class="sword-modal-section-title">Name <span class="sword-modal-required">required</span></span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <input type="text" class="form-control sword-modal-input" id="create-topic-name" placeholder="e.g., Faith, Grace, The Holy Spirit">
+                    </div>
+                </div>
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-title">Description <span class="sword-modal-optional">optional</span></span>
+                    </div>
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="create-topic-description" rows="3" placeholder="What is this topic about?"></textarea>
+                    </div>
+                </div>
+
+                <div class="sword-modal-section mb-2">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-key-variant"></i></span>
+                        <span class="sword-modal-section-title">Keywords <span class="sword-modal-optional">optional</span></span>
+                    </div>
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="create-topic-keywords" rows="2" placeholder="faith, trust, belief, salvation…"></textarea>
+                        <p class="sword-modal-hint">Comma-separated — used to surface related verses</p>
+                    </div>
+                </div>
+
             </div>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="create-topic-save">
+                    <i class="mdi mdi-tag-plus me-1"></i>Save Topic
+                </button>
+            </div>
+
         </div>
     </div>
 </div>

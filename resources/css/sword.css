@@ -930,3 +930,305 @@ div.dataTables_info {
     text-decoration-style: solid;
     color: var(--sword-navy) !important;
 }
+
+
+/* ==========================================================================
+   Sword Modal System
+   Add .sword-modal to .modal-content to activate the shared design.
+   ========================================================================== */
+
+.sword-modal {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 3.5rem);
+}
+@media (max-width: 575px) {
+    .sword-modal { border-radius: 0; max-height: 100%; }
+}
+/* Fix scrolling when a <form> wraps header+body+footer inside .modal-content */
+.sword-modal > form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+.sword-modal-header {
+    background: linear-gradient(135deg, #0e1628 0%, #1a2545 100%) !important;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2) !important;
+    padding: 20px 24px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    min-height: 0;
+}
+.sword-modal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #c9a84c;
+    flex-shrink: 0;
+}
+.sword-modal-header .modal-title {
+    color: #fff !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+.sword-modal-subtitle {
+    font-size: 0.7rem;
+    color: rgba(201, 168, 76, 0.7);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+}
+.sword-modal-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    padding: 0;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.sword-modal-close:hover { background: rgba(255, 255, 255, 0.13); color: #fff; }
+.sword-modal-close .mdi { line-height: 1; }
+
+/* ── Body ────────────────────────────────────────────────────── */
+.sword-modal-body {
+    background: #f9f8f5 !important;
+    padding: 24px !important;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+@media (max-width: 575px) { .sword-modal-body { padding: 14px !important; } }
+
+/* ── Section cards ───────────────────────────────────────────── */
+.sword-modal-section {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ede8df;
+    overflow: hidden;
+    transition: box-shadow 0.18s;
+}
+.sword-modal-section:focus-within {
+    box-shadow: 0 2px 12px rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.4);
+}
+.sword-modal-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(201, 168, 76, 0.05);
+    border-bottom: 1px solid #f0ebe2;
+}
+/* Small icon badge */
+.sword-modal-section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #1a2545, #2a3a6a);
+    color: #c9a84c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+/* Large letter badge (A·C·T·S prayer sections) */
+.sword-modal-section-letter {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1a2545, #2a3a6a);
+    color: #c9a84c;
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: Georgia, serif;
+}
+.sword-modal-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #1a2545;
+}
+.sword-modal-section-desc {
+    display: block;
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-top: 1px;
+}
+.sword-modal-section-body { padding: 16px; }
+
+/* ── Labels ──────────────────────────────────────────────────── */
+.sword-modal-label {
+    display: block;
+    font-size: 0.73rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+.sword-modal-optional {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #9ca3af;
+    font-size: 0.7rem;
+}
+.sword-modal-required {
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #dc2626;
+    font-size: 0.7rem;
+}
+
+/* ── Form controls ───────────────────────────────────────────── */
+.sword-modal-input,
+.sword-modal-select {
+    border-radius: 8px !important;
+    border-color: #e2ddd5 !important;
+    background: #fff !important;
+    font-size: 0.88rem !important;
+    color: #1a2545 !important;
+}
+.sword-modal-input:focus,
+.sword-modal-select:focus {
+    border-color: #c9a84c !important;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15) !important;
+}
+.sword-modal-textarea {
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    resize: vertical;
+    padding: 14px 16px !important;
+    font-size: 0.88rem;
+    color: #374151;
+    line-height: 1.6;
+    width: 100%;
+    display: block;
+}
+.sword-modal-textarea:focus {
+    border: none !important;
+    box-shadow: none !important;
+    background: #fffdf7 !important;
+    outline: none;
+}
+.sword-modal-textarea::placeholder { color: #c4bfb5; font-style: italic; }
+.sword-modal-hint {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    padding: 6px 16px 10px;
+    margin: 0;
+}
+.sword-modal-preview {
+    background: #fffdf7;
+    border: 1px solid #ede8df;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.87rem;
+    line-height: 1.65;
+    color: #374151;
+    font-style: italic;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.sword-modal-footer {
+    background: #f9f8f5 !important;
+    border-top: 1px solid #ede8df !important;
+    padding: 16px 24px !important;
+    gap: 10px;
+    flex-shrink: 0;
+    min-height: 0;
+}
+@media (max-width: 575px) {
+    .sword-modal-footer { padding: 12px 14px !important; }
+    .sword-modal-btn-cancel,
+    .sword-modal-btn-save { flex: 1; text-align: center; justify-content: center; }
+}
+.sword-modal-btn-cancel {
+    background: transparent;
+    border: 1px solid #d1ccc4;
+    color: #6b7280;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 0.88rem;
+    transition: all 0.18s;
+}
+.sword-modal-btn-cancel:hover { background: #ede8df; border-color: #bfbab0; color: #374151; }
+.sword-modal-btn-save {
+    background: linear-gradient(135deg, #1a2545, #2a3a6a);
+    color: #c9a84c;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.sword-modal-btn-save:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0e1628, #1a2545);
+    color: #e0bc6a;
+    border-color: rgba(201, 168, 76, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 37, 69, 0.25);
+}
+.sword-modal-btn-save:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.sword-modal-btn-add {
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    color: #92681a;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    transition: all 0.18s;
+}
+.sword-modal-btn-add:hover:not(:disabled) {
+    background: rgba(201, 168, 76, 0.2);
+    border-color: rgba(201, 168, 76, 0.6);
+    color: #7a5515;
+}
+.sword-modal-btn-add:disabled { opacity: 0.4; cursor: not-allowed; }
+.sword-modal-verse-multiselect { min-height: 80px; }
+.sword-modal-selected-verses {
+    min-height: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: flex-start;
+}
+.sword-modal-empty-hint {
+    font-size: 0.83rem;
+    font-style: italic;
+    color: #9ca3af;
+}

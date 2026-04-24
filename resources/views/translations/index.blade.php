@@ -1,6 +1,6 @@
 @extends('base.layout')
 
-@section('title', 'Translation')
+@section('title', 'Read & Compare')
 
 @section('content')  
 
@@ -8,7 +8,7 @@
     <div class="col-sm-6 mb-4 mb-xl-0">
         <div class="d-lg-flex align-items-center">
             <div>
-                <h3 class="text-dark font-weight-bold mb-2">All Translations</h3>
+                <h3 class="text-dark font-weight-bold mb-2">Read &amp; Compare</h3>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
                 <button type="button" id="btn-single-col" class="btn btn-primary btn-icon" title="Single column">
@@ -132,27 +132,53 @@
 @include('commentary.modals.chapter')
 
 <div class="modal fade" id="bookEditModal" tabindex="-1" aria-labelledby="bookEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="bookEditModalLabel">Edit Book Info</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h6 id="book-edit-title" class="fw-bold mb-3"></h6>
-                <div class="mb-3">
-                    <label for="book-edit-author" class="form-label">Author</label>
-                    <input type="text" class="form-control" id="book-edit-author" placeholder="e.g. Moses">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-book-edit-outline"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="bookEditModalLabel">Edit Book Info</h5>
+                        <p class="sword-modal-subtitle mb-0" id="book-edit-title"></p>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="book-edit-description" class="form-label">Description</label>
-                    <textarea class="form-control" id="book-edit-description" rows="4" placeholder="Brief overview of the book..."></textarea>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+
+            <div class="modal-body sword-modal-body">
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-account-edit-outline"></i></span>
+                        <span class="sword-modal-section-title">Author</span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <input type="text" class="form-control sword-modal-input" id="book-edit-author" placeholder="e.g. Moses">
+                    </div>
                 </div>
+
+                <div class="sword-modal-section mb-2">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-title">Description</span>
+                    </div>
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="book-edit-description" rows="4" placeholder="Brief overview of the book…"></textarea>
+                    </div>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="btn-save-book">Save</button>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="btn-save-book">
+                    <i class="mdi mdi-content-save-outline me-1"></i>Save
+                </button>
             </div>
+
         </div>
     </div>
 </div>

@@ -109,10 +109,10 @@
                         <span class="menu-title">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item {{ request()->routeIs('translations.*') || request()->routeIs('books.*') || request()->routeIs('chapters.*') ? 'active' : '' }}">
+                <li class="nav-item {{ request()->routeIs('translations.*') || request()->routeIs('chapters.*') ? 'active' : '' }}">
                     <a href="{{ route('translations.index') }}" class="nav-link">
                         <i class="mdi mdi-book-open-page-variant menu-icon"></i>
-                        <span class="menu-title">Translations</span>
+                        <span class="menu-title">Read</span>
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
@@ -179,11 +179,11 @@
                 @endif
             </a>
         </li>
-        <li class="{{ (request()->routeIs('translations.*') || request()->routeIs('books.*') || request()->routeIs('chapters.*')) ? 'mob-active' : '' }}">
+        <li class="{{ (request()->routeIs('translations.*') || request()->routeIs('chapters.*')) ? 'mob-active' : '' }}">
             <a href="{{ route('translations.index') }}">
                 <span class="mob-nav-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
-                <span class="mob-nav-label">Translations</span>
-                @if(request()->routeIs('translations.*') || request()->routeIs('books.*') || request()->routeIs('chapters.*'))
+                <span class="mob-nav-label">Read</span>
+                @if(request()->routeIs('translations.*') || request()->routeIs('chapters.*'))
                     <span class="mob-nav-pip"></span>
                 @endif
             </a>

@@ -25,7 +25,8 @@
     </div>
 @endif
 
-<div class="row">
+{{-- Desktop table --}}
+<div class="row d-none d-md-flex">
     <div class="col">
         <div class="card" style="border-top: 3px solid var(--sword-gold);">
             <div class="card-body p-0">
@@ -109,6 +110,72 @@
             </div>
         </div>
     </div>
+</div>
+
+{{-- Mobile cards --}}
+<div class="d-md-none">
+    @forelse($users as $user)
+    <div class="card mb-3" style="border-top: 3px solid var(--sword-gold);">
+        <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between mb-2">
+                <div>
+                    <span class="fw-semibold" style="color: var(--sword-navy); font-size: 1rem;">{{ $user->name }}</span>
+                    @if($user->id === auth()->id())
+                        <span class="badge ms-1" style="background: rgba(70,77,238,0.12); color: #464dee; font-size: 0.65rem;">you</span>
+                    @endif
+                    <div class="text-muted mt-1" style="font-size: 0.83rem;">{{ $user->email }}</div>
+                    <div class="text-muted" style="font-size: 0.78rem;">Joined {{ $user->created_at->format('M j, Y') }}</div>
+                </div>
+                <div class="d-flex flex-column align-items-end gap-1">
+                    @if($user->is_active)
+                        <span class="badge" style="background: rgba(16,185,129,0.12); color: #059669; font-size: 0.72rem; padding: 4px 9px;">Active</span>
+                    @else
+                        <span class="badge" style="background: rgba(245,158,11,0.12); color: #d97706; font-size: 0.72rem; padding: 4px 9px;">Pending</span>
+                    @endif
+                    @if($user->is_admin)
+                        <span class="badge" style="background: rgba(201,168,76,0.15); color: #92681a; font-size: 0.72rem; padding: 4px 9px;">
+                            <i class="mdi mdi-shield-account me-1"></i>Admin
+                        </span>
+                    @else
+                        <span class="badge" style="background: rgba(107,114,128,0.1); color: #6b7280; font-size: 0.72rem; padding: 4px 9px;">User</span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                @if($user->is_active)
+                    <form method="POST" action="{{ route('admin.users.deactivate', $user) }}" class="flex-fill">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-warning w-100" style="font-size: 0.82rem;"
+                            @if($user->id === auth()->id()) disabled @endif>
+                            Deactivate
+                        </button>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('admin.users.activate', $user) }}" class="flex-fill">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-success w-100" style="font-size: 0.82rem;">
+                            Activate
+                        </button>
+                    </form>
+                @endif
+
+                @if($user->id !== auth()->id())
+                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+                        onsubmit="return confirm('Delete {{ addslashes($user->name) }}\'s account? This cannot be undone.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger" style="font-size: 0.82rem; white-space: nowrap;">
+                            Delete
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+    </div>
+    @empty
+    <p class="text-muted text-center py-4">No users found.</p>
+    @endforelse
 </div>
 
 @endsection

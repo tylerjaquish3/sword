@@ -43,81 +43,137 @@
 
 <!-- Create Prayer Modal -->
 <div class="modal fade" id="createPrayerModal" tabindex="-1" aria-labelledby="createPrayerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createPrayerModalLabel">New Prayer Journal Entry</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="modal-header sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-hands-pray"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="createPrayerModalLabel">Prayer Journal</h5>
+                        <p class="sword-modal-subtitle mb-0">A.C.T.S. — Adoration · Confession · Thanksgiving · Supplication</p>
+                    </div>
+                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-group row mb-3">
-                    <label for="prayer-date" class="col-sm-3 col-form-label">Date</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" id="prayer-date" value="{{ $today }}">
-                    </div>
+
+            <div class="modal-body sword-modal-body">
+
+                <div class="mb-4">
+                    <label for="prayer-date" class="sword-modal-label">
+                        <i class="mdi mdi-calendar-outline me-1"></i> Date
+                    </label>
+                    <input type="text" class="form-control sword-modal-input" style="max-width:220px;" id="prayer-date" value="{{ $today }}">
                 </div>
-                <div class="form-group row mb-3">
-                    <label for="prayer-adoration" class="col-sm-3 col-form-label">Adoration</label>
-                    <div class="col-sm-9">
-                        <textarea class="form-control" id="prayer-adoration" rows="4"></textarea>
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-letter">A</span>
+                        <div>
+                            <span class="sword-modal-section-title">Adoration</span>
+                            <span class="sword-modal-section-desc">Praise God for who He is</span>
+                        </div>
                     </div>
+                    <textarea class="sword-modal-textarea" id="prayer-adoration" rows="3" placeholder="Lord, I praise you for…"></textarea>
                 </div>
-                <div class="form-group row mb-3">
-                    <label for="prayer-confession" class="col-sm-3 col-form-label">Confession</label>
-                    <div class="col-sm-9">
-                        <textarea class="form-control" id="prayer-confession" rows="4"></textarea>
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-letter">C</span>
+                        <div>
+                            <span class="sword-modal-section-title">Confession</span>
+                            <span class="sword-modal-section-desc">Acknowledge and repent of sin</span>
+                        </div>
                     </div>
+                    <textarea class="sword-modal-textarea" id="prayer-confession" rows="3" placeholder="Father, forgive me for…"></textarea>
                 </div>
-                <div class="form-group row mb-3">
-                    <label for="prayer-thanksgiving" class="col-sm-3 col-form-label">Thanksgiving</label>
-                    <div class="col-sm-9">
-                        <textarea class="form-control" id="prayer-thanksgiving" rows="4"></textarea>
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-letter">T</span>
+                        <div>
+                            <span class="sword-modal-section-title">Thanksgiving</span>
+                            <span class="sword-modal-section-desc">Thank God for His blessings</span>
+                        </div>
                     </div>
+                    <textarea class="sword-modal-textarea" id="prayer-thanksgiving" rows="3" placeholder="Thank you, Lord, for…"></textarea>
                 </div>
-                <div class="form-group row mb-3">
-                    <label for="prayer-supplication" class="col-sm-3 col-form-label">Supplication</label>
-                    <div class="col-sm-9">
-                        <textarea class="form-control" id="prayer-supplication" rows="4"></textarea>
+
+                <div class="sword-modal-section mb-2">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-letter">S</span>
+                        <div>
+                            <span class="sword-modal-section-title">Supplication</span>
+                            <span class="sword-modal-section-desc">Bring your requests before God</span>
+                        </div>
                     </div>
+                    <textarea class="sword-modal-textarea" id="prayer-supplication" rows="3" placeholder="Lord, I ask for…"></textarea>
                 </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="btn-save-prayer">Save Entry</button>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="btn-save-prayer">
+                    <i class="mdi mdi-content-save-outline me-1"></i> Save Entry
+                </button>
             </div>
+
         </div>
     </div>
 </div>
 
 <!-- Send Prayer Modal -->
 <div class="modal fade" id="sendPrayerModal" tabindex="-1" aria-labelledby="sendPrayerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="sendPrayerModalLabel">Send Prayer Journal Entry</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group mb-4">
-                    <label for="recipientEmail" class="form-label">Recipient Email</label>
-                    <input type="email" class="form-control" id="recipientEmail" placeholder="Enter email address">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="modal-header sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-email-send-outline"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="sendPrayerModalLabel">Send Prayer Entry</h5>
+                        <p class="sword-modal-subtitle mb-0">Share this journal entry by email</p>
+                    </div>
                 </div>
-                <hr>
-                <h6 class="text-muted mb-3">Preview</h6>
-                <div class="card bg-light">
-                    <div class="card-body">
-                        <h5 class="card-title" id="previewDate"></h5>
-                        <hr>
-                        <div id="previewContent"></div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+
+            <div class="modal-body sword-modal-body">
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-email-outline"></i></span>
+                        <span class="sword-modal-section-title">Recipient</span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <label for="recipientEmail" class="sword-modal-label">Email Address</label>
+                        <input type="email" class="form-control sword-modal-input" id="recipientEmail" placeholder="Enter email address">
+                    </div>
+                </div>
+
+                <div class="sword-modal-section">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-eye-outline"></i></span>
+                        <span class="sword-modal-section-title">Preview</span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <p class="fw-semibold mb-2" id="previewDate" style="color:var(--sword-navy);"></p>
+                        <div id="previewContent" class="sword-modal-preview"></div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="sendPrayerBtn">
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="sendPrayerBtn">
                     <i class="mdi mdi-send me-1"></i> Send
                 </button>
             </div>
+
         </div>
     </div>
 </div>

@@ -240,111 +240,132 @@ $formatVerseRange = function($numbers) {
 
 <!-- Create Memory Modal -->
 <div class="modal fade" id="createMemoryModal" tabindex="-1" aria-labelledby="createMemoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
             <form action="{{ route('memory.store') }}" method="POST">
                 @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createMemoryModalLabel">Create Memory Goal</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="sword-modal-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="sword-modal-icon"><i class="mdi mdi-brain"></i></div>
+                        <div>
+                            <h5 class="modal-title mb-0" id="createMemoryModalLabel">New Memory Goal</h5>
+                            <p class="sword-modal-subtitle mb-0">Choose verses and set your memorization target</p>
+                        </div>
+                    </div>
+                    <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="mdi mdi-close"></i>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label for="title" class="form-label">Title (optional)</label>
-                            <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Romans 8 - Freedom in Christ">
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ date('Y-m-d') }}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="end_date" class="form-label">Target End Date (optional)</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date">
-                        </div>
-                    </div>
 
-                    <hr>
+                <div class="modal-body sword-modal-body">
 
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="translation_select" class="form-label">Translation</label>
-                            <select class="form-select" id="translation_select">
-                                <option value="">Select Translation</option>
-                                @foreach($translations as $translation)
-                                    <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
-                                @endforeach
-                            </select>
+                    <div class="sword-modal-section mb-4">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                            <span class="sword-modal-section-title">Details</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <div class="mb-3">
+                                <label for="title" class="sword-modal-label">Title <span class="sword-modal-optional">optional</span></label>
+                                <input type="text" class="form-control sword-modal-input" id="title" name="title" placeholder="e.g., Romans 8 — Freedom in Christ">
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label for="start_date" class="sword-modal-label">Start Date</label>
+                                    <input type="date" class="form-control sword-modal-input" id="start_date" name="start_date" value="{{ date('Y-m-d') }}" required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="end_date" class="sword-modal-label">Target Date <span class="sword-modal-optional">optional</span></label>
+                                    <input type="date" class="form-control sword-modal-input" id="end_date" name="end_date">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="book_select" class="form-label">Book</label>
-                            <select class="form-select select2-books" id="book_select">
-                                <option value="">Select Book</option>
-                                <optgroup label="Old Testament">
-                                    @foreach($books->where('new_testament', 0) as $book)
-                                        <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
+                    <div class="sword-modal-section mb-4">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                            <span class="sword-modal-section-title">Add Verses</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <div class="mb-3">
+                                <label for="translation_select" class="sword-modal-label">Translation</label>
+                                <select class="form-select sword-modal-select" id="translation_select">
+                                    <option value="">Select Translation</option>
+                                    @foreach($translations as $translation)
+                                        <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
                                     @endforeach
-                                </optgroup>
-                                <optgroup label="New Testament">
-                                    @foreach($books->where('new_testament', 1) as $book)
-                                        <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
-                                    @endforeach
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="chapter_select" class="form-label">Chapter</label>
-                            <select class="form-select" id="chapter_select" disabled>
-                                <option value="">Select Chapter</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="verse_select" class="form-label">Verse(s)</label>
-                            <select class="form-select" id="verse_select" multiple disabled>
-                                <option value="">Select Book & Chapter first</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3" id="verse-preview-row" style="display: none;">
-                        <div class="col-12">
-                            <div id="verse-preview" class="border rounded p-3" style="background: #f8f9fc; font-size: 0.9rem; line-height: 1.6;"></div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <button type="button" class="btn btn-outline-primary" id="addVersesBtn" disabled>
+                                </select>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-sm-4">
+                                    <label for="book_select" class="sword-modal-label">Book</label>
+                                    <select class="form-select sword-modal-select select2-books" id="book_select">
+                                        <option value="">Select Book</option>
+                                        <optgroup label="Old Testament">
+                                            @foreach($books->where('new_testament', 0) as $book)
+                                                <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                        <optgroup label="New Testament">
+                                            @foreach($books->where('new_testament', 1) as $book)
+                                                <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label for="chapter_select" class="sword-modal-label">Chapter</label>
+                                    <select class="form-select sword-modal-select" id="chapter_select" disabled>
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label for="verse_select" class="sword-modal-label">Verse(s)</label>
+                                    <select class="form-select sword-modal-select sword-modal-verse-multiselect" id="verse_select" multiple disabled>
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="verse-preview-row" style="display:none;" class="mb-3">
+                                <div id="verse-preview" class="sword-modal-preview"></div>
+                            </div>
+                            <button type="button" class="btn sword-modal-btn-add" id="addVersesBtn" disabled>
                                 <i class="mdi mdi-plus me-1"></i>Add Selected Verses
                             </button>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label class="form-label">Selected Verses</label>
-                            <div id="selectedVerses" class="border rounded p-3 min-height-100">
-                                <p class="text-muted mb-0" id="noVersesText">No verses selected yet</p>
+                    <div class="sword-modal-section mb-4">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-format-list-checks"></i></span>
+                            <span class="sword-modal-section-title">Selected Verses</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <div id="selectedVerses" class="sword-modal-selected-verses">
+                                <p class="sword-modal-empty-hint mb-0" id="noVersesText">No verses selected yet</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label for="notes" class="form-label">Notes (optional)</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Any notes about this memory goal..."></textarea>
+                    <div class="sword-modal-section mb-2">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-note-outline"></i></span>
+                            <span class="sword-modal-section-title">Notes <span class="sword-modal-optional">optional</span></span>
+                        </div>
+                        <div class="sword-modal-section-body p-0">
+                            <textarea class="form-control sword-modal-textarea" id="notes" name="notes" rows="2" placeholder="Any notes about this memory goal…"></textarea>
                         </div>
                     </div>
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="submitMemoryBtn" disabled>Create Memory Goal</button>
+
+                <div class="modal-footer sword-modal-footer">
+                    <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn sword-modal-btn-save" id="submitMemoryBtn" disabled>
+                        <i class="mdi mdi-brain me-1"></i>Create Goal
+                    </button>
                 </div>
             </form>
         </div>
@@ -353,112 +374,133 @@ $formatVerseRange = function($numbers) {
 
 <!-- Edit Memory Modal -->
 <div class="modal fade" id="editMemoryModal" tabindex="-1" aria-labelledby="editMemoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
             <form id="editMemoryForm" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editMemoryModalLabel">Edit Memory Goal</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="sword-modal-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="sword-modal-icon"><i class="mdi mdi-brain"></i></div>
+                        <div>
+                            <h5 class="modal-title mb-0" id="editMemoryModalLabel">Edit Memory Goal</h5>
+                            <p class="sword-modal-subtitle mb-0">Update verses, dates, or notes</p>
+                        </div>
+                    </div>
+                    <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="mdi mdi-close"></i>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label for="edit_title" class="form-label">Title (optional)</label>
-                            <input type="text" class="form-control" id="edit_title" name="title" placeholder="e.g., Romans 8 - Freedom in Christ">
+
+                <div class="modal-body sword-modal-body">
+
+                    <div class="sword-modal-section mb-4">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                            <span class="sword-modal-section-title">Details</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <div class="mb-3">
+                                <label for="edit_title" class="sword-modal-label">Title <span class="sword-modal-optional">optional</span></label>
+                                <input type="text" class="form-control sword-modal-input" id="edit_title" name="title" placeholder="e.g., Romans 8 — Freedom in Christ">
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label for="edit_start_date" class="sword-modal-label">Start Date</label>
+                                    <input type="date" class="form-control sword-modal-input" id="edit_start_date" name="start_date" required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="edit_end_date" class="sword-modal-label">Target Date <span class="sword-modal-optional">optional</span></label>
+                                    <input type="date" class="form-control sword-modal-input" id="edit_end_date" name="end_date">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="edit_start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="edit_start_date" name="start_date" required>
+                    <div class="sword-modal-section mb-4">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                            <span class="sword-modal-section-title">Add Verses</span>
                         </div>
-                        <div class="col-md-6">
-                            <label for="edit_end_date" class="form-label">Target End Date (optional)</label>
-                            <input type="date" class="form-control" id="edit_end_date" name="end_date">
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="edit_translation_select" class="form-label">Translation</label>
-                            <select class="form-select" id="edit_translation_select">
-                                <option value="">Select Translation</option>
-                                @foreach($translations as $translation)
-                                    <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="edit_book_select" class="form-label">Book</label>
-                            <select class="form-select" id="edit_book_select">
-                                <option value="">Select Book</option>
-                                <optgroup label="Old Testament">
-                                    @foreach($books->where('new_testament', 0) as $book)
-                                        <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
+                        <div class="sword-modal-section-body">
+                            <div class="mb-3">
+                                <label for="edit_translation_select" class="sword-modal-label">Translation</label>
+                                <select class="form-select sword-modal-select" id="edit_translation_select">
+                                    <option value="">Select Translation</option>
+                                    @foreach($translations as $translation)
+                                        <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
                                     @endforeach
-                                </optgroup>
-                                <optgroup label="New Testament">
-                                    @foreach($books->where('new_testament', 1) as $book)
-                                        <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
-                                    @endforeach
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="edit_chapter_select" class="form-label">Chapter</label>
-                            <select class="form-select" id="edit_chapter_select" disabled>
-                                <option value="">Select Chapter</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="edit_verse_select" class="form-label">Verse(s)</label>
-                            <select class="form-select" id="edit_verse_select" multiple disabled>
-                                <option value="">Select Book & Chapter first</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3" id="edit-verse-preview-row" style="display: none;">
-                        <div class="col-12">
-                            <div id="edit-verse-preview" class="border rounded p-3" style="background: #f8f9fc; font-size: 0.9rem; line-height: 1.6;"></div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <button type="button" class="btn btn-outline-primary" id="editAddVersesBtn" disabled>
+                                </select>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-sm-4">
+                                    <label for="edit_book_select" class="sword-modal-label">Book</label>
+                                    <select class="form-select sword-modal-select" id="edit_book_select">
+                                        <option value="">Select Book</option>
+                                        <optgroup label="Old Testament">
+                                            @foreach($books->where('new_testament', 0) as $book)
+                                                <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                        <optgroup label="New Testament">
+                                            @foreach($books->where('new_testament', 1) as $book)
+                                                <option value="{{ $book->id }}" data-chapters="{{ $book->chapters->count() }}">{{ $book->name }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label for="edit_chapter_select" class="sword-modal-label">Chapter</label>
+                                    <select class="form-select sword-modal-select" id="edit_chapter_select" disabled>
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label for="edit_verse_select" class="sword-modal-label">Verse(s)</label>
+                                    <select class="form-select sword-modal-select sword-modal-verse-multiselect" id="edit_verse_select" multiple disabled>
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="edit-verse-preview-row" style="display:none;" class="mb-3">
+                                <div id="edit-verse-preview" class="sword-modal-preview"></div>
+                            </div>
+                            <button type="button" class="btn sword-modal-btn-add" id="editAddVersesBtn" disabled>
                                 <i class="mdi mdi-plus me-1"></i>Add Selected Verses
                             </button>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label class="form-label">Selected Verses</label>
-                            <div id="editSelectedVerses" class="border rounded p-3 min-height-100">
-                                <p class="text-muted mb-0" id="editNoVersesText">No verses selected yet</p>
+                    <div class="sword-modal-section mb-4">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-format-list-checks"></i></span>
+                            <span class="sword-modal-section-title">Selected Verses</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <div id="editSelectedVerses" class="sword-modal-selected-verses">
+                                <p class="sword-modal-empty-hint mb-0" id="editNoVersesText">No verses selected yet</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label for="edit_notes" class="form-label">Notes (optional)</label>
-                            <textarea class="form-control" id="edit_notes" name="notes" rows="2" placeholder="Any notes about this memory goal..."></textarea>
+                    <div class="sword-modal-section mb-2">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-note-outline"></i></span>
+                            <span class="sword-modal-section-title">Notes <span class="sword-modal-optional">optional</span></span>
+                        </div>
+                        <div class="sword-modal-section-body p-0">
+                            <textarea class="form-control sword-modal-textarea" id="edit_notes" name="notes" rows="2" placeholder="Any notes about this memory goal…"></textarea>
                         </div>
                     </div>
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="editSubmitMemoryBtn">Save Changes</button>
+
+                <div class="modal-footer sword-modal-footer">
+                    <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn sword-modal-btn-save" id="editSubmitMemoryBtn">
+                        <i class="mdi mdi-content-save-outline me-1"></i>Save Changes
+                    </button>
                 </div>
             </form>
         </div>
@@ -468,11 +510,6 @@ $formatVerseRange = function($numbers) {
 
 @endsection
 
-@push('css')
-<style>
-    .min-height-100 { min-height: 100px; }
-</style>
-@endpush
 
 @push('js')
 <script>

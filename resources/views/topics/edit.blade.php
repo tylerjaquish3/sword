@@ -4,20 +4,24 @@
 
 @section('content')  
 
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <h3 class="topic-hero-title mb-0 me-3">{{ $topic->name }}</h3>
-    <a href="{{ route('topics.index') }}" class="btn btn-outline-inverse-info btn-icon-text flex-shrink-0">
-        <i class="mdi mdi-arrow-left me-1"></i> Back to Topics
-    </a>
+<div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <a href="{{ route('topics.index') }}" style="font-size: 0.78rem; color: var(--sword-gold); text-decoration: none;">
+                <i class="mdi mdi-arrow-left"></i> Study Hub
+            </a>
+        </div>
+        <h3 class="topic-hero-title mb-0">{{ $topic->name }}</h3>
+    </div>
 </div>
 
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card" style="border-top: 2px solid var(--sword-gold);">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Topic Details</h4>
-                <button class="btn btn-sm btn-primary" id="edit-topic-btn">
-                    <i class="mdi mdi-pencil me-1"></i>
+                <h4 class="card-title mb-0" style="color: var(--sword-navy);">Topic Details</h4>
+                <button class="btn btn-sm" id="edit-topic-btn" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
+                    <i class="mdi mdi-pencil"></i>
                 </button>
             </div>
             <div class="card-body">
@@ -53,11 +57,11 @@
 <!-- Notes Section -->
 <div class="row mt-4" id="notes-section">
     <div class="col-12">
-        <div class="card">
+        <div class="card" style="border-top: 2px solid var(--sword-gold);">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Notes</h4>
-                <button class="btn btn-sm btn-primary" id="add-note-btn">
-                    Add Note
+                <h4 class="card-title mb-0" style="color: var(--sword-navy);">Notes</h4>
+                <button class="btn btn-sm" id="add-note-btn" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+                    <i class="mdi mdi-plus"></i> Add Note
                 </button>
             </div>
             <div class="card-body" id="notes-list">
@@ -96,9 +100,9 @@
 @endphp
 <div class="row mt-4">
     <div class="col-12">
-        <div class="card">
+        <div class="card" style="border-top: 2px solid var(--sword-gold);">
             <div class="card-header">
-                <h4 class="card-title">Related Verses</h4>
+                <h4 class="card-title mb-1" style="color: var(--sword-navy);">Related Verses</h4>
                 <p class="text-muted mb-0">{{ $groupedVerses->count() }} references found ({{ $matchingVerses->count() }} total matches)</p>
             </div>
             <div class="card-body">
@@ -162,67 +166,127 @@
 
 <!-- Add Note Modal -->
 <div class="modal fade" id="addNoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Note</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Note <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="note-text" rows="5" placeholder="Write your note…"></textarea>
-                    <div class="invalid-feedback">Note cannot be empty.</div>
-                </div>
-                <div>
-                    <label class="form-label">Link Verses</label>
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control" id="verse-search-input" placeholder="Search by reference or text (e.g. John 3, faith)">
-                        <button class="btn btn-outline-secondary" type="button" id="verse-search-btn">
-                            <i class="mdi mdi-magnify"></i>
-                        </button>
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-note-plus-outline"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Add Note</h5>
+                        <p class="sword-modal-subtitle mb-0">{{ $topic->name }}</p>
                     </div>
-                    <div id="verse-search-results" class="list-group mb-2" style="max-height:200px;overflow-y:auto;display:none;"></div>
-                    <div id="linked-verses" class="d-flex flex-wrap gap-1"></div>
-                    <input type="hidden" id="linked-verse-ids">
                 </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal">
+                    <i class="mdi mdi-close"></i>
+                </button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-note-btn">Save Note</button>
+
+            <div class="modal-body sword-modal-body">
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-title">Note <span class="sword-modal-required">required</span></span>
+                    </div>
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="note-text" rows="5" placeholder="Write your note…"></textarea>
+                        <div class="invalid-feedback px-3 pb-2">Note cannot be empty.</div>
+                    </div>
+                </div>
+
+                <div class="sword-modal-section mb-2">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-link-variant"></i></span>
+                        <span class="sword-modal-section-title">Link Verses <span class="sword-modal-optional">optional</span></span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control sword-modal-input" id="verse-search-input" placeholder="Search by reference or text (e.g. John 3, faith)">
+                            <button class="btn sword-modal-btn-add" type="button" id="verse-search-btn" style="border-radius: 0 8px 8px 0;">
+                                <i class="mdi mdi-magnify"></i>
+                            </button>
+                        </div>
+                        <div id="verse-search-results" class="list-group mb-2" style="max-height:200px;overflow-y:auto;display:none;"></div>
+                        <div id="linked-verses" class="d-flex flex-wrap gap-1"></div>
+                        <input type="hidden" id="linked-verse-ids">
+                    </div>
+                </div>
+
             </div>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="save-note-btn">
+                    <i class="mdi mdi-content-save-outline me-1"></i>Save Note
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
 
 <!-- Edit Topic Modal -->
 <div class="modal fade" id="editTopicModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Topic</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="modal-name">
-                    <div class="invalid-feedback">Name is required.</div>
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-tag-edit-outline"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Edit Topic</h5>
+                        <p class="sword-modal-subtitle mb-0">Update name, description, or keywords</p>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-control" id="modal-description" rows="3"></textarea>
-                </div>
-                <div>
-                    <label class="form-label">Keywords</label>
-                    <textarea class="form-control" id="modal-keywords" rows="2" placeholder="Comma-separated keywords"></textarea>
-                    <small class="text-muted">Enter keywords separated by commas</small>
-                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal">
+                    <i class="mdi mdi-close"></i>
+                </button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-topic-btn">Save Changes</button>
+
+            <div class="modal-body sword-modal-body">
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                        <span class="sword-modal-section-title">Name <span class="sword-modal-required">required</span></span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <input type="text" class="form-control sword-modal-input" id="modal-name">
+                        <div class="invalid-feedback">Name is required.</div>
+                    </div>
+                </div>
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-title">Description <span class="sword-modal-optional">optional</span></span>
+                    </div>
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="modal-description" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="sword-modal-section mb-2">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-key-variant"></i></span>
+                        <span class="sword-modal-section-title">Keywords <span class="sword-modal-optional">optional</span></span>
+                    </div>
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="modal-keywords" rows="2" placeholder="Comma-separated keywords"></textarea>
+                        <p class="sword-modal-hint">Comma-separated — used to surface related verses</p>
+                    </div>
+                </div>
+
             </div>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="save-topic-btn">
+                    <i class="mdi mdi-content-save-outline me-1"></i>Save Changes
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
