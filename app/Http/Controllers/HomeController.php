@@ -10,6 +10,7 @@ use App\Models\PrayerType;
 use App\Models\Topic;
 use App\Models\Translation;
 use App\Models\UserLogin;
+use App\Models\UserRead;
 use App\Models\Verse;
 use App\Models\VerseComment;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,45 @@ class HomeController extends Controller
             ->skip(1)
             ->first();
 
+        // Heatmap: reads per date for the last year
+        $readsByDate = UserRead::where('user_id', Auth::id())
+            ->where('read_at', '>=', now()->subYear())
+            ->selectRaw('DATE(read_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
+        // All distinct read dates for streak calculation
+        $allReadDates = UserRead::where('user_id', Auth::id())
+            ->selectRaw('DATE(read_at) as date')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->pluck('date')
+            ->map(fn($d) => \Carbon\Carbon::parse($d)->startOfDay());
+
+        // Current streak: consecutive days backwards from today
+        $currentStreak = 0;
+        $checkDate = now()->startOfDay();
+        while ($allReadDates->contains(fn($d) => $d->eq($checkDate))) {
+            $currentStreak++;
+            $checkDate->subDay();
+        }
+
+        // Longest streak: scan all read dates
+        $longestStreak = 0;
+        $runLength = 0;
+        $prevDate = null;
+        foreach ($allReadDates as $date) {
+            if ($prevDate && $date->diffInDays($prevDate) === 1) {
+                $runLength++;
+            } else {
+                $runLength = 1;
+            }
+            $longestStreak = max($longestStreak, $runLength);
+            $prevDate = $date;
+        }
+
+        $todayReadCount = (int) ($readsByDate->get(now()->toDateString(), 0));
+
         return view('home.index', compact(
             'books',
             'prayerCount',
@@ -63,7 +103,11 @@ class HomeController extends Controller
             'prayersByType',
             'recentPrayers',
             'recentComments',
-            'lastLogin'
+            'lastLogin',
+            'readsByDate',
+            'currentStreak',
+            'longestStreak',
+            'todayReadCount'
         ));
     }
     

@@ -9,13 +9,13 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="font-weight-bold mb-2" style="color: var(--sword-navy);">Hi, welcome back!</h3>
-                <h6 class="font-weight-normal mb-2" style="color: #6b7280;">
+                <p class="page-subtitle mb-0">
                     @if($lastLogin)
                         Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
                     @else
                         Welcome!
                     @endif
-                </h6>
+                </p>
             </div>
         </div>
     </div>
@@ -183,6 +183,58 @@
     </div>
 </div>
 
+{{-- Reading Activity Heatmap --}}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" style="border-top: 3px solid var(--sword-gold);">
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <h4 class="card-title mb-0" style="color: var(--sword-navy);">Reading Activity</h4>
+                    <div class="d-flex gap-4">
+                        <div class="text-center">
+                            <div class="font-weight-bold" style="color: var(--sword-navy); font-size: 1.1rem;">
+                                <i class="mdi mdi-fire" style="color: var(--sword-gold);"></i> {{ $currentStreak }}
+                            </div>
+                            <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Current Streak</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-weight-bold" style="color: var(--sword-navy); font-size: 1.1rem;">
+                                <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i> {{ $longestStreak }}
+                            </div>
+                            <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Best Streak</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-weight-bold" style="color: var(--sword-navy); font-size: 1.1rem;">
+                                @if($todayReadCount > 0)
+                                    <i class="mdi mdi-check-circle" style="color: var(--sword-gold);"></i> {{ $todayReadCount }}
+                                @else
+                                    <i class="mdi mdi-circle-outline" style="color: #9ca3af;"></i> 0
+                                @endif
+                            </div>
+                            <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Today</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <div style="min-width: max-content;">
+                        <div id="heatmap-months" style="position: relative; height: 16px; margin-bottom: 4px;"></div>
+                        <div id="reading-heatmap" style="display: grid; grid-template-columns: repeat(53, 12px); grid-auto-rows: 12px; gap: 2px;"></div>
+                        <div class="d-flex align-items-center gap-2 mt-2" style="font-size: 0.75rem; color: #9ca3af;">
+                            <span>Less</span>
+                            <div style="width:12px;height:12px;border-radius:2px;background:rgba(201,168,76,0.08);display:inline-block;"></div>
+                            <div style="width:12px;height:12px;border-radius:2px;background:rgba(201,168,76,0.3);display:inline-block;"></div>
+                            <div style="width:12px;height:12px;border-radius:2px;background:rgba(201,168,76,0.5);display:inline-block;"></div>
+                            <div style="width:12px;height:12px;border-radius:2px;background:rgba(201,168,76,0.7);display:inline-block;"></div>
+                            <div style="width:12px;height:12px;border-radius:2px;background:#c9a84c;display:inline-block;"></div>
+                            <span>More</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Mobile-only search card --}}
 <div class="row mt-4 d-lg-none">
     <div class="col-12">
@@ -221,3 +273,84 @@
 </style>
 
 @endsection
+
+@push('js')
+<script>
+(function () {
+    const readData = @json($readsByDate);
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    // Align start to the Sunday of the week that is 52 weeks before today's week
+    const startDate = new Date(todayDate);
+    startDate.setDate(todayDate.getDate() - 364 - todayDate.getDay());
+
+    const WEEKS = 53;
+    const CELL = 12;
+    const GAP = 2;
+
+    const grid = document.getElementById('reading-heatmap');
+    const monthBar = document.getElementById('heatmap-months');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function toKey(d) {
+        return d.getFullYear() + '-' +
+            String(d.getMonth() + 1).padStart(2, '0') + '-' +
+            String(d.getDate()).padStart(2, '0');
+    }
+
+    function getColor(n) {
+        if (n <= 0) return 'rgba(201,168,76,0.08)';
+        if (n === 1) return 'rgba(201,168,76,0.3)';
+        if (n === 2) return 'rgba(201,168,76,0.5)';
+        if (n === 3) return 'rgba(201,168,76,0.7)';
+        return '#c9a84c';
+    }
+
+    // Month labels above the grid
+    let lastMonth = -1;
+    for (let w = 0; w < WEEKS; w++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + w * 7);
+        if (d.getMonth() !== lastMonth) {
+            lastMonth = d.getMonth();
+            const span = document.createElement('span');
+            span.textContent = monthNames[lastMonth];
+            span.style.cssText = 'position:absolute;left:' + (w * (CELL + GAP)) + 'px;font-size:10px;color:#9ca3af;white-space:nowrap;';
+            monthBar.appendChild(span);
+        }
+    }
+
+    // Grid cells: columns = weeks, rows = days (0=Sun … 6=Sat)
+    for (let w = 0; w < WEEKS; w++) {
+        for (let d = 0; d < 7; d++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + w * 7 + d);
+
+            const div = document.createElement('div');
+            div.style.width = CELL + 'px';
+            div.style.height = CELL + 'px';
+            div.style.borderRadius = '2px';
+            div.style.gridColumn = (w + 1).toString();
+            div.style.gridRow = (d + 1).toString();
+
+            if (date > todayDate) {
+                div.style.background = 'transparent';
+            } else {
+                const key = toKey(date);
+                const count = readData[key] || 0;
+                div.style.background = getColor(count);
+                if (date.getTime() === todayDate.getTime()) {
+                    div.style.outline = '1.5px solid var(--sword-gold)';
+                    div.style.outlineOffset = '1px';
+                }
+                div.title = monthNames[date.getMonth()] + ' ' + date.getDate() +
+                    ' — ' + (count > 0 ? count + ' chapter' + (count > 1 ? 's' : '') : 'no reading');
+            }
+
+            grid.appendChild(div);
+        }
+    }
+})();
+</script>
+@endpush

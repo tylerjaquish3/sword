@@ -9,7 +9,7 @@
         <div class="d-lg-flex align-items-center">
             <div>
                 <h3 class="text-dark font-weight-bold mb-2">All Topics</h3>
-                <h6 class="font-weight-normal mb-2">{{ count($topics) }} topics found</h6>
+                <p class="page-subtitle mb-0">{{ count($topics) }} topics found</p>
             </div>
             <div class="ms-lg-5 d-lg-flex d-none">
                 <button type="button" class="btn bg-white btn-icon view-toggle active" id="gridViewBtn" data-view="grid">

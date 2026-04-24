@@ -38,15 +38,26 @@
                     <div class="form-group row mb-3">
                         <label for="book_id" class="col-sm-3 col-form-label">Book</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="book_id" name="book_id" onchange="updateChapters()">
+                            <select class="form-control select2-books" id="book_id" name="book_id" onchange="updateChapters()">
                                 <option value="">Select a Book</option>
-                                @foreach ($books as $book)
-                                    <option value="{{ $book->id }}" 
-                                        data-chapters="{{ json_encode($book->chapters) }}"
-                                        {{ $verseComment->verse->chapter->book_id == $book->id ? 'selected' : '' }}>
-                                        {{ $book->name }}
-                                    </option>
-                                @endforeach
+                                <optgroup label="Old Testament">
+                                    @foreach ($books->where('new_testament', 0) as $book)
+                                        <option value="{{ $book->id }}"
+                                            data-chapters="{{ json_encode($book->chapters) }}"
+                                            {{ $verseComment->verse->chapter->book_id == $book->id ? 'selected' : '' }}>
+                                            {{ $book->name }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="New Testament">
+                                    @foreach ($books->where('new_testament', 1) as $book)
+                                        <option value="{{ $book->id }}"
+                                            data-chapters="{{ json_encode($book->chapters) }}"
+                                            {{ $verseComment->verse->chapter->book_id == $book->id ? 'selected' : '' }}>
+                                            {{ $book->name }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
                             </select>
                         </div>
                     </div>

@@ -49,11 +49,18 @@
                     <div class="row mb-3 align-items-center">
                         <label for="book_id" class="col-sm-3 col-form-label fw-semibold">Book</label>
                         <div class="col-sm-9">
-                            <select class="form-select" id="book_id" name="book_id" required>
+                            <select class="form-select select2-books" id="book_id" name="book_id" required>
                                 <option value="">Select a Book</option>
-                                @foreach ($books as $book)
-                                    <option value="{{ $book->id }}" data-chapters="{{ json_encode($book->chapters) }}">{{ $book->name }}</option>
-                                @endforeach
+                                <optgroup label="Old Testament">
+                                    @foreach ($books->where('new_testament', 0) as $book)
+                                        <option value="{{ $book->id }}" data-chapters="{{ json_encode($book->chapters) }}">{{ $book->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="New Testament">
+                                    @foreach ($books->where('new_testament', 1) as $book)
+                                        <option value="{{ $book->id }}" data-chapters="{{ json_encode($book->chapters) }}">{{ $book->name }}</option>
+                                    @endforeach
+                                </optgroup>
                             </select>
                         </div>
                     </div>

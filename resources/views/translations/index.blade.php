@@ -35,10 +35,18 @@
                         </select>
                     </div>
                     <div class="col-4">
-                        <select class="form-select" id="book_select">
-                            @foreach ($books as $book)
-                                <option value="{{ $book->id }}">{{ $book->name }}</option>
-                            @endforeach
+                        <select class="form-select select2-books" id="book_select">
+                            <option value="">Select a Book</option>
+                            <optgroup label="Old Testament">
+                                @foreach ($books->where('new_testament', 0) as $book)
+                                    <option value="{{ $book->id }}">{{ $book->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="New Testament">
+                                @foreach ($books->where('new_testament', 1) as $book)
+                                    <option value="{{ $book->id }}">{{ $book->name }}</option>
+                                @endforeach
+                            </optgroup>
                         </select>
                     </div>
                     <div class="col-4">
@@ -280,7 +288,7 @@ $(document).ready(function() {
             .done(function(last) {
                 if (last && last.book_id) {
                     $('#translation_select').val(last.translation_id);
-                    $('#book_select').val(last.book_id);
+                    $('#book_select').val(last.book_id).trigger('change.select2');
                     loadChapters(last.book_id, function() {
                         $('#chapter_select').val(last.chapter_number);
                         lookupVerses('');
