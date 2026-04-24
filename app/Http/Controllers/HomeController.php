@@ -89,6 +89,34 @@ class HomeController extends Controller
 
         $todayReadCount = (int) ($readsByDate->get(now()->toDateString(), 0));
 
+        // Weekly digest preview stats
+        $weekStart = now()->startOfWeek();
+        $weekEnd = now()->endOfWeek();
+        $digestStats = [
+            'days' => UserRead::where('user_id', Auth::id())
+                ->whereBetween('read_at', [$weekStart, $weekEnd])
+                ->selectRaw('DATE(read_at) as date')
+                ->groupBy('date')
+                ->count(),
+            'chapters' => UserRead::where('user_id', Auth::id())
+                ->whereBetween('read_at', [$weekStart, $weekEnd])
+                ->count(),
+            'prayers' => Prayer::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
+            'notes' => ChapterComment::whereBetween('created_at', [$weekStart, $weekEnd])->count()
+                + VerseComment::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
+        ];
+
+        $yearAgoStart = now()->subYear()->startOfWeek();
+        $yearAgoEnd = now()->subYear()->endOfWeek();
+        $digestPastNote = VerseComment::whereBetween('created_at', [$yearAgoStart, $yearAgoEnd])
+            ->inRandomOrder()
+            ->first();
+        if (!$digestPastNote) {
+            $digestPastNote = ChapterComment::whereBetween('created_at', [$yearAgoStart, $yearAgoEnd])
+                ->inRandomOrder()
+                ->first();
+        }
+
         return view('home.index', compact(
             'books',
             'prayerCount',
@@ -107,7 +135,9 @@ class HomeController extends Controller
             'readsByDate',
             'currentStreak',
             'longestStreak',
-            'todayReadCount'
+            'todayReadCount',
+            'digestStats',
+            'digestPastNote'
         ));
     }
     

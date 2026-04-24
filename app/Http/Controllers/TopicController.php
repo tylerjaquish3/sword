@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Topic;
 use App\Models\TopicNote;
+use App\Models\UserRead;
 use App\Models\Verse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TopicController extends Controller
 {
@@ -17,7 +20,13 @@ class TopicController extends Controller
     {
         $topics = Topic::all();
 
-        return view('topics.index', compact('topics'));
+        $books = Book::withCount('chapters')->get();
+        $chaptersReadByBook = UserRead::where('user_id', Auth::id())
+            ->selectRaw('book_id, COUNT(DISTINCT chapter_number) as read_count')
+            ->groupBy('book_id')
+            ->pluck('read_count', 'book_id');
+
+        return view('topics.index', compact('topics', 'books', 'chaptersReadByBook'));
     }
 
     public function create()

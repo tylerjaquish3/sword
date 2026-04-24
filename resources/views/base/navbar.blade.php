@@ -52,6 +52,12 @@
                                 <i class="mdi mdi-account-circle text-primary"></i>
                                 Profile
                             </a>
+                            @if(auth()->user()->is_admin)
+                            <a class="dropdown-item" href="{{ route('admin.users') }}">
+                                <i class="mdi mdi-shield-account text-warning"></i>
+                                Admin
+                            </a>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
                                 @csrf
                                 <button type="submit" class="dropdown-item">
@@ -117,10 +123,10 @@
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item {{ request()->routeIs('topics.*') ? 'active' : '' }}">
+                <li class="nav-item {{ request()->routeIs('topics.*') || request()->routeIs('books.study') || request()->routeIs('books.update-study') ? 'active' : '' }}">
                     <a href="{{ route('topics.index') }}" class="nav-link">
-                        <i class="mdi mdi-tag-multiple menu-icon"></i>
-                        <span class="menu-title">Topics</span>
+                        <i class="mdi mdi-school menu-icon"></i>
+                        <span class="menu-title">Study</span>
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
@@ -191,11 +197,11 @@
                 @endif
             </a>
         </li>
-        <li class="{{ request()->routeIs('topics.*') ? 'mob-active' : '' }}">
+        <li class="{{ request()->routeIs('topics.*') || request()->routeIs('books.study') || request()->routeIs('books.update-study') ? 'mob-active' : '' }}">
             <a href="{{ route('topics.index') }}">
-                <span class="mob-nav-icon"><i class="mdi mdi-tag-multiple"></i></span>
-                <span class="mob-nav-label">Topics</span>
-                @if(request()->routeIs('topics.*'))
+                <span class="mob-nav-icon"><i class="mdi mdi-school"></i></span>
+                <span class="mob-nav-label">Study</span>
+                @if(request()->routeIs('topics.*') || request()->routeIs('books.study') || request()->routeIs('books.update-study'))
                     <span class="mob-nav-pip"></span>
                 @endif
             </a>
@@ -234,6 +240,17 @@
                     @endif
                 </a>
             </li>
+            @if(auth()->user()->is_admin)
+            <li class="{{ request()->routeIs('admin.*') ? 'mob-active' : '' }}">
+                <a href="{{ route('admin.users') }}">
+                    <span class="mob-nav-icon"><i class="mdi mdi-shield-account"></i></span>
+                    <span class="mob-nav-label">Admin</span>
+                    @if(request()->routeIs('admin.*'))
+                        <span class="mob-nav-pip"></span>
+                    @endif
+                </a>
+            </li>
+            @endif
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
                     @csrf

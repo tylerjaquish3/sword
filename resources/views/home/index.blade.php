@@ -183,6 +183,51 @@
     </div>
 </div>
 
+{{-- Weekly Digest Preview --}}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(135deg, rgba(14,22,40,0.02) 0%, rgba(201,168,76,0.04) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-4 flex-wrap">
+                        <div>
+                            <p class="mb-0" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">This Week's Digest</p>
+                            <p class="mb-0" style="font-size: 0.78rem; color: #9ca3af;">{{ now()->startOfWeek()->format('M j') }} – {{ now()->endOfWeek()->format('M j') }}</p>
+                        </div>
+                        <div class="d-flex gap-4">
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['days'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Days</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['chapters'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Chapters</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['prayers'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Prayers</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['notes'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Notes</div>
+                            </div>
+                        </div>
+                        @if($digestPastNote)
+                        <div class="d-none d-xl-block ps-4" style="border-left: 1px solid rgba(201,168,76,0.3); max-width: 300px;">
+                            <p class="mb-1" style="font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-gold);">From your notes, one year ago</p>
+                            <p class="mb-0" style="font-size: 0.78rem; color: #4b5563; line-height: 1.4; font-style: italic;">"{{ Str::limit($digestPastNote->comment, 80) }}"</p>
+                        </div>
+                        @endif
+                    </div>
+                    <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap;">
+                        View Full Digest <i class="mdi mdi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Reading Activity Heatmap --}}
 <div class="row mt-4">
     <div class="col-12">

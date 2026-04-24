@@ -22,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'default_translation_id',
+        'is_admin',
+        'is_active',
     ];
 
     public function defaultTranslation()
@@ -47,5 +49,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_admin' => 'boolean',
+        'is_active' => 'boolean',
     ];
 }

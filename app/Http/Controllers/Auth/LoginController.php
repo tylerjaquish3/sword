@@ -22,6 +22,14 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            if (!Auth::user()->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')
+                    ->with('warning', 'Your account is pending activation. An administrator will review your account shortly.');
+            }
+
             $request->session()->regenerate();
             UserLogin::create(['user_id' => Auth::id(), 'logged_in_at' => now()]);
             return redirect()->intended(route('home.index'));

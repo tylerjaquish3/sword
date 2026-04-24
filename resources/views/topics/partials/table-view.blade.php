@@ -4,7 +4,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="datatable-topics" class="table table-bordered table-hover">
+                    <table id="datatable-topics" class="table table-bordered table-hover table-compact">
                         <thead>
                             <tr>
                                 <th>Topic</th>
@@ -20,8 +20,8 @@
                                     <td>{{ Str::limit($topic->description, 50) }}</td>
                                     <td>{{ $topic->keywords }}</td>
                                     <td>
-                                        <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-sm btn-outline-primary">
-                                            <i class="mdi mdi-pencil"></i> Edit
+                                        <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-outline-primary" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;">
+                                            <i class="mdi mdi-pencil"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -33,6 +33,17 @@
         </div>
     </div>
 </div>
+
+@push('css')
+<style>
+.table-compact th,
+.table-compact td {
+    padding: 0.28rem 0.55rem !important;
+    font-size: 0.82rem !important;
+    vertical-align: middle !important;
+}
+</style>
+@endpush
 
 @push('js')
 <script>

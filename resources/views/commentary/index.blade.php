@@ -36,7 +36,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="datatable-chapter-comments" class="table table-bordered table-hover">
+                    <table id="datatable-chapter-comments" class="table table-bordered table-hover table-compact">
                         <thead>
                             <tr>
                                 <th>Reference</th>
@@ -56,7 +56,7 @@
                                     <td>{{ Str::limit($comment->comment, 80) }}</td>
                                     <td data-order="{{ $comment->created_at->format('Y-m-d H:i:s') }}">{{ $comment->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-outline-primary open-chapter-modal" 
+                                        <button type="button" class="btn btn-outline-primary open-chapter-modal" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;" 
                                             data-chapter-id="{{ $comment->chapter_id }}"
                                             data-book-id="{{ $comment->chapter->book_id ?? '' }}"
                                             data-chapter-number="{{ $comment->chapter->number ?? '' }}">
@@ -85,7 +85,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="datatable-verse-comments" class="table table-bordered table-hover">
+                    <table id="datatable-verse-comments" class="table table-bordered table-hover table-compact">
                         <thead>
                             <tr>
                                 <th>Reference</th>
@@ -105,7 +105,7 @@
                                     <td>{{ Str::limit($comment->comment, 60) }}</td>
                                     <td data-order="{{ $comment->created_at->format('Y-m-d H:i:s') }}">{{ $comment->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-outline-primary open-verse-modal" 
+                                        <button type="button" class="btn btn-outline-primary open-verse-modal" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;" 
                                             data-chapter-id="{{ $comment->chapter_id }}"
                                             data-verse-number="{{ $comment->verse_number }}">
                                             <i class="mdi mdi-pencil"></i>
@@ -129,6 +129,23 @@
 
 @push('css')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+.table-compact th,
+.table-compact td {
+    padding: 0.28rem 0.55rem !important;
+    font-size: 0.82rem !important;
+    vertical-align: middle !important;
+}
+.table-compact thead th {
+    background: #0e1628 !important;
+    color: #fff !important;
+    font-size: 0.72rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    font-weight: 700 !important;
+    border-color: #1e2d44 !important;
+}
+</style>
 @endpush
 
 @push('js')

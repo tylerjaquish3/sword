@@ -34,6 +34,7 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - tablet size, allow compare
 - collaboration tools, accountability partner
 - import ESV translation (see details below)
+- d3 word cloud for chapter
 
 
 # locally — run as many times as needed until complete
@@ -65,8 +66,6 @@ php artisan keyWords
 - Scripture Memory Flashcard Quiz — Turn memory goals into interactive quizzes. Show the reference, user types the verse, reveal the text, mark Got It / Try Again. Track mastery percentage per verse over time.
 
 - Reading Plan Builder — Create structured plans ("NT in 90 days," custom). Daily assignments surface on the dashboard. Today's reading shows "Day 14 of 90" in the chapter view.
-
-- Weekly Spiritual Digest — A /digest/weekly page auto-generating a summary of the week: chapters read, prayers written, commentary added, memory practice, plus a random verse from your past notes ("From your notes, one year ago…"). Shareable.
 
 ---
 

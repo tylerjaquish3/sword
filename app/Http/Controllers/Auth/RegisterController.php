@@ -23,14 +23,15 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_active' => false,
+            'is_admin' => false,
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('home.index');
+        return redirect()->route('login')
+            ->with('warning', 'Your account has been created and is pending activation. An administrator will review your account shortly.');
     }
 }

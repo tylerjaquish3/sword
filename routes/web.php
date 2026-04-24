@@ -13,7 +13,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\CommentaryController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\DigestController;
 use App\Http\Controllers\TopicController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (guest only)
@@ -44,6 +46,8 @@ Route::middleware('auth')->group(function () {
     // Book routes
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
     Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
+    Route::get('/books/{book}/study', [BookController::class, 'study'])->name('books.study');
+    Route::put('/books/{book}/study', [BookController::class, 'updateStudy'])->name('books.update-study');
 
     // Chapter routes
     Route::group(['prefix' => 'chapters'], function () {
@@ -77,6 +81,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/topics/{topic}/notes', [TopicController::class, 'storeNote'])->name('topics.notes.store');
     Route::delete('/topics/notes/{note}', [TopicController::class, 'destroyNote'])->name('topics.notes.destroy');
 
+    // Digest routes
+    Route::get('/digest/weekly', [DigestController::class, 'weekly'])->name('digest.weekly');
+
     // Memory routes
     Route::resource('memory', MemoryController::class)->except(['create', 'show', 'edit']);
     Route::post('/memory/{memory}/complete', [MemoryController::class, 'complete'])->name('memory.complete');
@@ -90,5 +97,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/verse/{verse}', [TranslationController::class, 'updateVerse']);
     });
     Route::resource('translations', TranslationController::class);
+
+    // Admin routes
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+        Route::post('/admin/users/{user}/activate', [AdminController::class, 'activate'])->name('admin.users.activate');
+        Route::post('/admin/users/{user}/deactivate', [AdminController::class, 'deactivate'])->name('admin.users.deactivate');
+        Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    });
 
 });
