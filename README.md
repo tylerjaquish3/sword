@@ -36,7 +36,9 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - import ESV translation (see details below)
 - d3 word cloud for chapter
 - look at other bible apps and what features they have
-
+- accountability worksheet like what Aaron sent me
+- dashboard overview counts verses for each txn instead of total
+- dashboard confession has no icon
 
 # locally — run as many times as needed until complete
 php artisan esv:import

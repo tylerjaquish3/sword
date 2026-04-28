@@ -9,13 +9,9 @@
 
 	<link rel="shortcut icon" href="/images/logo.png" />
     
-    <!-- Load jQuery and Bootstrap before Vite so they're immediately available -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <!-- jQuery loaded synchronously so inline Blade scripts can call $() at parse time.
+         Bootstrap, DataTables, and select2 are bundled by Vite (no CDN dependency). -->
+    <script src="/js/vendor/jquery.min.js"></script>
 
     @vite(['resources/js/app.js', 'resources/css/sword.css'])
 
@@ -97,9 +93,6 @@
 
     </div>
 
-    <script>
-        $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
-    </script>
     @stack('js')
     <script>
     $(document).ready(function () {

@@ -13,7 +13,14 @@ export default defineConfig({
     ],
     build: {
         rollupOptions: {
+            // jQuery is loaded synchronously from /js/vendor/jquery.min.js so inline
+            // Blade scripts have immediate access to $. All other modules reference the
+            // same global instance at runtime via the 'jQuery' global name.
+            external: ['jquery'],
             output: {
+                globals: {
+                    jquery: 'jQuery',
+                },
                 assetFileNames: (assetInfo) => {
                     if (assetInfo.name && assetInfo.name.endsWith('.css')) {
                         return 'css/[name][extname]';
