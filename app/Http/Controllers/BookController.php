@@ -26,6 +26,7 @@ class BookController extends Controller
             'name'        => $book->name,
             'author'      => $book->author,
             'description' => $book->description,
+            'timeframe'   => $book->timeframe,
         ]);
     }
 
@@ -34,11 +35,13 @@ class BookController extends Controller
         $request->validate([
             'author'      => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'timeframe'   => 'nullable|string|max:255',
         ]);
 
         $book->update([
             'author'      => $request->author,
             'description' => $request->description,
+            'timeframe'   => $request->timeframe,
         ]);
 
         return response()->json(['success' => true]);

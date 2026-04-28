@@ -24,6 +24,23 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" style="border-left: 3px solid var(--sword-gold); background: linear-gradient(160deg, #fff 70%, rgba(201,168,76,0.04) 100%);">
+            <div class="card-body py-3 px-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="mdi mdi-book-open-page-variant" style="color: var(--sword-gold); font-size: 1.1rem;"></i>
+                    <span class="text-uppercase fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.08em; color: var(--sword-gold);">Why Memorize Scripture</span>
+                </div>
+                <p class="mb-2" style="font-size: 0.8rem; color: #4b5563; line-height: 1.6;">First and foremost, before we learn how to memorize Scripture, we should know why it's important to. We should memorize Scripture because it is God's Word. The living God has revealed Himself to us in His Word. He has given us wonderful promises and commands. He tells us what He is like and the things He desires. Because the Word of God is so important, we should commit it to memory.</p>
+                <p class="mb-2" style="font-size: 0.8rem; color: #4b5563; line-height: 1.6;">Second, we should memorize the Bible because the Holy Spirit will use the Scriptures we memorize to make us more like Christ. When we are tempted to sin, the Spirit will bring the commands of God to mind and help us flee from temptation. When we are discouraged, the Spirit will give us hope through the promises of God. When we're sharing our faith with someone else, the Spirit will give us specific verses to share with that person.</p>
+                <p class="mb-1 mt-3 fw-semibold" style="font-size: 0.78rem; color: var(--sword-navy);">Stick With It!</p>
+                <p class="mb-0" style="font-size: 0.8rem; color: #4b5563; line-height: 1.6;">More than anything else, it's essential that you stick with Scripture memorization over the long haul. There are no shortcuts. But if you stick with it, you'll be absolutely amazed at how much progress you make. Over time, you'll commit hundreds, even thousands of verses to memory, and God will use the memorized verses in amazing ways in your life. The way you think and live will be transformed by the Word of God.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
         {{ session('success') }}
@@ -691,7 +708,7 @@ $(document).ready(function() {
         });
 
         updateEditSubmitButton();
-        $('#editMemoryModal').modal('show');
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('editMemoryModal')).show();
     });
 
     // Edit translation change

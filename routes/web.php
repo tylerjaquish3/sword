@@ -14,8 +14,11 @@ use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\CommentaryController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\DigestController;
+use App\Http\Controllers\SharedDigestController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\VerseFavoriteController;
+use App\Http\Controllers\VerseHighlightController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (guest only)
@@ -31,6 +34,9 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Public shared digest (no auth required)
+Route::get('/shared/digest/{uuid}', [SharedDigestController::class, 'show'])->name('digest.shared.show');
 
 
 // All application routes require authentication
@@ -84,12 +90,18 @@ Route::middleware('auth')->group(function () {
 
     // Digest routes
     Route::get('/digest/weekly', [DigestController::class, 'weekly'])->name('digest.weekly');
+    Route::get('/digest/share', [SharedDigestController::class, 'create'])->name('digest.share.create');
+    Route::post('/digest/share', [SharedDigestController::class, 'store'])->name('digest.share.store');
+    Route::get('/digest/share/{uuid}/link', [SharedDigestController::class, 'link'])->name('digest.share.link');
 
     // Memory routes
     Route::resource('memory', MemoryController::class)->except(['create', 'show', 'edit']);
     Route::post('/memory/{memory}/complete', [MemoryController::class, 'complete'])->name('memory.complete');
     Route::post('/memory/{memory}/uncomplete', [MemoryController::class, 'uncomplete'])->name('memory.uncomplete');
     Route::get('/memory/verses', [MemoryController::class, 'getVerses'])->name('memory.verses');
+
+    Route::post('/verse-favorites/toggle', [VerseFavoriteController::class, 'toggle'])->name('verse-favorites.toggle');
+    Route::post('/verse-highlights/toggle', [VerseHighlightController::class, 'toggle'])->name('verse-highlights.toggle');
 
     Route::group(['prefix' => 'translations'], function () {
         Route::get('/verses', [TranslationController::class, 'verses']);

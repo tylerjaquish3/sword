@@ -88,7 +88,7 @@ $(document).ready(function() {
                 }
                 $('#modal_chapter_comments_list').html(commentsHtml);
 
-                $('#chapterModal').modal('show');
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('chapterModal')).show();
             }
         });
     });

@@ -8,6 +8,8 @@ use App\Models\Translation;
 use App\Models\UserLogin;
 use App\Models\Verse;
 use App\Models\VerseComment;
+use App\Models\VerseFavorite;
+use App\Models\VerseHighlight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,9 +60,18 @@ class TranslationController extends Controller
             ->pluck('verse_number')
             ->toArray();
 
-        // Add has_commentary flag to each verse
-        $verses = $verses->map(function ($verse) use ($verseNumbersWithCommentary) {
-            $verse->has_commentary = in_array($verse->number, $verseNumbersWithCommentary);
+        // Get highlights and favorites keyed by verse_number
+        $highlights = VerseHighlight::where('chapter_id', $chapter->id)
+            ->pluck('color', 'verse_number');
+
+        $favoriteNumbers = VerseFavorite::where('chapter_id', $chapter->id)
+            ->pluck('verse_number')
+            ->toArray();
+
+        $verses = $verses->map(function ($verse) use ($verseNumbersWithCommentary, $highlights, $favoriteNumbers) {
+            $verse->has_commentary  = in_array($verse->number, $verseNumbersWithCommentary);
+            $verse->highlight_color = $highlights[$verse->number] ?? null;
+            $verse->is_favorite     = in_array($verse->number, $favoriteNumbers);
             return $verse;
         });
 
@@ -73,17 +84,27 @@ class TranslationController extends Controller
     public function getVerse(Verse $verse)
     {
         $verse->load('chapter.book');
-        
+
         // Get comments by chapter_id and verse_number (translation-independent)
         $comments = VerseComment::where('chapter_id', $verse->chapter_id)
             ->where('verse_number', $verse->number)
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
+        $highlight = VerseHighlight::where('chapter_id', $verse->chapter_id)
+            ->where('verse_number', $verse->number)
+            ->first();
+
+        $isFavorite = VerseFavorite::where('chapter_id', $verse->chapter_id)
+            ->where('verse_number', $verse->number)
+            ->exists();
+
         return response()->json([
-            'verse' => $verse,
-            'reference' => $verse->chapter->book->name . ' ' . $verse->chapter->number . ':' . $verse->number,
-            'comments' => $comments
+            'verse'           => $verse,
+            'reference'       => $verse->chapter->book->name . ' ' . $verse->chapter->number . ':' . $verse->number,
+            'comments'        => $comments,
+            'highlight_color' => $highlight?->color,
+            'is_favorite'     => $isFavorite,
         ]);
     }
 

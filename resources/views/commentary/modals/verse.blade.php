@@ -43,6 +43,38 @@
                     </div>
                 </div>
 
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-palette"></i></span>
+                        <span class="sword-modal-section-title">Highlight</span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <button type="button" class="highlight-btn" data-color="yellow" title="Important" style="background:#fef08a;border:2px solid transparent;border-radius:6px;width:32px;height:32px;cursor:pointer;"></button>
+                            <button type="button" class="highlight-btn" data-color="blue"   title="Prophecy"  style="background:#93c5fd;border:2px solid transparent;border-radius:6px;width:32px;height:32px;cursor:pointer;"></button>
+                            <button type="button" class="highlight-btn" data-color="green"  title="Promise"   style="background:#86efac;border:2px solid transparent;border-radius:6px;width:32px;height:32px;cursor:pointer;"></button>
+                            <button type="button" class="highlight-btn" data-color="red"    title="Command"   style="background:#fca5a5;border:2px solid transparent;border-radius:6px;width:32px;height:32px;cursor:pointer;"></button>
+                            <span class="text-muted ms-1" style="font-size:0.75rem;">Click again to remove</span>
+                        </div>
+                        <div class="d-flex gap-3 mt-2" style="font-size:0.72rem;color:#9ca3af;">
+                            <span><span style="display:inline-block;width:10px;height:10px;background:#fef08a;border-radius:2px;"></span> Important</span>
+                            <span><span style="display:inline-block;width:10px;height:10px;background:#93c5fd;border-radius:2px;"></span> Prophecy</span>
+                            <span><span style="display:inline-block;width:10px;height:10px;background:#86efac;border-radius:2px;"></span> Promise</span>
+                            <span><span style="display:inline-block;width:10px;height:10px;background:#fca5a5;border-radius:2px;"></span> Command</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-star-outline" id="modal_favorite_icon"></i></span>
+                        <span class="sword-modal-section-title">Favorite</span>
+                        <button type="button" id="modal_favorite_btn" class="btn btn-sm ms-auto" style="font-size:0.78rem;">
+                            <i class="mdi mdi-star-outline me-1"></i><span id="modal_favorite_label">Mark as Favorite</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="sword-modal-section mb-2">
                     <div class="sword-modal-section-header">
                         <span class="sword-modal-section-icon"><i class="mdi mdi-format-text"></i></span>
@@ -79,6 +111,39 @@
 
 @push('js')
 <script>
+    const highlightBgColors = {
+        yellow: '#fef9c3',
+        blue:   '#dbeafe',
+        green:  '#dcfce7',
+        red:    '#fee2e2',
+    };
+
+    const highlightBorderColors = {
+        yellow: '#ca8a04',
+        blue:   '#2563eb',
+        green:  '#16a34a',
+        red:    '#dc2626',
+    };
+
+    function setHighlightButtons(activeColor) {
+        $('.highlight-btn').each(function() {
+            const color = $(this).data('color');
+            $(this).css('border-color', color === activeColor ? highlightBorderColors[color] : 'transparent');
+        });
+    }
+
+    function setFavoriteBtn(isFavorite) {
+        if (isFavorite) {
+            $('#modal_favorite_btn').removeClass('btn-outline-secondary').addClass('btn-warning');
+            $('#modal_favorite_btn i').removeClass('mdi-star-outline').addClass('mdi-star');
+            $('#modal_favorite_label').text('Favorited');
+        } else {
+            $('#modal_favorite_btn').removeClass('btn-warning').addClass('btn-outline-secondary');
+            $('#modal_favorite_btn i').removeClass('mdi-star').addClass('mdi-star-outline');
+            $('#modal_favorite_label').text('Mark as Favorite');
+        }
+    }
+
     $(document).ready(function() {
         // Handle verse click to open modal
         $(document).on('click', '.verse-clickable', function() {
@@ -108,6 +173,12 @@
                     $('#modal_line_break').prop('checked', hasLineBreak || sectionTitle);
                     $('#modal_section_title').val(sectionTitle);
 
+                    // Highlight buttons
+                    setHighlightButtons(response.highlight_color || null);
+
+                    // Favorite button
+                    setFavoriteBtn(response.is_favorite || false);
+
                     // Build comments list
                     let commentsHtml = '';
                     if (response.comments && response.comments.length > 0) {
@@ -133,7 +204,36 @@
                     }
                     $('#modal_comments_list').html(commentsHtml);
 
-                    $('#verseModal').modal('show');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('verseModal')).show();
+                }
+            });
+        });
+
+        // Highlight color toggle
+        $(document).on('click', '.highlight-btn', function() {
+            const verseId = $('#modal_verse_id').val();
+            const color   = $(this).data('color');
+            $.ajax({
+                url: '{{ route("verse-highlights.toggle") }}',
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}', verse_id: verseId, color: color },
+                success: function(response) {
+                    setHighlightButtons(response.color);
+                    if (typeof lookupVerses === 'function') { lookupVerses(''); lookupVerses(2); }
+                }
+            });
+        });
+
+        // Favorite toggle
+        $(document).on('click', '#modal_favorite_btn', function() {
+            const verseId = $('#modal_verse_id').val();
+            $.ajax({
+                url: '{{ route("verse-favorites.toggle") }}',
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}', verse_id: verseId },
+                success: function(response) {
+                    setFavoriteBtn(response.favorite);
+                    if (typeof lookupVerses === 'function') { lookupVerses(''); lookupVerses(2); }
                 }
             });
         });
@@ -156,7 +256,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#verseModal').modal('hide');
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('verseModal')).hide();
                         // Refresh the verses if the function exists (translations page)
                         if (typeof lookupVerses === 'function') {
                             lookupVerses('');

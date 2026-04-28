@@ -121,6 +121,46 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0"><i class="mdi mdi-star me-2" style="color:#f59e0b;"></i>Favorite Verses</h4>
+            </div>
+            <div class="card-body p-0">
+                @if($favorites->isEmpty())
+                    <p class="text-muted p-4 mb-0">No favorite verses yet. Open a verse in the reader and click the star to mark it.</p>
+                @else
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Reference</th>
+                                <th>Text</th>
+                                <th>Favorited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($favorites as $fav)
+                            <tr>
+                                <td style="white-space:nowrap;">
+                                    <a href="{{ route('translations.index') }}?book={{ $fav['book_id'] }}">
+                                        {{ $fav['reference'] }}
+                                    </a>
+                                </td>
+                                <td class="text-muted" style="max-width:480px;">{{ Str::limit($fav['text'], 100) }}</td>
+                                <td style="white-space:nowrap;">{{ $fav['favorited']->format('M j, Y') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-12 grid-margin stretch-card">
         <div class="card">

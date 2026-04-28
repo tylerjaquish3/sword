@@ -6,6 +6,8 @@ use App\Models\ChapterComment;
 use App\Models\Translation;
 use App\Models\UserLogin;
 use App\Models\UserRead;
+use App\Models\Verse;
+use App\Models\VerseFavorite;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +50,25 @@ class ProfileController extends Controller
 
         $translations = Translation::orderBy('name')->get();
 
-        return view('profile.index', compact('reads', 'logins', 'commentary', 'translations'));
+        // Favorite verses — pick one verse per (chapter_id, verse_number) for display text
+        $favorites = VerseFavorite::with('chapter.book')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($fav) {
+                $verse = Verse::where('chapter_id', $fav->chapter_id)
+                    ->where('number', $fav->verse_number)
+                    ->first();
+                return [
+                    'reference' => ($fav->chapter->book->name ?? '—') . ' ' . ($fav->chapter->number ?? '') . ':' . $fav->verse_number,
+                    'book'      => $fav->chapter->book->name ?? '—',
+                    'chapter'   => $fav->chapter->number ?? '',
+                    'text'      => $verse?->text ?? '—',
+                    'book_id'   => $fav->chapter->book_id ?? null,
+                    'favorited' => $fav->created_at,
+                ];
+            });
+
+        return view('profile.index', compact('reads', 'logins', 'commentary', 'translations', 'favorites'));
     }
 
     public function updateDefaultTranslation(Request $request)

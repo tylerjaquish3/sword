@@ -36,8 +36,6 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - import ESV translation (see details below)
 - d3 word cloud for chapter
 - look at other bible apps and what features they have
-- accountability worksheet like what Aaron sent me
-- set up captcha on sign up/login
 - reading plan (1 year)
 - mark favorite verses
 
@@ -62,8 +60,6 @@ php artisan keyWords
 - Verse Connection Graph — Render the existing verse_links table as an interactive D3.js network. Click a verse, see a web of cross-references radiating outward, color-coded by book.
 
 - Personal Concordance / Word Cloud — Aggregate key_words from all verses you've commented on, highlighted, or added to topics. Clicking a word shows all your study notes for verses with that keyword.
-
-- Verse Highlighter — Color-coded verse annotations in the reading view: Yellow (important), Blue (prophecy), Green (promise), Red (command). Stored in a verse_highlights table. Your own "illuminated Bible."
 
 - Prophecy & Fulfillment Tracker — A specialized version of verse links: tag OT verses as prophecies and link them to NT fulfillments. A dedicated browser shows pairs side-by-side. Just needs a link_type column on verse_links.
 

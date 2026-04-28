@@ -219,7 +219,7 @@
                     }
                     $('#modal_comments_list').html(commentsHtml);
                     
-                    $('#verseModal').modal('show');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('verseModal')).show();
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching verse:', error);
@@ -268,7 +268,7 @@
                     }
                     $('#modal_chapter_comments_list').html(commentsHtml);
                     
-                    $('#chapterModal').modal('show');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('chapterModal')).show();
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching chapter:', error);

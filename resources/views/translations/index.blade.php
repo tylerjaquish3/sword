@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row mt-2">
     <div id="reading-col" class="col-sm-12 grid-margin grid-margin-md-0 stretch-card">
         <div class="card">
             <div class="card-header p-0">
@@ -81,11 +81,15 @@
                 <div id="book-info" class="reading-book-info mb-4">
                     <div class="reading-book-meta">
                         <div class="reading-meta-row">
-                            <span class="reading-meta-label">Author</span>
+                            <span class="reading-meta-label"><i class="mdi mdi-account-outline me-1"></i>Author</span>
                             <span id="book-author" class="reading-meta-value"></span>
                         </div>
                         <div class="reading-meta-row">
-                            <span class="reading-meta-label">About</span>
+                            <span class="reading-meta-label"><i class="mdi mdi-calendar-range-outline me-1"></i>Timeframe</span>
+                            <span id="book-timeframe" class="reading-meta-value"></span>
+                        </div>
+                        <div class="reading-meta-row">
+                            <span class="reading-meta-label"><i class="mdi mdi-text-subject me-1"></i>About</span>
                             <span id="book-description" class="reading-meta-value"></span>
                         </div>
                     </div>
@@ -96,7 +100,7 @@
 
                 <div class="reading-notes-section mb-3">
                     <div class="reading-notes-header">
-                        <span class="notes-icon"><i class="mdi mdi-note-text-outline"></i></span>
+                        <span class="notes-icon"><i class="mdi mdi-note-text"></i></span>
                         <span class="notes-title">Chapter Notes</span>
                     </div>
                     <div id="chapter_comments_display" class="reading-notes-body">
@@ -154,7 +158,7 @@
 
             <div class="sword-modal-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="sword-modal-icon"><i class="mdi mdi-book-edit-outline"></i></div>
+                    <div class="sword-modal-icon"><i class="mdi mdi-book-open-page-variant"></i></div>
                     <div>
                         <h5 class="modal-title mb-0" id="bookEditModalLabel">Edit Book Info</h5>
                         <p class="sword-modal-subtitle mb-0" id="book-edit-title"></p>
@@ -169,7 +173,7 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-account-edit-outline"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-account"></i></span>
                         <span class="sword-modal-section-title">Author</span>
                     </div>
                     <div class="sword-modal-section-body">
@@ -177,9 +181,19 @@
                     </div>
                 </div>
 
+                <div class="sword-modal-section mb-4">
+                    <div class="sword-modal-section-header">
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-calendar-range-outline"></i></span>
+                        <span class="sword-modal-section-title">Timeframe</span>
+                    </div>
+                    <div class="sword-modal-section-body">
+                        <input type="text" class="form-control sword-modal-input" id="book-edit-timeframe" placeholder="e.g. ~1446–1406 BC">
+                    </div>
+                </div>
+
                 <div class="sword-modal-section mb-2">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
                         <span class="sword-modal-section-title">Description</span>
                     </div>
                     <div class="sword-modal-section-body p-0">
@@ -575,10 +589,12 @@ $(document).ready(function() {
         $.get('/books/' + bookId, function(book) {
             var desc = book.description || '';
             $('#book-author').text(book.author || '—');
+            $('#book-timeframe').text(book.timeframe || '—');
             $('#book-description').text(desc.length > 120 ? desc.substring(0, 120) + '…' : (desc || '—'));
             // Pre-populate modal fields
             $('#book-edit-title').text(book.name);
             $('#book-edit-author').val(book.author || '');
+            $('#book-edit-timeframe').val(book.timeframe || '');
             $('#book-edit-description').val(book.description || '');
         });
     }
@@ -592,11 +608,13 @@ $(document).ready(function() {
             data: {
                 _token: '{{ csrf_token() }}',
                 author: $('#book-edit-author').val(),
+                timeframe: $('#book-edit-timeframe').val(),
                 description: $('#book-edit-description').val(),
             },
             success: function() {
                 var savedDesc = $('#book-edit-description').val();
                 $('#book-author').text($('#book-edit-author').val() || '—');
+                $('#book-timeframe').text($('#book-edit-timeframe').val() || '—');
                 $('#book-description').text(savedDesc.length > 120 ? savedDesc.substring(0, 120) + '…' : (savedDesc || '—'));
                 bootstrap.Modal.getInstance(document.getElementById('bookEditModal')).hide();
             }
@@ -703,16 +721,26 @@ $(document).ready(function() {
             type: 'GET',
             success: function(response) {
                 $('#chapter'+side+'_content').empty();
+                const hlBg = { yellow: '#fef9c3', blue: '#dbeafe', green: '#dcfce7', red: '#fee2e2' };
                 let html = '<p>';
                 response.forEach(function(verse) {
                     // Add prefix (contains HTML like <br> or <h5>Header</h5>)
                     if (verse.prefix) {
                         html += verse.prefix;
                     }
-                    let highlightStyle = verse.has_commentary ? 'background-color: #e0f7fa; padding: 2px 4px; border-radius: 3px;' : '';
-                    html += '<span class="verse-clickable" data-verse-id="' + verse.id + '" style="cursor: pointer; ' + highlightStyle + '">';
+                    let highlightStyle = '';
+                    if (verse.highlight_color && hlBg[verse.highlight_color]) {
+                        highlightStyle = 'background-color:' + hlBg[verse.highlight_color] + ';padding:2px 4px;border-radius:3px;';
+                    } else if (verse.has_commentary) {
+                        highlightStyle = 'border-bottom:2px dotted #94a3b8;';
+                    }
+                    html += '<span class="verse-clickable" data-verse-id="' + verse.id + '" style="cursor:pointer;' + highlightStyle + '">';
                     html += '<sup class="text-muted">' + verse.number + '</sup> ' + verse.text;
-                    html += '</span> ';
+                    html += '</span>';
+                    if (verse.is_favorite) {
+                        html += '<sup style="color:#f59e0b;font-size:0.6rem;margin-left:1px;">★</sup>';
+                    }
+                    html += ' ';
                 });
                 html += '</p>';
                 $('#chapter'+side+'_content').html(html);

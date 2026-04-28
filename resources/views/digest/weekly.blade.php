@@ -91,9 +91,9 @@
         </p>
     </div>
     <div class="d-flex gap-2 align-items-center d-print-none">
-        <button onclick="window.print()" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
-            <i class="mdi mdi-printer"></i> Print
-        </button>
+        <a href="{{ route('digest.share.create') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
+            <i class="mdi mdi-share-variant"></i> Share
+        </a>
         <a href="{{ route('home.index') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.8rem; font-weight: 600;">
             <i class="mdi mdi-arrow-left"></i> Dashboard
         </a>

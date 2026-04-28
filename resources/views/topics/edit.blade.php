@@ -400,7 +400,7 @@
             $('#linked-verses').empty();
             $('#linked-verse-ids').val('');
             linkedVerses = {};
-            $('#addNoteModal').modal('show');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('addNoteModal')).show();
         });
 
         var searchTimer;
@@ -476,7 +476,7 @@
                 data: { _token: '{{ csrf_token() }}', note: note, verse_ids: $('#linked-verse-ids').val() },
                 success: function(data) {
                     $btn.prop('disabled', false).text('Save Note');
-                    $('#addNoteModal').modal('hide');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('addNoteModal')).hide();
                     $('#no-notes-msg').remove();
 
                     var versesHtml = '';
@@ -548,7 +548,7 @@
             $('#modal-name').val(currentName).removeClass('is-invalid');
             $('#modal-description').val(currentDescription);
             $('#modal-keywords').val(currentKeywords);
-            $('#editTopicModal').modal('show');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('editTopicModal')).show();
         });
 
         $('#save-topic-btn').on('click', function() {
@@ -615,7 +615,7 @@
 
                     $('.topic-hero-title').text(data.name);
 
-                    $('#editTopicModal').modal('hide');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('editTopicModal')).hide();
                     Swal.fire({ icon: 'success', title: 'Saved!', timer: 1500, showConfirmButton: false });
                 } else {
                     Swal.fire({ icon: 'error', title: 'Error', text: 'Could not save changes.' });
