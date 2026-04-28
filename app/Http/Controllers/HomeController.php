@@ -31,7 +31,7 @@ class HomeController extends Controller
         // Bible stats
         $bookCount = Book::count();
         $chapterCount = Chapter::count();
-        $verseCount = Verse::count();
+        $verseCount = Verse::where('translation_id', Auth::user()->default_translation_id)->count();
         $translationCount = Translation::count();
         
         // Prayer breakdown by type

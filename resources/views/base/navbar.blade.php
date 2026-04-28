@@ -165,6 +165,9 @@
         </button>
     </div>
 
+    {{-- Scrollable nav area --}}
+    <div class="mob-drawer-scroll">
+
     {{-- Nav section label --}}
     <p class="mob-drawer-section-label">Navigate</p>
 
@@ -226,6 +229,8 @@
         </li>
     </ul>
 
+    </div>{{-- /mob-drawer-scroll --}}
+
     {{-- Footer area --}}
     <div class="mob-drawer-footer">
         <div class="mob-drawer-divider"></div>
@@ -275,6 +280,13 @@
     .mob-hamburger,
     #mobNavOverlay,
     #mobNavDrawer { display: none !important; }
+}
+
+/* Hide profile dropdown on mobile/tablet — drawer handles it */
+@media (max-width: 991px) {
+    .horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav.navbar-nav-right {
+        display: none !important;
+    }
 }
 
 /* Hide old hamburger on mobile */
@@ -350,6 +362,7 @@ body.mob-nav-open #mobNavOverlay {
     z-index: 1050;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 
     /* Illuminated manuscript palette */
     background: #0e1628;
@@ -360,9 +373,6 @@ body.mob-nav-open #mobNavOverlay {
 
     transform: translateX(100%);
     transition: transform 0.38s cubic-bezier(.4,0,.2,1);
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
 
     /* Subtle grain texture via svg */
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
@@ -543,9 +553,16 @@ body.mob-nav-open { overflow: hidden; }
     flex-shrink: 0;
 }
 
+/* ── Scrollable nav area ──────────────────────────────────────── */
+.mob-drawer-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
 /* ── Drawer footer ────────────────────────────────────────────── */
 .mob-drawer-footer {
-    margin-top: auto;
     flex-shrink: 0;
 }
 
@@ -563,6 +580,19 @@ body.mob-nav-open { overflow: hidden; }
 .mob-drawer-nav-footer .mob-logout-btn:hover .mob-nav-icon {
     color: #e07070;
     background: rgba(224, 112, 112, 0.1);
+}
+
+/* Logout button — always visible */
+.mob-logout-btn {
+    color: rgba(220, 225, 240, 0.9) !important;
+}
+.mob-logout-btn .mob-nav-icon {
+    color: #e07070 !important;
+    background: rgba(224, 112, 112, 0.1) !important;
+}
+.mob-logout-btn:hover {
+    color: #fff !important;
+    background: rgba(224, 112, 112, 0.08) !important;
 }
 
 /* ── Staggered entrance animation ────────────────────────────── */
@@ -587,6 +617,7 @@ body.mob-nav-open #mobNavDrawer .mob-drawer-footer   { opacity: 1; transform: no
 body.mob-nav-open #mobNavDrawer .mob-drawer-footer .mob-drawer-section-label { opacity: 1; transform: none; transition-delay: 0.32s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.35s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.38s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.41s; }
 </style>
 
 <script>

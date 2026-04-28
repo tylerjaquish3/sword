@@ -175,9 +175,13 @@ div.dataTables_paginate {
     .horizontal-menu .bottom-navbar {
         display: none !important;
     }
-    /* Remove dropdown caret from profile on mobile */
-    .nav-item.nav-profile .nav-link.dropdown-toggle::after {
-        display: none;
+    /* Hide left nav list on mobile — drawer handles navigation */
+    .navbar-nav-left {
+        display: none !important;
+    }
+    /* Push bell + hamburger to the right */
+    .mob-bell {
+        margin-left: auto;
     }
 }
 

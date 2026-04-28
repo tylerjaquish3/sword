@@ -94,35 +94,6 @@
     </div>
 
     @stack('js')
-    <script>
-    $(document).ready(function () {
-        $('.select2-books').each(function () {
-            var $sel = $(this);
-            var placeholder = $sel.find('option[value=""]').first().text() || 'Select a Book';
-            $sel.select2({ placeholder: placeholder, allowClear: true, width: '100%' });
-        });
-    });
-    </script>
-
-    @if(request()->has('debug'))
-    <div id="__dbg" style="position:fixed;top:0;left:0;right:0;background:#900;color:#fff;font-size:12px;font-family:monospace;padding:6px 10px;z-index:2147483647;white-space:pre-wrap;max-height:50vh;overflow:auto">SWORD DEBUG LOADED</div>
-    <script>
-    !function(){
-        var d=document.getElementById('__dbg');
-        function add(m){d.textContent+='\n'+m;d.scrollTop=d.scrollHeight;}
-        window.onerror=function(m,s,l,c,e){add('JS ERROR: '+m+'\n  @ '+s.split('/').pop()+':'+l+(e&&e.stack?'\n  '+e.stack.split('\n').slice(1,3).join('\n  '):''));};
-        window.addEventListener('unhandledrejection',function(e){add('PROMISE REJECT: '+(e.reason&&e.reason.message||e.reason));});
-        add('jQuery  : '+(typeof $!=='undefined'?'loaded v'+($.fn&&$.fn.jquery||'?'):'MISSING'));
-        add('bootstrap: '+(typeof bootstrap!=='undefined'?'loaded':'MISSING'));
-        add('Swal    : '+(typeof Swal!=='undefined'?'loaded':'MISSING'));
-        document.addEventListener('DOMContentLoaded',function(){
-            add('--- DOMContentLoaded ---');
-            add('jQuery  : '+(typeof $!=='undefined'?'loaded':'MISSING'));
-            add('bootstrap: '+(typeof bootstrap!=='undefined'?'loaded':'MISSING'));
-        });
-    }();
-    </script>
-    @endif
 
 </body>
 </html>

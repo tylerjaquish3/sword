@@ -25,18 +25,26 @@
 <div class="row">
     <div id="reading-col" class="col-sm-12 grid-margin grid-margin-md-0 stretch-card">
         <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-4">
-                        <select class="form-select" id="translation_select">
+            <div class="card-header p-0">
+                <div class="reader-selector-bar">
+                    {{-- Translation pill --}}
+                    <div class="rsel-group rsel-translation">
+                        <span class="rsel-label">Version</span>
+                        <select class="rsel-native" id="translation_select">
                             @foreach ($translations as $translation)
                                 <option value="{{ $translation->id }}" {{ ($defaultTranslationId ?? null) == $translation->id ? 'selected' : '' }}>{{ $translation->name }}</option>
                             @endforeach
                         </select>
+                        <i class="mdi mdi-chevron-down rsel-chevron"></i>
                     </div>
-                    <div class="col-4">
-                        <select class="form-select select2-books" id="book_select">
-                            <option value="">Select a Book</option>
+
+                    <div class="rsel-divider"></div>
+
+                    {{-- Book (select2) --}}
+                    <div class="rsel-group rsel-book">
+                        <span class="rsel-label">Book</span>
+                        <select class="form-select select2-books rsel-native" id="book_select">
+                            <option value="">— choose —</option>
                             <optgroup label="Old Testament">
                                 @foreach ($books->where('new_testament', 0) as $book)
                                     <option value="{{ $book->id }}">{{ $book->name }}</option>
@@ -49,10 +57,16 @@
                             </optgroup>
                         </select>
                     </div>
-                    <div class="col-4">
-                        <select class="form-select" id="chapter_select">
+
+                    <div class="rsel-divider"></div>
+
+                    {{-- Chapter --}}
+                    <div class="rsel-group rsel-chapter">
+                        <span class="rsel-label">Ch.</span>
+                        <select class="rsel-native" id="chapter_select">
                             <option value=1>1</option>
                         </select>
+                        <i class="mdi mdi-chevron-down rsel-chevron"></i>
                     </div>
                 </div>
             </div>
@@ -184,6 +198,133 @@
 </div>
 
 @endsection
+
+@push('css')
+<style>
+/* ── Reader selector bar ─────────────────────────────────────── */
+.reader-selector-bar {
+    display: flex;
+    align-items: stretch;
+    background: #0e1628;
+    border-radius: 0.375rem 0.375rem 0 0;
+    overflow: hidden;
+    min-height: 56px;
+}
+
+.rsel-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 16px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.18s;
+    min-width: 0;
+}
+.rsel-group:hover { background: rgba(201,168,76,0.08); }
+
+.rsel-translation { flex: 0 0 auto; min-width: 80px; }
+.rsel-book        { flex: 1 1 auto; }
+.rsel-chapter     { flex: 0 0 auto; min-width: 64px; }
+
+.rsel-label {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 2px;
+    pointer-events: none;
+}
+
+/* Native selects (translation + chapter) */
+.rsel-native {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+}
+.rsel-native option,
+.rsel-native optgroup { background: #0e1628; color: #e2e8f0; }
+
+.rsel-chevron {
+    position: absolute;
+    right: 10px;
+    bottom: 12px;
+    font-size: 0.85rem;
+    color: rgba(201,168,76,0.5);
+    pointer-events: none;
+}
+
+/* Dividers */
+.rsel-divider {
+    width: 1px;
+    background: rgba(201,168,76,0.15);
+    align-self: stretch;
+    flex-shrink: 0;
+}
+
+/* ── select2 inside the bar ──────────────────────────────────── */
+.rsel-book .select2-container {
+    width: 100% !important;
+}
+.rsel-book .select2-container--default .select2-selection--single {
+    background: transparent !important;
+    border: none !important;
+    height: auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+.rsel-book .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #fff !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    padding: 0 20px 0 0 !important;
+}
+.rsel-book .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: rgba(255,255,255,0.35) !important;
+    font-weight: 400 !important;
+}
+.rsel-book .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 0 !important;
+}
+.rsel-book .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: rgba(201,168,76,0.5) transparent transparent transparent !important;
+}
+.rsel-book .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent rgba(201,168,76,0.8) transparent !important;
+}
+.rsel-book .select2-container--default .select2-selection--single .select2-selection__clear {
+    color: rgba(201,168,76,0.6) !important;
+    font-size: 1rem !important;
+    margin-right: 18px !important;
+}
+.rsel-book .select2-container--default.select2-container--open .select2-selection--single {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ── Bottom gold accent line on active group ─────────────────── */
+.reader-selector-bar::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+    pointer-events: none;
+}
+.reader-selector-bar { position: relative; }
+</style>
+@endpush
 
 
 @push('js')

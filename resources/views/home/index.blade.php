@@ -58,13 +58,13 @@
 
     {{-- Verses Memorized --}}
     <div class="col-6 col-lg-2 grid-margin stretch-card">
-        <div class="card dash-stat-card">
+        <a href="{{ route('memory.index') }}" class="card text-decoration-none dash-stat-card">
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-brain mdi-36px mb-2" style="color: var(--sword-gold);"></i>
                 <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">0</h2>
                 <p class="mb-0 text-uppercase font-weight-bold" style="font-size: 0.7rem; letter-spacing: 0.08em; color: #9ca3af;">Verses Memorized</p>
             </div>
-        </div>
+        </a>
     </div>
 
     {{-- Topics Studied --}}
@@ -90,7 +90,7 @@
 
 <div class="row">
     {{-- Bible Overview --}}
-    <div class="col-sm-6 grid-margin grid-margin-md-0 stretch-card">
+    <div class="col-12 col-lg-6 grid-margin grid-margin-md-0 stretch-card">
         <div class="card">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
@@ -142,7 +142,7 @@
     </div>
 
     {{-- Prayer Journal --}}
-    <div class="col-sm-6 grid-margin grid-margin-md-0 stretch-card">
+    <div class="col-12 col-lg-6 grid-margin grid-margin-md-0 stretch-card mt-4 mt-lg-0">
         <div class="card">
             <div class="card-body">
                 <div class="d-lg-flex align-items-center justify-content-between mb-4">
@@ -151,14 +151,23 @@
                         <span class="font-weight-bold" style="color: var(--sword-gold);">{{ $recentPrayers }}</span> prayers this week
                     </p>
                 </div>
+                @php
+                $prayerTypeIcons = [
+                    'Adoration'    => 'star-circle',
+                    'Confession'   => 'shield-alert',
+                    'Thanksgiving' => 'gift',
+                    'Supplication' => 'human-handsup',
+                ];
+                @endphp
                 @if($prayersByType->count() > 0)
                     <div class="row">
                         @foreach($prayersByType as $prayer)
+                            @php $icon = $prayerTypeIcons[$prayer->type->name ?? ''] ?? 'heart'; @endphp
                             <div class="col-6 mb-3">
                                 <div class="rounded p-3 h-100" style="border: 1px solid rgba(14,22,40,0.1); background: rgba(14,22,40,0.02);">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <h4 class="font-weight-bold mb-0" style="color: var(--sword-navy);">{{ $prayer->count }}</h4>
-                                        <i class="mdi mdi-{{ ['heart', 'hand-heart', 'account-group', 'church', 'shield-cross'][$loop->index % 5] }} mdi-24px" style="color: var(--sword-gold);"></i>
+                                        <i class="mdi mdi-{{ $icon }} mdi-24px" style="color: var(--sword-gold);"></i>
                                     </div>
                                     <p class="mb-0 mt-2" style="color: #9ca3af; font-size: 0.82rem;">{{ $prayer->type->name ?? 'Unknown' }}</p>
                                 </div>
