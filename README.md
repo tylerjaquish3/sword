@@ -39,6 +39,8 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - accountability worksheet like what Aaron sent me
 - dashboard overview counts verses for each txn instead of total
 - dashboard confession has no icon
+- set up captcha on sign up/login
+- add log out on mobile version
 
 # locally — run as many times as needed until complete
 php artisan esv:import

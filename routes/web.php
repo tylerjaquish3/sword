@@ -32,6 +32,12 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// TEMPORARY: clear all caches — remove after use
+Route::get('/clear-cache', function () {
+    Artisan::call('optimize:clear');
+    return '<pre>' . Artisan::output() . '</pre>done';
+});
+
 // All application routes require authentication
 Route::middleware('auth')->group(function () {
 
