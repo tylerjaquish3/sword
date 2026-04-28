@@ -2,9 +2,6 @@
 
 @section('title', 'Add Commentary')
 
-@push('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-@endpush
 
 @section('content')
 
@@ -115,7 +112,6 @@
 @endsection
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function () {
 

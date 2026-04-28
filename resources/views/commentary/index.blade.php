@@ -128,7 +128,6 @@
 @endsection
 
 @push('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
 .table-compact th,
 .table-compact td {
@@ -149,7 +148,6 @@
 @endpush
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $('#datatable-chapter-comments').DataTable({

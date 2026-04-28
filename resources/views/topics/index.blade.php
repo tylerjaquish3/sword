@@ -218,17 +218,36 @@
 
 @endsection
 
-@push('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-@endpush
-
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if(request()->has('debug'))
+<div id="sword-debug" style="position:fixed;bottom:0;left:0;right:0;background:#111;color:#0f0;font-family:monospace;font-size:12px;padding:8px 12px;z-index:99999;white-space:pre-wrap;max-height:40vh;overflow:auto"></div>
+<script>
+(function() {
+    var el = document.getElementById('sword-debug');
+    function log(msg) { el.textContent += '\n' + msg; }
+    window._dbg = log;
+
+    window.onerror = function(msg, src, line, col, err) {
+        log('JS ERROR: ' + msg + ' (' + src + ':' + line + ')');
+        if (err && err.stack) log(err.stack);
+    };
+
+    log('PHP rendered OK — topics={{ $topics->count() }}, books={{ $books->count() }}');
+    log('jQuery: ' + (typeof $ !== 'undefined' ? 'loaded v' + ($.fn && $.fn.jquery ? $.fn.jquery : '?') : 'MISSING'));
+    log('Bootstrap: ' + (typeof bootstrap !== 'undefined' ? 'loaded' : 'MISSING'));
+    log('Swal: ' + (typeof Swal !== 'undefined' ? 'loaded' : 'MISSING'));
+    log('--- waiting for DOMContentLoaded ---');
+})();
+</script>
+@endif
 <script>
 $(document).ready(function () {
 
     // Activate tab from URL hash
     var hash = window.location.hash;
+    @if(request()->has('debug'))
+    window._dbg && window._dbg('ready() fired | hash=' + hash + ' | bootstrap=' + (typeof bootstrap) + ' | bootstrap.Tab=' + (typeof bootstrap !== 'undefined' ? typeof bootstrap.Tab : 'N/A'));
+    @endif
     if (hash === '#books') {
         var booksTab = document.getElementById('tab-books');
         bootstrap.Tab.getOrCreateInstance(booksTab).show();
@@ -236,6 +255,9 @@ $(document).ready(function () {
         var topicsTab = document.getElementById('tab-topics');
         bootstrap.Tab.getOrCreateInstance(topicsTab).show();
     }
+    @if(request()->has('debug'))
+    window._dbg && window._dbg('tab activated successfully');
+    @endif
 
     // Update hash when switching tabs
     document.getElementById('tab-topics').addEventListener('shown.bs.tab', function () {

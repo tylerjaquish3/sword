@@ -296,7 +296,6 @@
 @push('css')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
     .topic-hero-title {
         font-family: 'Cormorant Garamond', serif;
@@ -340,7 +339,6 @@
 @endpush
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         var table = $('#datatable-matching-verses').DataTable({
