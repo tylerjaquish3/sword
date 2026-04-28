@@ -32,10 +32,24 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// TEMPORARY: clear all caches — remove after use
+// TEMPORARY: diagnostics — remove after use
 Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');
     return '<pre>' . Artisan::output() . '</pre>done';
+});
+
+Route::get('/debug-info', function () {
+    return response()->json([
+        'php'           => PHP_VERSION,
+        'app_debug'     => config('app.debug'),
+        'app_env'       => config('app.env'),
+        'topics'        => \App\Models\Topic::count(),
+        'books'         => \App\Models\Book::count(),
+        'vite_manifest' => file_exists(public_path('build/manifest.json')) ? 'ok' : 'MISSING',
+        'jquery_vendor' => file_exists(public_path('js/vendor/jquery.min.js')) ? 'ok' : 'MISSING',
+        'app_js_bundle' => count(glob(public_path('build/assets/app-*.js')) ?: []) . ' file(s)',
+        'log_writable'  => is_writable(storage_path('logs')) ? 'yes' : 'NO',
+    ]);
 });
 
 // All application routes require authentication
