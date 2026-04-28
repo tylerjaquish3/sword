@@ -17,6 +17,9 @@
                 <button type="button" id="btn-double-col" class="btn bg-white btn-icon ms-2" title="Compare columns">
                     <i class="mdi mdi-view-split-vertical"></i>
                 </button>
+                <button type="button" id="btn-read-aloud" class="btn bg-white btn-icon ms-2" title="Read aloud">
+                    <i class="mdi mdi-volume-high"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -214,8 +217,8 @@
 .rsel-group {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 8px 16px;
+    justify-content: flex-start;
+    padding: 26px 16px 8px;
     position: relative;
     cursor: pointer;
     transition: background 0.18s;
@@ -228,12 +231,14 @@
 .rsel-chapter     { flex: 0 0 auto; min-width: 64px; }
 
 .rsel-label {
+    position: absolute;
+    top: 10px;
+    left: 16px;
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgba(201,168,76,0.6);
-    margin-bottom: 2px;
     pointer-events: none;
 }
 
@@ -279,14 +284,16 @@
     background: transparent !important;
     border: none !important;
     height: auto !important;
+    min-height: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
+    line-height: 1 !important;
 }
 .rsel-book .select2-container--default .select2-selection--single .select2-selection__rendered {
     color: #fff !important;
     font-size: 0.92rem !important;
     font-weight: 600 !important;
-    line-height: 1.3 !important;
+    line-height: normal !important;
     padding: 0 20px 0 0 !important;
 }
 .rsel-book .select2-container--default .select2-selection--single .select2-selection__placeholder {
@@ -332,7 +339,49 @@
 
 const defaultTranslationId = {{ $defaultTranslationId ?? 'null' }};
 
+var ttsActive = false;
+
+function stopSpeech() {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    ttsActive = false;
+    $('#btn-read-aloud').removeClass('btn-warning').addClass('bg-white')
+        .attr('title', 'Read aloud')
+        .find('i').removeClass('mdi-stop-circle-outline').addClass('mdi-volume-high');
+}
+
 $(document).ready(function() {
+
+    // ── Read Aloud (Web Speech API) ───────────────────────────────
+    $('#btn-read-aloud').on('click', function() {
+        if (!window.speechSynthesis) {
+            alert('Your browser does not support text-to-speech.');
+            return;
+        }
+        if (ttsActive) {
+            stopSpeech();
+            return;
+        }
+        var text = '';
+        $('#chapter_content .verse-clickable').each(function() {
+            var $clone = $(this).clone();
+            $clone.find('sup').remove();
+            text += $clone.text().trim() + ' ';
+        });
+        text = text.trim();
+        if (!text) return;
+
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.95;
+        utterance.onend = function() { stopSpeech(); };
+        utterance.onerror = function() { stopSpeech(); };
+
+        ttsActive = true;
+        $('#btn-read-aloud').removeClass('bg-white').addClass('btn-warning')
+            .attr('title', 'Stop reading')
+            .find('i').removeClass('mdi-volume-high').addClass('mdi-stop-circle-outline');
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    });
 
     $('#btn-mark-read').on('click', function() {
         const btn = $(this);
@@ -640,6 +689,7 @@ $(document).ready(function() {
 
     function lookupVerses(side)
     {
+        if (!side) stopSpeech();
         translation_id = $('#translation'+side+'_select').val();
         // Always use the main book/chapter selectors
         book_id = $('#book_select').val();

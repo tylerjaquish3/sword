@@ -67,6 +67,13 @@
         >
     </div>
 
+    <div class="form-group mb-4">
+        <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+        @error('g-recaptcha-response')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="mt-4">
         <button type="submit" class="btn btn-primary btn-lg w-100 font-weight-medium auth-form-btn">
             Create Account

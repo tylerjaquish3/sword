@@ -38,7 +38,6 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - look at other bible apps and what features they have
 - accountability worksheet like what Aaron sent me
 - set up captcha on sign up/login
-- listen to it (audible)
 - reading plan (1 year)
 - mark favorite verses
 
