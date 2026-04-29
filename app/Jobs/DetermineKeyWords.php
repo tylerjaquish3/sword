@@ -25,24 +25,15 @@ class DetermineKeyWords implements ShouldQueue
         $commonWords = CommonWords::COMMON_WORDS;
 
         try {
-            // Loop through each verse and remove any words that are in the common words list, then update the verse->key_words field with what is left
-            $verses = Verse::all();
-            foreach ($verses as $verse) {
-
-                if ($verse->key_words) {
-                    continue;
+            Verse::whereNull('key_words')->chunk(500, function ($verses) use ($commonWords) {
+                foreach ($verses as $verse) {
+                    $verseText = preg_replace('/[^a-zA-Z0-9\s]/', '', $verse->text);
+                    $verseText = strtolower($verseText);
+                    $verseText = array_diff(explode(' ', $verseText), $commonWords);
+                    $verse->key_words = implode(' ', $verseText);
+                    $verse->save();
                 }
-
-                $verseText = $verse->text;
-                $verseText = preg_replace('/[^a-zA-Z0-9\s]/', '', $verseText);
-                $verseText = strtolower($verseText);
-                $verseText = explode(' ', $verseText);
-                $verseText = array_diff($verseText, $commonWords);
-                $verseText = implode(' ', $verseText);
-                $verse->key_words = $verseText;
-
-                $verse->save();
-            }
+            });
        
         } catch (\Exception $e) {
             $success = false;
