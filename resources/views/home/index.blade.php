@@ -73,7 +73,7 @@
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-tag-multiple mdi-36px mb-2" style="color: var(--sword-gold);"></i>
                 <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">{{ $topicCount }}</h2>
-                <p class="mb-0 text-uppercase font-weight-bold" style="font-size: 0.7rem; letter-spacing: 0.08em; color: #9ca3af;">Topics Studied</p>
+                <p class="mb-0 text-uppercase font-weight-bold" style="font-size: 0.7rem; letter-spacing: 0.08em; color: #9ca3af;">Study Topics</p>
             </div>
         </a>
     </div>

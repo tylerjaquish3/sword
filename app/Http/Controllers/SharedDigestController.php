@@ -57,6 +57,7 @@ class SharedDigestController extends Controller
 
         $shared = SharedDigest::create([
             'uuid' => Str::uuid()->toString(),
+            'sharer_name' => Auth::user()->name,
             'week_start' => $weekStart->toDateString(),
             'week_end' => $weekEnd->toDateString(),
             'snapshot' => $snapshot,

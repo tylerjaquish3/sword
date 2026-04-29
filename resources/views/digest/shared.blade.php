@@ -154,6 +154,13 @@
         <div class="wordmark"><i class="mdi mdi-sword me-1"></i>Sword — Weekly Spiritual Digest</div>
         <h1>Week in Review</h1>
         <div class="week-range">{{ $shared->week_start->format('M j') }} – {{ $shared->week_end->format('M j, Y') }}</div>
+        @if($shared->sharer_name)
+        <div class="mt-2 d-flex align-items-center gap-3" style="font-size: 0.82rem; color: rgba(255,255,255,0.75);">
+            <span><i class="mdi mdi-account-outline me-1" style="color: var(--sword-gold);"></i>{{ $shared->sharer_name }}</span>
+            <span style="color: rgba(255,255,255,0.35);">&bull;</span>
+            <span><i class="mdi mdi-calendar-outline me-1" style="color: var(--sword-gold);"></i>Submitted {{ $shared->created_at->format('M j, Y') }}</span>
+        </div>
+        @endif
     </div>
 </div>
 
@@ -242,29 +249,8 @@
         {{-- Right column --}}
         <div class="col-lg-6">
 
-            @if($shared->show_commentary)
-            <div class="digest-card">
-                <div class="card-body">
-                    <p class="section-label"><i class="mdi mdi-pencil me-1"></i>Commentary Added</p>
-                    @if(!empty($snapshot['commentary']))
-                        @foreach($snapshot['commentary'] as $note)
-                        <div class="digest-item">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="digest-ref">{{ $note['ref'] }}</span>
-                                <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
-                            </div>
-                            <p class="digest-snippet mb-0">{{ Str::limit($note['comment'], 120) }}</p>
-                        </div>
-                        @endforeach
-                    @else
-                        <div class="digest-empty">No commentary recorded</div>
-                    @endif
-                </div>
-            </div>
-            @endif
-
             @if($shared->show_memory)
-            <div class="digest-card">
+            <div class="digest-card" style="margin-bottom: 1rem;">
                 <div class="card-body">
                     <p class="section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
 
@@ -286,6 +272,27 @@
                         @endforeach
                     @else
                         <div class="digest-empty">No active memory sets</div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            @if($shared->show_commentary)
+            <div class="digest-card">
+                <div class="card-body">
+                    <p class="section-label"><i class="mdi mdi-pencil me-1"></i>Commentary Added</p>
+                    @if(!empty($snapshot['commentary']))
+                        @foreach($snapshot['commentary'] as $note)
+                        <div class="digest-item">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="digest-ref">{{ $note['ref'] }}</span>
+                                <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
+                            </div>
+                            <p class="digest-snippet mb-0">{{ Str::limit($note['comment'], 120) }}</p>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="digest-empty">No commentary recorded</div>
                     @endif
                 </div>
             </div>

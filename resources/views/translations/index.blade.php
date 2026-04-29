@@ -5,12 +5,16 @@
 @section('content')  
 
 <div class="row">
-    <div class="col-sm-6 mb-4 mb-xl-0">
-        <div class="d-lg-flex align-items-center">
-            <div>
-                <h3 class="text-dark font-weight-bold mb-2">Read &amp; Compare</h3>
-            </div>
-            <div class="ms-lg-5 d-lg-flex d-none">
+    <div class="col-12 mb-4 mb-xl-0">
+        <div class="d-flex align-items-center justify-content-between">
+            <h3 class="text-dark font-weight-bold mb-0">Read &amp; Compare</h3>
+            <div class="d-flex">
+                <button type="button" id="btn-edit-book-info" class="btn bg-white btn-icon me-2" title="Edit book info" data-bs-toggle="modal" data-bs-target="#bookEditModal">
+                    <i class="mdi mdi-pencil-outline"></i>
+                </button>
+                <button type="button" id="btn-chapter-note" class="btn bg-white btn-icon me-2" title="Add chapter note">
+                    +<i class="mdi mdi-note-text"></i>
+                </button>
                 <button type="button" id="btn-single-col" class="btn btn-primary btn-icon" title="Single column">
                     <i class="mdi mdi-rectangle-outline"></i>
                 </button>
@@ -102,6 +106,7 @@
                     <div class="reading-notes-header">
                         <span class="notes-icon"><i class="mdi mdi-note-text"></i></span>
                         <span class="notes-title">Chapter Notes</span>
+                        <a href="#" id="chapter_comment_link" class="ms-auto btn btn-sm btn-secondary reading-edit-btn" title="Add chapter note"><i class="mdi mdi-plus"></i></a>
                     </div>
                     <div id="chapter_comments_display" class="reading-notes-body">
                         <p class="reading-notes-empty mb-0">No chapter notes yet.</p>
@@ -109,7 +114,6 @@
                 </div>
 
                 <div class="reading-actions">
-                    <a href="#" id="chapter_comment_link" class="reading-action-link"><i class="mdi mdi-plus-circle-outline"></i> Add Chapter Note</a>
                     <button type="button" id="btn-mark-read" class="btn btn-outline-success btn-sm"><i class="mdi mdi-check"></i> Mark as Read</button>
                     <small id="read-status-display" class="reading-read-status"></small>
                 </div>
@@ -128,17 +132,16 @@
     </div>
     <div id="compare-col" class="col-sm-6 grid-margin grid-margin-md-0 stretch-card d-none">
         <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-4 d-flex align-items-center">
-                        <span class="fw-semibold text-nowrap">Compare with</span>
-                    </div>
-                    <div class="col-8">
-                        <select class="form-select" id="translation2_select">
+            <div class="card-header p-0">
+                <div class="reader-selector-bar">
+                    <div class="rsel-group" style="flex:1;">
+                        <span class="rsel-label">Compare with</span>
+                        <select class="rsel-native" id="translation2_select">
                             @foreach ($translations as $translation)
                                 <option value="{{ $translation->id }}" {{ $translation->name == 'NIV' ? 'selected' : '' }}>{{ $translation->name }}</option>
                             @endforeach
                         </select>
+                        <i class="mdi mdi-chevron-down rsel-chevron"></i>
                     </div>
                 </div>
             </div>
@@ -183,21 +186,21 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-calendar-range-outline"></i></span>
-                        <span class="sword-modal-section-title">Timeframe</span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
+                        <span class="sword-modal-section-title">Description</span>
                     </div>
-                    <div class="sword-modal-section-body">
-                        <input type="text" class="form-control sword-modal-input" id="book-edit-timeframe" placeholder="e.g. ~1446–1406 BC">
+                    <div class="sword-modal-section-body p-0">
+                        <textarea class="form-control sword-modal-textarea" id="book-edit-description" rows="3" placeholder="Brief overview of the book…"></textarea>
                     </div>
                 </div>
 
                 <div class="sword-modal-section mb-2">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
-                        <span class="sword-modal-section-title">Description</span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-calendar-range-outline"></i></span>
+                        <span class="sword-modal-section-title">Timeframe</span>
                     </div>
-                    <div class="sword-modal-section-body p-0">
-                        <textarea class="form-control sword-modal-textarea" id="book-edit-description" rows="4" placeholder="Brief overview of the book…"></textarea>
+                    <div class="sword-modal-section-body">
+                        <input type="text" class="form-control sword-modal-input" id="book-edit-timeframe" placeholder="e.g. ~1446–1406 BC">
                     </div>
                 </div>
 
@@ -420,16 +423,22 @@ $(document).ready(function() {
         });
     });
 
+    $('#btn-chapter-note').on('click', function() {
+        $('#chapter_comment_link').trigger('click');
+    });
+
     $('#btn-single-col').on('click', function() {
         $('#compare-col').addClass('d-none');
-        $('#reading-col').removeClass('col-sm-6').addClass('col-sm-12');
+        $('#reading-col').removeClass('col-sm-6 col-md-6').addClass('col-12');
         $('#btn-single-col').addClass('btn-primary').removeClass('bg-white');
         $('#btn-double-col').addClass('bg-white').removeClass('btn-primary');
     });
 
     $('#btn-double-col').on('click', function() {
         $('#compare-col').removeClass('d-none');
-        $('#reading-col').removeClass('col-sm-12').addClass('col-sm-6');
+        // Side-by-side on sm+, stacked on xs
+        $('#reading-col').removeClass('col-12').addClass('col-sm-6');
+        $('#compare-col').addClass('col-sm-6').removeClass('col-12');
         $('#btn-double-col').addClass('btn-primary').removeClass('bg-white');
         $('#btn-single-col').addClass('bg-white').removeClass('btn-primary');
         lookupVerses(2);
@@ -447,11 +456,31 @@ $(document).ready(function() {
         $('#translation_select').val(paramTranslation);
     }
     if (paramBook) {
-        $('#book_select').val(paramBook);
+        $('#book_select').val(paramBook).trigger('change.select2');
     }
+
+    // Keep compare dropdown in sync — remove whichever version is selected in the main picker
+    const allTranslations = @json($translations->map(fn($t) => ['id' => $t->id, 'name' => $t->name]));
+    function syncCompareOptions() {
+        const selectedId = parseInt($('#translation_select').val());
+        const currentCompare = parseInt($('#translation2_select').val());
+        const $compare = $('#translation2_select');
+        $compare.empty();
+        allTranslations.forEach(function(t) {
+            if (t.id !== selectedId) {
+                $compare.append(new Option(t.name, t.id));
+            }
+        });
+        // Restore previous selection if still available, otherwise pick first
+        if (currentCompare && currentCompare !== selectedId) {
+            $compare.val(currentCompare);
+        }
+    }
+    syncCompareOptions();
 
     // When translation changes, update chapter options
     $('#translation_select').change(function() {
+        syncCompareOptions();
         book_id = $('#book_select').val();
         loadChapters(book_id, function() {
             lookupVerses('');
@@ -562,14 +591,13 @@ $(document).ready(function() {
             success: function(response) {
                 let commentsHtml = '';
                 if (response.comments && response.comments.length > 0) {
-                    response.comments.forEach(function(comment) {
+                    const sorted = response.comments.slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    sorted.forEach(function(comment) {
                         let date = new Date(comment.created_at);
-                        let formattedDate = date.toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
+                        let formattedDate = date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
                         });
                         commentsHtml += '<div class="mb-2 pb-2 border-bottom">';
                         commentsHtml += '<small class="text-muted">' + formattedDate + '</small>';

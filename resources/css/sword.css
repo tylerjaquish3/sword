@@ -658,6 +658,7 @@ div.dataTables_info {
     margin-bottom: 8px;
 }
 
+
 .notes-icon {
     display: flex;
     align-items: center;
@@ -1190,9 +1191,9 @@ div.dataTables_info {
 }
 .sword-modal-btn-cancel:hover { background: #ede8df; border-color: #bfbab0; color: #374151; }
 .sword-modal-btn-save {
-    background: linear-gradient(135deg, #1a2545, #2a3a6a);
-    color: #c9a84c;
-    border: 1px solid rgba(201, 168, 76, 0.3);
+    background: linear-gradient(135deg, #1a2545, #2a3a6a) !important;
+    color: #c9a84c !important;
+    border: 1px solid rgba(201, 168, 76, 0.3) !important;
     border-radius: 8px;
     padding: 9px 22px;
     font-size: 0.88rem;
@@ -1200,9 +1201,9 @@ div.dataTables_info {
     transition: all 0.2s;
 }
 .sword-modal-btn-save:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0e1628, #1a2545);
-    color: #e0bc6a;
-    border-color: rgba(201, 168, 76, 0.5);
+    background: linear-gradient(135deg, #0e1628, #1a2545) !important;
+    color: #e0bc6a !important;
+    border-color: rgba(201, 168, 76, 0.5) !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(26, 37, 69, 0.25);
 }

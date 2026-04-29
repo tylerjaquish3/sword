@@ -108,13 +108,14 @@ class BookController extends Controller
     {
         $request->validate([
             'author'      => 'nullable|string|max:255',
+            'timeframe'   => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'history'     => 'nullable|string',
             'themes'      => 'nullable|string',
             'notes'       => 'nullable|string',
         ]);
 
-        $book->update($request->only(['author', 'description', 'history', 'themes', 'notes']));
+        $book->update($request->only(['author', 'timeframe', 'description', 'history', 'themes', 'notes']));
 
         return redirect()->route('books.study', $book)->with('success', 'Study notes saved.');
     }

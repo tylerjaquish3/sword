@@ -30,7 +30,7 @@
 <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
     <div>
         <p class="share-section-label mb-1">Shareable Link Ready</p>
-        <h3 class="mb-1 fw-bold" style="color: var(--sword-navy);">Your Digest Has Been Shared</h3>
+        <h3 class="mb-1 fw-bold" style="color: var(--sword-navy);">Your Digest Has Been Created</h3>
         <p class="mb-0" style="font-size: 0.85rem; color: #6b7280;">
             {{ $shared->week_start->format('M j') }} – {{ $shared->week_end->format('M j, Y') }}
         </p>
@@ -73,12 +73,15 @@
     </div>
 </div>
 
-@push('scripts')
+@endsection
+
+@push('js')
 <script>
 function copyLink() {
     const link = document.getElementById('share-link').textContent.trim();
-    navigator.clipboard.writeText(link).then(() => {
-        const btn = document.getElementById('copy-btn');
+    const btn = document.getElementById('copy-btn');
+
+    function markCopied() {
         btn.innerHTML = '<i class="mdi mdi-check me-1"></i> Copied!';
         btn.style.background = '#16a34a';
         btn.style.borderColor = '#16a34a';
@@ -89,9 +92,21 @@ function copyLink() {
             btn.style.borderColor = 'rgba(201,168,76,0.3)';
             btn.style.color = 'var(--sword-gold)';
         }, 2500);
-    });
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(markCopied);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        markCopied();
+    }
 }
 </script>
 @endpush
-
-@endsection

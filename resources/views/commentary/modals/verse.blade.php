@@ -134,11 +134,11 @@
 
     function setFavoriteBtn(isFavorite) {
         if (isFavorite) {
-            $('#modal_favorite_btn').removeClass('btn-outline-secondary').addClass('btn-warning');
+            $('#modal_favorite_btn').removeClass('btn-outline-warning').addClass('btn-warning');
             $('#modal_favorite_btn i').removeClass('mdi-star-outline').addClass('mdi-star');
             $('#modal_favorite_label').text('Favorited');
         } else {
-            $('#modal_favorite_btn').removeClass('btn-warning').addClass('btn-outline-secondary');
+            $('#modal_favorite_btn').removeClass('btn-warning').addClass('btn-outline-warning');
             $('#modal_favorite_btn i').removeClass('mdi-star').addClass('mdi-star-outline');
             $('#modal_favorite_label').text('Mark as Favorite');
         }
@@ -250,7 +250,7 @@
                 type: 'PUT',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    line_break: lineBreak,
+                    line_break: lineBreak ? 1 : 0,
                     section_title: sectionTitle,
                     commentary: commentary
                 },

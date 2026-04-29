@@ -66,14 +66,13 @@ $(document).ready(function() {
                 // Build comments list
                 let commentsHtml = '';
                 if (response.comments && response.comments.length > 0) {
-                    response.comments.forEach(function(comment) {
+                    const sorted = response.comments.slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    sorted.forEach(function(comment) {
                         let date = new Date(comment.created_at);
                         let formattedDate = date.toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
+                            day: 'numeric'
                         });
                         commentsHtml += '<div class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-start">';
                         commentsHtml += '<div>';
@@ -111,10 +110,8 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    // Refresh the modal comments list
-                    $('#chapter_comment_link').click();
                     $('#modal_chapter_commentary').val('');
-                    // Also refresh the displayed comments on the page if function exists
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('chapterModal')).hide();
                     if (typeof loadChapterComments === 'function') {
                         loadChapterComments();
                     }

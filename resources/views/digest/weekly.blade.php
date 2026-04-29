@@ -14,7 +14,6 @@
 }
 .digest-card {
     border-top: 2px solid var(--sword-gold);
-    height: 100%;
 }
 .digest-item {
     padding: 0.6rem 0;
@@ -187,36 +186,8 @@
     {{-- Right column --}}
     <div class="col-lg-6">
 
-        {{-- Commentary --}}
-        <div class="card digest-card mb-3">
-            <div class="card-body">
-                <p class="digest-section-label"><i class="mdi mdi-pencil me-1"></i>Commentary Added</p>
-                @php $allNotes = $chapterComments->map(fn($c) => ['type' => 'chapter', 'model' => $c])->concat($verseComments->map(fn($c) => ['type' => 'verse', 'model' => $c]))->sortByDesc(fn($n) => $n['model']->created_at); @endphp
-                @if($allNotes->isNotEmpty())
-                    @foreach($allNotes as $note)
-                        @php $m = $note['model']; $book = $m->chapter?->book; @endphp
-                        <div class="digest-item">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="digest-ref">
-                                    {{ $book?->name }}
-                                    {{ $m->chapter?->number }}@if($note['type'] === 'verse'):{{ $m->verse_number }}@endif
-                                </span>
-                                <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
-                            </div>
-                            <p class="digest-snippet mb-0">{{ Str::limit($m->comment, 120) }}</p>
-                        </div>
-                    @endforeach
-                @else
-                    <div class="digest-empty">
-                        <i class="mdi mdi-file-document-outline mdi-36px d-block mb-2" style="color: rgba(14,22,40,0.15);"></i>
-                        No commentary added this week
-                    </div>
-                @endif
-            </div>
-        </div>
-
         {{-- Memory Practice --}}
-        <div class="card digest-card">
+        <div class="card digest-card mb-3">
             <div class="card-body">
                 <p class="digest-section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
 
@@ -243,6 +214,34 @@
                         <div class="mt-2">
                             <a href="{{ route('memory.index') }}" style="font-size: 0.78rem; color: var(--sword-gold);">Start memorizing →</a>
                         </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- Commentary --}}
+        <div class="card digest-card">
+            <div class="card-body">
+                <p class="digest-section-label"><i class="mdi mdi-pencil me-1"></i>Commentary Added</p>
+                @php $allNotes = $chapterComments->map(fn($c) => ['type' => 'chapter', 'model' => $c])->concat($verseComments->map(fn($c) => ['type' => 'verse', 'model' => $c]))->sortByDesc(fn($n) => $n['model']->created_at); @endphp
+                @if($allNotes->isNotEmpty())
+                    @foreach($allNotes as $note)
+                        @php $m = $note['model']; $book = $m->chapter?->book; @endphp
+                        <div class="digest-item">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="digest-ref">
+                                    {{ $book?->name }}
+                                    {{ $m->chapter?->number }}@if($note['type'] === 'verse'):{{ $m->verse_number }}@endif
+                                </span>
+                                <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
+                            </div>
+                            <p class="digest-snippet mb-0">{{ Str::limit($m->comment, 120) }}</p>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="digest-empty">
+                        <i class="mdi mdi-file-document-outline mdi-36px d-block mb-2" style="color: rgba(14,22,40,0.15);"></i>
+                        No commentary added this week
                     </div>
                 @endif
             </div>

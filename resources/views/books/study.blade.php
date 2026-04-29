@@ -119,10 +119,10 @@
             @csrf
             @method('PUT')
 
-            {{-- Author + Description row --}}
+            {{-- Author + Timeframe + Description --}}
             <div class="card mb-3" style="border-top: 2px solid var(--sword-gold);">
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-sm-6">
                             <label class="study-field-label">Author</label>
                             <input type="text"
@@ -132,13 +132,20 @@
                                    placeholder="e.g. Moses, Paul, Unknown">
                         </div>
                         <div class="col-sm-6">
-                            <label class="study-field-label">Description / Overview</label>
+                            <label class="study-field-label">Timeframe</label>
                             <input type="text"
-                                   name="description"
+                                   name="timeframe"
                                    class="study-input"
-                                   value="{{ old('description', $book->description) }}"
-                                   placeholder="One-line summary">
+                                   value="{{ old('timeframe', $book->timeframe) }}"
+                                   placeholder="e.g. ~1446–1406 BC">
                         </div>
+                    </div>
+                    <div>
+                        <label class="study-field-label">Description / Overview</label>
+                        <textarea name="description"
+                                  class="study-input"
+                                  rows="3"
+                                  placeholder="Brief overview of the book…">{{ old('description', $book->description) }}</textarea>
                     </div>
                 </div>
             </div>
@@ -204,8 +211,8 @@
         </form>
     </div>
 
-    {{-- Right: Stats Sidebar --}}
-    <div class="col-lg-4">
+    {{-- Right: Stats Sidebar (first on mobile, right column on desktop) --}}
+    <div class="col-lg-4 order-first order-lg-last">
         <div class="card mb-3" style="border-top: 2px solid var(--sword-gold); position: sticky; top: 16px;">
             <div class="card-body">
                 <p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold);" class="mb-3">Reading Progress</p>
@@ -258,6 +265,35 @@
             </div>
         </div>
 
+        {{-- Fields filled indicator --}}
+        @php
+            $filled = collect(['author', 'description', 'history', 'themes', 'notes'])
+                ->filter(fn($f) => !empty($book->$f))
+                ->count();
+        @endphp
+        @if($filled < 5)
+        <div class="card mb-3" style="border: 1px dashed rgba(201,168,76,0.35); background: rgba(201,168,76,0.03);">
+            <div class="card-body py-3">
+                <p style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--sword-gold);" class="mb-2">Study Progress</p>
+                @foreach(['author' => 'Author', 'description' => 'Description', 'history' => 'Historical Context', 'themes' => 'Key Themes', 'notes' => 'Personal Notes'] as $field => $label)
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="mdi {{ !empty($book->$field) ? 'mdi-check-circle' : 'mdi-circle-outline' }}"
+                       style="font-size: 0.85rem; color: {{ !empty($book->$field) ? 'var(--sword-gold)' : 'rgba(14,22,40,0.2)' }};"></i>
+                    <span style="font-size: 0.78rem; color: {{ !empty($book->$field) ? '#374151' : '#9ca3af' }};">{{ $label }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @else
+        <div class="card mb-3" style="border: 1px solid rgba(201,168,76,0.3); background: rgba(201,168,76,0.05);">
+            <div class="card-body py-3 text-center">
+                <i class="mdi mdi-trophy mdi-24px" style="color: var(--sword-gold);"></i>
+                <p class="mb-0 mt-1" style="font-size: 0.8rem; color: var(--sword-navy); font-weight: 600;">Study complete!</p>
+                <p class="mb-0" style="font-size: 0.72rem; color: #9ca3af;">All fields filled in</p>
+            </div>
+        </div>
+        @endif
+
         {{-- Commentary Notes --}}
         @if($bookNotes->isNotEmpty())
         <div class="card mb-3">
@@ -283,35 +319,6 @@
                     </a>
                 </div>
                 @endif
-            </div>
-        </div>
-        @endif
-
-        {{-- Fields filled indicator --}}
-        @php
-            $filled = collect(['author', 'description', 'history', 'themes', 'notes'])
-                ->filter(fn($f) => !empty($book->$f))
-                ->count();
-        @endphp
-        @if($filled < 5)
-        <div class="card" style="border: 1px dashed rgba(201,168,76,0.35); background: rgba(201,168,76,0.03);">
-            <div class="card-body py-3">
-                <p style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--sword-gold);" class="mb-2">Study Progress</p>
-                @foreach(['author' => 'Author', 'description' => 'Description', 'history' => 'Historical Context', 'themes' => 'Key Themes', 'notes' => 'Personal Notes'] as $field => $label)
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <i class="mdi {{ !empty($book->$field) ? 'mdi-check-circle' : 'mdi-circle-outline' }}"
-                       style="font-size: 0.85rem; color: {{ !empty($book->$field) ? 'var(--sword-gold)' : 'rgba(14,22,40,0.2)' }};"></i>
-                    <span style="font-size: 0.78rem; color: {{ !empty($book->$field) ? '#374151' : '#9ca3af' }};">{{ $label }}</span>
-                </div>
-                @endforeach
-            </div>
-        </div>
-        @else
-        <div class="card" style="border: 1px solid rgba(201,168,76,0.3); background: rgba(201,168,76,0.05);">
-            <div class="card-body py-3 text-center">
-                <i class="mdi mdi-trophy mdi-24px" style="color: var(--sword-gold);"></i>
-                <p class="mb-0 mt-1" style="font-size: 0.8rem; color: var(--sword-navy); font-weight: 600;">Study complete!</p>
-                <p class="mb-0" style="font-size: 0.72rem; color: #9ca3af;">All fields filled in</p>
             </div>
         </div>
         @endif

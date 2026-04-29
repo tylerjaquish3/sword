@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChapterComment;
+use App\Models\SharedDigest;
 use App\Models\Translation;
-use App\Models\UserLogin;
 use App\Models\UserRead;
 use App\Models\Verse;
 use App\Models\VerseFavorite;
@@ -21,16 +21,14 @@ class ProfileController extends Controller
             ->orderByDesc('read_at')
             ->get();
 
-        $logins = UserLogin::where('user_id', Auth::id())
-            ->orderByDesc('logged_in_at')
-            ->limit(100)
-            ->get();
+        $digests = SharedDigest::orderByDesc('created_at')->get();
 
         $verseComments = VerseComment::with(['chapter.book'])
             ->get()
             ->map(fn($c) => [
                 'type'       => 'Verse',
                 'book'       => $c->chapter?->book?->name ?? '—',
+                'book_id'    => $c->chapter?->book?->id,
                 'reference'  => ($c->chapter?->book?->name ?? '—') . ' ' . ($c->chapter?->number ?? '') . ':' . $c->verse_number,
                 'comment'    => $c->comment,
                 'created_at' => $c->created_at,
@@ -41,6 +39,7 @@ class ProfileController extends Controller
             ->map(fn($c) => [
                 'type'       => 'Chapter',
                 'book'       => $c->chapter?->book?->name ?? '—',
+                'book_id'    => $c->chapter?->book?->id,
                 'reference'  => ($c->chapter?->book?->name ?? '—') . ' ' . ($c->chapter?->number ?? ''),
                 'comment'    => $c->comment,
                 'created_at' => $c->created_at,
@@ -68,7 +67,7 @@ class ProfileController extends Controller
                 ];
             });
 
-        return view('profile.index', compact('reads', 'logins', 'commentary', 'translations', 'favorites'));
+        return view('profile.index', compact('reads', 'digests', 'commentary', 'translations', 'favorites'));
     }
 
     public function updateDefaultTranslation(Request $request)

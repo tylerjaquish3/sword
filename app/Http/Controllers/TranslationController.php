@@ -146,7 +146,7 @@ class TranslationController extends Controller
     {
         // Build the prefix HTML from checkbox and section title
         $prefix = '';
-        if ($request->line_break || $request->section_title) {
+        if ($request->line_break == '1' || $request->section_title) {
             $prefix = '</p>';
             if ($request->section_title) {
                 $prefix .= '<h5 class="mt-3 mb-2 fw-bold">' . e($request->section_title) . '</h5>';

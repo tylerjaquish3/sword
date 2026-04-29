@@ -37,7 +37,6 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - d3 word cloud for chapter
 - look at other bible apps and what features they have
 - reading plan (1 year)
-- mark favorite verses
 
 # locally — run as many times as needed until complete
 php artisan esv:import
