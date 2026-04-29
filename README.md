@@ -30,29 +30,11 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - History of how a translation/book was put together
 - Timeline of books written
 - Look into missing books, verses
-- set up notifications
-- tablet size, allow compare
 - collaboration tools, accountability partner
-- import ESV translation (see details below)
 - d3 word cloud for chapter
 - look at other bible apps and what features they have
 - reading plan (1 year)
-
-# locally — run as many times as needed until complete
-php artisan esv:import
-php artisan esv:import --limit=100
-
-# once all 1,189 chapters are done
-php artisan esv:export-migration
-git add database/migrations/YYYY_MM_DD_HHMMSS_seed_esv_verses.php
-git commit -m "Add ESV verse seed migration"
-git push
-Then on prod:
-php artisan migrate
-
-
-also need to run the key words job:
-php artisan keyWords
+- check how long session is (maybe set to 12 hrs?)
 
 ## Claude ideas
 

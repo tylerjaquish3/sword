@@ -17,6 +17,7 @@ use App\Http\Controllers\DigestController;
 use App\Http\Controllers\SharedDigestController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VerseFavoriteController;
 use App\Http\Controllers\VerseHighlightController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::redirect('/', '/home');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+    Route::get('/changelog', fn() => view('changelog'))->name('changelog');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
@@ -99,6 +101,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/memory/{memory}/complete', [MemoryController::class, 'complete'])->name('memory.complete');
     Route::post('/memory/{memory}/uncomplete', [MemoryController::class, 'uncomplete'])->name('memory.uncomplete');
     Route::get('/memory/verses', [MemoryController::class, 'getVerses'])->name('memory.verses');
+
+    // Notification routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
 
     Route::post('/verse-favorites/toggle', [VerseFavoriteController::class, 'toggle'])->name('verse-favorites.toggle');
     Route::post('/verse-highlights/toggle', [VerseHighlightController::class, 'toggle'])->name('verse-highlights.toggle');

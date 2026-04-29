@@ -1,0 +1,266 @@
+@extends('base.layout')
+
+@section('title', "What's New")
+
+@section('content')
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h3 class="font-weight-bold mb-1" style="color: var(--sword-navy);">What's New</h3>
+        <p class="page-subtitle mb-0">A record of updates and improvements to Sword App</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-12">
+
+        {{-- ── v1.3.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.3</span>
+                <div>
+                    <div class="changelog-title">In-App Notifications</div>
+                    <div class="changelog-date">April 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Notification bell in the navbar shows a live unread count that disappears when everything is read
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Notifications page lists all updates with read/unread state and direct links to relevant sections
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Reading streak milestones (7, 14, 30, 100 days) generate automatic congratulations
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Prayer reminder when no prayers have been logged this week
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Alert when a memory verse set is expiring within 3 days
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            GenerateNotifications job can be run manually or scheduled; includes a static announce() helper for app-wide broadcasts
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── v1.2.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.2</span>
+                <div>
+                    <div class="changelog-title">Verse Keywords & ESV</div>
+                    <div class="changelog-date">April 2026</div>
+                </div>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            ESV translation imported and available across all reading and study views
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            DetermineKeyWords job extracts meaningful keywords from every verse, filtering common words — used for search and topic discovery
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Weekly digest updated with richer stats, shareable links, and configurable sections (chapters, prayers, commentary, memory, past notes)
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Read page and user profile enhancements
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── v1.1.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.1</span>
+                <div>
+                    <div class="changelog-title">Highlights, Favorites & Sharing</div>
+                    <div class="changelog-date">Early 2026</div>
+                </div>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Verse highlighting — mark passages for quick visual reference while reading
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Verse favorites — save verses to a personal collection
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Shareable weekly digest — generate a public link to your weekly Bible study summary to share with a group or mentor
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Book timeframes and author descriptions for historical context
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Text-to-voice reading on verse pages
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Reading activity heatmap on the dashboard — visualize your study patterns over the past year
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Dashboard redesigned with streak tracking, longest streak, and weekly digest preview
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Admin users page for managing accounts
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── v1.0.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.0</span>
+                <div>
+                    <div class="changelog-title">Initial Release</div>
+                    <div class="changelog-date">2025</div>
+                </div>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Multi-translation Bible reader (KJV, NIV, NLT, ESV) with chapter navigation and read-tracking
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Verse and chapter commentary — write personal notes anchored to specific passages
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Prayer journal with type categorization and date-based history
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Topics — create study topics and attach related verses from across translations
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Memory verse sets with start/end dates, verse selection, and completion tracking
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Full-text verse search across all loaded translations
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Default translation preference saved to your profile
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    
+</div>
+
+<style>
+.changelog-version {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--sword-gold);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    min-width: 3rem;
+    font-variant-numeric: tabular-nums;
+}
+.changelog-title {
+    font-weight: 700;
+    color: var(--sword-navy);
+    font-size: 0.97rem;
+    line-height: 1.2;
+}
+.changelog-date {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+.changelog-badge-latest {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(201,168,76,0.15);
+    color: var(--sword-gold);
+    border: 1px solid rgba(201,168,76,0.35);
+    font-weight: 700;
+    padding: 3px 8px;
+}
+.changelog-card {
+    border-top: 3px solid var(--sword-gold);
+    border-radius: 8px;
+}
+.changelog-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.changelog-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 0.88rem;
+    color: #374151;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.changelog-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.changelog-list li:first-child {
+    padding-top: 0;
+}
+.changelog-tag {
+    flex-shrink: 0;
+    display: inline-block;
+    min-width: 4.8rem;
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    line-height: 1.6;
+    margin-top: 2px;
+}
+.tag-new      { background: rgba(70,77,238,0.1);  color: #464dee; }
+.tag-improved { background: rgba(201,168,76,0.15); color: #a07820; }
+.tag-fix      { background: rgba(22,163,74,0.1);   color: #16a34a; }
+</style>
+
+@endsection

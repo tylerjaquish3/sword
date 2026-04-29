@@ -10,20 +10,46 @@
                     <li class="nav-item dropdown d-none d-lg-flex">
                         <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                             <i class="mdi mdi-bell mx-0"></i>
-                            <span class="count bg-success">2</span>
+                            @if($unreadNotificationCount > 0)
+                                <span class="count bg-success">{{ $unreadNotificationCount }}</span>
+                            @endif
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-                            <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-success">
-                                        <i class="mdi mdi-information mx-0"></i>
-                                    </div>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown" style="min-width:320px">
+                            <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+                                <p class="mb-0 font-weight-normal dropdown-header p-0">Notifications</p>
+                                @if($unreadNotificationCount > 0)
+                                    <form method="POST" action="{{ route('notifications.read-all') }}" class="m-0">
+                                        @csrf
+                                        <button type="submit" class="btn btn-link btn-sm p-0 text-muted">Mark all read</button>
+                                    </form>
+                                @endif
+                            </div>
+                            @php
+                                $recentNotifications = \App\Models\UserNotification::unread()->latest()->take(5)->get();
+                            @endphp
+                            @forelse($recentNotifications as $notif)
+                                <form method="POST" action="{{ route('notifications.read', $notif) }}" class="m-0">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item preview-item w-100 text-start border-0 bg-transparent">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon {{ $notif->icon_color }}">
+                                                <i class="mdi {{ $notif->icon }} mx-0"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <h6 class="preview-subject font-weight-normal mb-0">{{ $notif->title }}</h6>
+                                            <p class="font-weight-light small-text mb-0 text-muted">{{ $notif->created_at->diffForHumans() }}</p>
+                                        </div>
+                                    </button>
+                                </form>
+                            @empty
+                                <div class="dropdown-item text-muted text-center py-3">
+                                    <i class="mdi mdi-check-circle text-success me-1"></i> All caught up!
                                 </div>
-                                <div class="preview-item-content">
-                                    <h6 class="preview-subject font-weight-normal">Application Error</h6>
-                                    <p class="font-weight-light small-text mb-0 text-muted">Just now</p>
-                                </div>
+                            @endforelse
+                            <div class="dropdown-divider m-0"></div>
+                            <a class="dropdown-item text-center small py-2" href="{{ route('notifications.index') }}">
+                                View all notifications
                             </a>
                         </div>
                     </li>
@@ -58,11 +84,15 @@
                                 Admin
                             </a>
                             @endif
+                            <a class="dropdown-item" href="{{ route('changelog') }}">
+                                <i class="mdi mdi-star-four-points text-warning"></i>
+                                What's New
+                            </a>
                             <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
                                 @csrf
                                 <button type="submit" class="dropdown-item">
                                     <i class="mdi mdi-logout text-primary"></i>
-                                    Logout
+                                    Sign Out
                                 </button>
                             </form>
                         </div>
@@ -70,24 +100,12 @@
                 </ul>
 
                 {{-- Mobile: bell next to hamburger --}}
-                <a class="mob-bell d-lg-none" href="#" data-bs-toggle="dropdown" data-bs-target="#mobBellDropdown" aria-label="Notifications">
+                <a class="mob-bell d-lg-none" href="{{ route('notifications.index') }}" aria-label="Notifications" style="position:relative;display:flex;align-items:center;">
                     <i class="mdi mdi-bell"></i>
-                    <span class="mob-bell-count">2</span>
+                    @if($unreadNotificationCount > 0)
+                        <span class="mob-bell-count">{{ $unreadNotificationCount }}</span>
+                    @endif
                 </a>
-                <div id="mobBellDropdown" class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list">
-                    <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
-                    <a class="dropdown-item preview-item">
-                        <div class="preview-thumbnail">
-                            <div class="preview-icon bg-success">
-                                <i class="mdi mdi-information mx-0"></i>
-                            </div>
-                        </div>
-                        <div class="preview-item-content">
-                            <h6 class="preview-subject font-weight-normal">Application Error</h6>
-                            <p class="font-weight-light small-text mb-0 text-muted">Just now</p>
-                        </div>
-                    </a>
-                </div>
 
                 {{-- Mobile hamburger --}}
                 <button class="mob-hamburger d-lg-none" id="mobHamburger" aria-label="Open navigation" type="button">
@@ -256,6 +274,15 @@
                 </a>
             </li>
             @endif
+            <li class="{{ request()->routeIs('changelog') ? 'mob-active' : '' }}">
+                <a href="{{ route('changelog') }}">
+                    <span class="mob-nav-icon"><i class="mdi mdi-star-four-points"></i></span>
+                    <span class="mob-nav-label">What's New</span>
+                    @if(request()->routeIs('changelog'))
+                        <span class="mob-nav-pip"></span>
+                    @endif
+                </a>
+            </li>
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
                     @csrf
@@ -618,6 +645,8 @@ body.mob-nav-open #mobNavDrawer .mob-drawer-footer .mob-drawer-section-label { o
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.35s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.38s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.41s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.44s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.47s; }
 </style>
 
 <script>
