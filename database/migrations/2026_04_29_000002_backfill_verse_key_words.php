@@ -12,7 +12,7 @@ return new class extends Migration
 
         Verse::whereNull('key_words')
             ->orWhere('key_words', '')
-            ->chunk(500, function ($verses) use ($commonWords) {
+            ->chunkById(500, function ($verses) use ($commonWords) {
                 foreach ($verses as $verse) {
                     $words = preg_replace('/[^a-zA-Z0-9\s]/', '', $verse->text);
                     $words = strtolower($words);

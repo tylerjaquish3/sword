@@ -25,7 +25,7 @@ class DetermineKeyWords implements ShouldQueue
         $commonWords = CommonWords::COMMON_WORDS;
 
         try {
-            Verse::whereNull('key_words')->chunk(500, function ($verses) use ($commonWords) {
+            Verse::whereNull('key_words')->chunkById(500, function ($verses) use ($commonWords) {
                 foreach ($verses as $verse) {
                     $verseText = preg_replace('/[^a-zA-Z0-9\s]/', '', $verse->text);
                     $verseText = strtolower($verseText);
