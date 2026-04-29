@@ -222,14 +222,44 @@
 <script>
 $(document).ready(function () {
 
+    // Debug helper — writes to console and the ?debug overlay when present
+    function dbg(msg, isErr) {
+        var fn = isErr ? console.error : console.log;
+        fn('[topics/index] ' + msg);
+        var el = document.getElementById('__dbg');
+        if (el) {
+            var line = document.createElement('div');
+            line.style.color = isErr ? '#f87171' : '#93c5fd';
+            line.textContent = '[topics/index] ' + msg;
+            el.appendChild(line);
+            el.scrollTop = el.scrollHeight;
+        }
+    }
+
+    dbg('ready — jQuery v' + ($.fn.jquery || '?'));
+    dbg('bootstrap: ' + (typeof bootstrap !== 'undefined' ? 'OK' : 'MISSING'), typeof bootstrap === 'undefined');
+    dbg('Swal: ' + (typeof Swal !== 'undefined' ? 'OK' : 'MISSING'));
+
     // Activate tab from URL hash
     var hash = window.location.hash;
-    if (hash === '#books') {
-        var booksTab = document.getElementById('tab-books');
-        bootstrap.Tab.getOrCreateInstance(booksTab).show();
-    } else {
-        var topicsTab = document.getElementById('tab-topics');
-        bootstrap.Tab.getOrCreateInstance(topicsTab).show();
+    try {
+        if (hash === '#books') {
+            var booksTab = document.getElementById('tab-books');
+            bootstrap.Tab.getOrCreateInstance(booksTab).show();
+            dbg('activated #books tab');
+        } else {
+            var topicsTab = document.getElementById('tab-topics');
+            bootstrap.Tab.getOrCreateInstance(topicsTab).show();
+            dbg('activated #topics tab');
+        }
+    } catch (e) {
+        dbg('FAILED to activate tab: ' + e.message, true);
+        // Fallback: manually show the tabs without Bootstrap
+        var defaultPane = document.getElementById(hash === '#books' ? 'pane-books' : 'pane-topics');
+        if (defaultPane) {
+            defaultPane.classList.add('active', 'show');
+            dbg('applied fallback active/show to ' + defaultPane.id);
+        }
     }
 
     // Update hash when switching tabs

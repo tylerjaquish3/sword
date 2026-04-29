@@ -96,20 +96,77 @@
     @stack('js')
 
     @if(request()->has('debug'))
-    <div id="__dbg" style="position:fixed;top:0;left:0;right:0;background:#900;color:#fff;font-size:12px;font-family:monospace;padding:6px 10px;z-index:2147483647;white-space:pre-wrap;max-height:50vh;overflow:auto">SWORD DEBUG LOADED</div>
+    <div id="__dbg" style="position:fixed;top:0;left:0;right:0;background:#1a1a2e;color:#e0e0e0;font-size:12px;font-family:monospace;padding:6px 10px;z-index:2147483647;white-space:pre-wrap;max-height:60vh;overflow:auto;border-bottom:2px solid #c9a84c;">
+[SWORD DEBUG] page={{ request()->path() }} env={{ app()->environment() }}</div>
     <script>
     !function(){
         var d=document.getElementById('__dbg');
-        function add(m){d.textContent+='\n'+m;d.scrollTop=d.scrollHeight;}
-        window.onerror=function(m,s,l,c,e){add('JS ERROR: '+m+'\n  @ '+s.split('/').pop()+':'+l+(e&&e.stack?'\n  '+e.stack.split('\n').slice(1,3).join('\n  '):''));};
-        window.addEventListener('unhandledrejection',function(e){add('PROMISE REJECT: '+(e.reason&&e.reason.message||e.reason));});
-        add('jQuery  : '+(typeof $!=='undefined'?'loaded v'+($.fn&&$.fn.jquery||'?'):'MISSING'));
-        add('bootstrap: '+(typeof bootstrap!=='undefined'?'loaded':'MISSING'));
-        add('Swal    : '+(typeof Swal!=='undefined'?'loaded':'MISSING'));
+        var t0=Date.now();
+        function ts(){return '+'+(Date.now()-t0)+'ms';}
+        function add(m,col){
+            var line=document.createElement('div');
+            if(col)line.style.color=col;
+            line.textContent=ts()+' '+m;
+            d.appendChild(line);
+            d.scrollTop=d.scrollHeight;
+        }
+        function chk(label,val){
+            add(label+': '+(val?'OK  ('+val+')':'MISSING')+'', val?'#7ec8a0':'#f87171');
+        }
+
+        // Catch all JS errors
+        window.onerror=function(m,s,l,c,e){
+            add('JS ERROR: '+m, '#f87171');
+            add('  @ '+(s||'?')+':'+l+':'+(c||'?'), '#f87171');
+            if(e&&e.stack){
+                e.stack.split('\n').slice(1,4).forEach(function(ln){add('  '+ln.trim(),'#f87171');});
+            }
+            return false;
+        };
+        window.addEventListener('unhandledrejection',function(e){
+            add('UNHANDLED PROMISE: '+(e.reason&&e.reason.message||String(e.reason)),'#fb923c');
+        });
+
+        // Catch script/link 404s
+        window.addEventListener('error',function(e){
+            if(e.target&&(e.target.tagName==='SCRIPT'||e.target.tagName==='LINK')){
+                add('ASSET FAILED: '+(e.target.src||e.target.href),'#f87171');
+            }
+        },true);
+
+        // At parse time — jQuery is synchronous in <head>
+        chk('jQuery (parse)', typeof $!=='undefined'?('v'+($.fn&&$.fn.jquery||'?')):null);
+        chk('bootstrap (parse)', typeof bootstrap!=='undefined'?'yes':null);
+        chk('Swal (parse)', typeof Swal!=='undefined'?'yes':null);
+
         document.addEventListener('DOMContentLoaded',function(){
-            add('--- DOMContentLoaded ---');
-            add('jQuery  : '+(typeof $!=='undefined'?'loaded':'MISSING'));
-            add('bootstrap: '+(typeof bootstrap!=='undefined'?'loaded':'MISSING'));
+            add('--- DOMContentLoaded ---','#c9a84c');
+            chk('jQuery', typeof $!=='undefined'?('v'+($.fn&&$.fn.jquery||'?')):null);
+            chk('bootstrap', typeof bootstrap!=='undefined'?'yes':null);
+            chk('Swal', typeof Swal!=='undefined'?'yes':null);
+            chk('$.fn.DataTable', (typeof $!=='undefined'&&$.fn&&$.fn.DataTable)?'yes':null);
+            chk('$.fn.select2', (typeof $!=='undefined'&&$.fn&&$.fn.select2)?'yes':null);
+
+            // List all <script src> tags and their status
+            add('--- script tags ---','#c9a84c');
+            document.querySelectorAll('script[src]').forEach(function(s){
+                add('  '+s.src.replace(window.location.origin,''));
+            });
+
+            // Detect tab panes that are invisible (topics page symptom)
+            var panes=document.querySelectorAll('.tab-pane');
+            if(panes.length){
+                var visible=0;
+                panes.forEach(function(p){
+                    if(p.classList.contains('active')&&p.classList.contains('show'))visible++;
+                });
+                add('tab-panes: '+panes.length+' total, '+visible+' visible', visible===0?'#f87171':'#7ec8a0');
+            }
+        });
+
+        window.addEventListener('load',function(){
+            add('--- window.load ---','#c9a84c');
+            chk('bootstrap', typeof bootstrap!=='undefined'?'yes':null);
         });
     }();
     </script>

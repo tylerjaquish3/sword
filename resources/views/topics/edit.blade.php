@@ -341,7 +341,29 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        var table = $('#datatable-matching-verses').DataTable({
+
+        // Debug helper
+        function dbg(msg, isErr) {
+            var fn = isErr ? console.error : console.log;
+            fn('[topics/edit] ' + msg);
+            var el = document.getElementById('__dbg');
+            if (el) {
+                var line = document.createElement('div');
+                line.style.color = isErr ? '#f87171' : '#93c5fd';
+                line.textContent = '[topics/edit] ' + msg;
+                el.appendChild(line);
+                el.scrollTop = el.scrollHeight;
+            }
+        }
+
+        dbg('ready — jQuery v' + ($.fn.jquery || '?'));
+        dbg('bootstrap: ' + (typeof bootstrap !== 'undefined' ? 'OK' : 'MISSING'), typeof bootstrap === 'undefined');
+        dbg('Swal: ' + (typeof Swal !== 'undefined' ? 'OK' : 'MISSING'));
+        dbg('$.fn.DataTable: ' + ($.fn.DataTable ? 'OK' : 'MISSING'), !$.fn.DataTable);
+
+        var table;
+        try {
+        table = $('#datatable-matching-verses').DataTable({
             "order": [[2, "asc"]],
             "pageLength": 25,
             "columnDefs": [
@@ -389,6 +411,12 @@
                 tr.find('.toggle-icon').text('−');
             }
         });
+
+        dbg('DataTable initialized OK');
+        } catch (e) {
+            dbg('DataTable FAILED: ' + e.message, true);
+            console.error(e);
+        }
 
         // ── Notes ────────────────────────────────────────────────────
         var linkedVerses = {};
