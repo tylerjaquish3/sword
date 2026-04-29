@@ -70,18 +70,19 @@ class TopicController extends Controller
             
             foreach ($keywords as $keyword) {
                 if (empty($keyword)) continue;
-                
+
                 $verses = Verse::with(['chapter.book', 'translation'])
                     ->where('text', 'LIKE', '%' . $keyword . '%')
+                    ->limit(500)
                     ->get()
                     ->map(function ($verse) use ($keyword) {
                         $verse->matched_keyword = $keyword;
                         return $verse;
                     });
-                
+
                 $matchingVerses = $matchingVerses->concat($verses);
             }
-            
+
             // Remove duplicates based on verse id, keeping first match
             $matchingVerses = $matchingVerses->unique('id');
         }
