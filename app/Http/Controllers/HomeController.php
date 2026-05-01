@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\ChapterComment;
+use App\Models\Memory;
 use App\Models\Prayer;
 use App\Models\PrayerType;
 use App\Models\Topic;
@@ -57,34 +58,43 @@ class HomeController extends Controller
             ->groupBy('date')
             ->pluck('count', 'date');
 
-        // All distinct read dates for streak calculation
+        // All distinct read dates as plain strings (YYYY-MM-DD), ascending
         $allReadDates = UserRead::where('user_id', Auth::id())
             ->selectRaw('DATE(read_at) as date')
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->pluck('date')
-            ->map(fn($d) => \Carbon\Carbon::parse($d)->startOfDay());
+            ->toArray();
 
-        // Current streak: consecutive days backwards from today
+        $readDateSet = array_flip($allReadDates); // O(1) lookup
+
+        // Current streak: count consecutive days backwards from today.
+        // If today hasn't been read yet, start from yesterday so a streak
+        // ending yesterday still shows — it resets only if yesterday was also missed.
+        $startFrom = isset($readDateSet[now()->toDateString()])
+            ? now()
+            : now()->subDay();
+
         $currentStreak = 0;
-        $checkDate = now()->startOfDay();
-        while ($allReadDates->contains(fn($d) => $d->eq($checkDate))) {
+        $checkDate = $startFrom->copy()->startOfDay();
+        while (isset($readDateSet[$checkDate->toDateString()])) {
             $currentStreak++;
             $checkDate->subDay();
         }
 
-        // Longest streak: scan all read dates
+        // Longest streak: scan all read dates with plain date arithmetic
         $longestStreak = 0;
         $runLength = 0;
         $prevDate = null;
-        foreach ($allReadDates as $date) {
-            if ($prevDate && $date->diffInDays($prevDate) === 1) {
-                $runLength++;
+        foreach ($allReadDates as $dateStr) {
+            if ($prevDate !== null) {
+                $diff = (new \DateTime($dateStr))->diff(new \DateTime($prevDate))->days;
+                $runLength = ($diff === 1) ? $runLength + 1 : 1;
             } else {
                 $runLength = 1;
             }
             $longestStreak = max($longestStreak, $runLength);
-            $prevDate = $date;
+            $prevDate = $dateStr;
         }
 
         $todayReadCount = (int) ($readsByDate->get(now()->toDateString(), 0));
@@ -98,10 +108,16 @@ class HomeController extends Controller
                 ->selectRaw('DATE(read_at) as date')
                 ->groupBy('date')
                 ->count(),
-            'chapters' => UserRead::where('user_id', Auth::id())
-                ->whereBetween('read_at', [$weekStart, $weekEnd])
-                ->count(),
-            'prayers' => Prayer::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
+            'chapters' => \DB::table(function ($q) use ($weekStart, $weekEnd) {
+                $q->from('user_reads')
+                  ->where('user_id', Auth::id())
+                  ->whereBetween('read_at', [$weekStart, $weekEnd])
+                  ->select('book_id', 'chapter_number')
+                  ->distinct();
+            }, 'sub')->count(),
+            'prayers' => Prayer::whereBetween('created_at', [$weekStart, $weekEnd])
+                ->distinct('date')
+                ->count('date'),
             'notes' => ChapterComment::whereBetween('created_at', [$weekStart, $weekEnd])->count()
                 + VerseComment::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
         ];
@@ -116,6 +132,11 @@ class HomeController extends Controller
                 ->inRandomOrder()
                 ->first();
         }
+
+        $activeMemory = Memory::active()
+            ->with(['verses' => fn($q) => $q->with('chapter.book')->orderBy('id')])
+            ->latest()
+            ->first();
 
         return view('home.index', compact(
             'books',
@@ -137,7 +158,8 @@ class HomeController extends Controller
             'longestStreak',
             'todayReadCount',
             'digestStats',
-            'digestPastNote'
+            'digestPastNote',
+            'activeMemory'
         ));
     }
     

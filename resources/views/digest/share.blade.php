@@ -1,6 +1,6 @@
 @extends('base.layout')
 
-@section('title', 'Share Weekly Digest')
+@section('title', 'Complete Weekly Digest')
 
 @push('css')
 <style>
@@ -55,8 +55,8 @@
 
 <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
     <div>
-        <p class="share-section-label mb-1">Share Weekly Digest</p>
-        <h3 class="mb-1 fw-bold" style="color: var(--sword-navy);">Create a Shareable Link</h3>
+        <p class="share-section-label mb-1">Weekly Digest</p>
+        <h3 class="mb-1 fw-bold" style="color: var(--sword-navy);">Complete This Week's Digest</h3>
         <p class="mb-0" style="font-size: 0.85rem; color: #6b7280;">
             {{ $weekStart->format('M j') }} – {{ $weekEnd->format('M j, Y') }}
         </p>
@@ -66,7 +66,7 @@
     </a>
 </div>
 
-<form action="{{ route('digest.share.store') }}" method="POST">
+<form action="{{ $formAction ?? route('digest.complete.store') }}" method="POST">
     @csrf
 
     <div class="row g-3">
@@ -216,8 +216,11 @@
         <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem;">
             Cancel
         </a>
-        <button type="submit" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
-            <i class="mdi mdi-link-variant me-1"></i> Generate Link
+        <button type="submit" name="submit_action" value="save" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
+            <i class="mdi mdi-content-save-outline me-1"></i> Save
+        </button>
+        <button type="submit" name="submit_action" value="share" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
+            <i class="mdi mdi-share-variant me-1"></i> Save &amp; Share
         </button>
     </div>
 

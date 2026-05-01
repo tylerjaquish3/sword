@@ -98,19 +98,20 @@
 
     <div class="col-lg-4 grid-margin stretch-card">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title mb-0"><i class="mdi mdi-share-variant me-2"></i>Weekly Digests</h4>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h4 class="card-title mb-0"><i class="mdi mdi-book-open-page-variant me-2"></i>Weekly Digests</h4>
+                <a href="{{ route('digest.history') }}" style="font-size: 0.75rem; color: var(--sword-gold); text-decoration: none;">All Digests &rarr;</a>
             </div>
             <div class="card-body p-0">
                 @if($digests->isEmpty())
-                    <p class="text-muted p-4 mb-0">No digests shared yet.</p>
+                    <p class="text-muted p-4 mb-0">No digests saved yet.</p>
                 @else
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" id="table-digests">
                         <thead class="table-light">
                             <tr>
                                 <th>Week</th>
-                                <th>Shared</th>
+                                <th>Status</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -118,9 +119,15 @@
                             @foreach($digests as $digest)
                             <tr>
                                 <td style="white-space:nowrap;">{{ $digest->week_start->format('M j') }}–{{ $digest->week_end->format('M j, Y') }}</td>
-                                <td class="text-muted" style="white-space:nowrap;">{{ $digest->created_at->format('M j, Y') }}</td>
+                                <td style="white-space:nowrap;">
+                                    @if($digest->is_shared)
+                                        <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(201,168,76,0.12); color: var(--sword-gold);">Shared</span>
+                                    @else
+                                        <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(14,22,40,0.06); color: #6b7280;">Saved</span>
+                                    @endif
+                                </td>
                                 <td>
-                                    <a href="{{ route('digest.shared.show', $digest->uuid) }}" class="sword-link" target="_blank">View</a>
+                                    <a href="{{ route('digest.show', $digest) }}" class="sword-link">View</a>
                                 </td>
                             </tr>
                             @endforeach

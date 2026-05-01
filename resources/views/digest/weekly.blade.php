@@ -90,11 +90,11 @@
         </p>
     </div>
     <div class="d-flex gap-2 align-items-center d-print-none">
-        <a href="{{ route('digest.share.create') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
-            <i class="mdi mdi-share-variant"></i> Share
+        <a href="{{ route('digest.history') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
+            <i class="mdi mdi-history"></i> All Digests
         </a>
-        <a href="{{ route('home.index') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.8rem; font-weight: 600;">
-            <i class="mdi mdi-arrow-left"></i> Dashboard
+        <a href="{{ route('digest.complete.create') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
+            <i class="mdi mdi-check-circle-outline"></i> {{ $savedThisWeek ? 'Edit Digest' : 'Complete Digest' }}
         </a>
     </div>
 </div>

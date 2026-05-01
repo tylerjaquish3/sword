@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ChapterComment;
 use App\Models\Memory;
 use App\Models\Prayer;
+use App\Models\SharedDigest;
 use App\Models\UserRead;
 use App\Models\VerseComment;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DigestController extends Controller
@@ -67,6 +69,10 @@ class DigestController extends Controller
             $pastNoteType = 'chapter';
         }
 
+        $savedThisWeek = SharedDigest::where('user_id', Auth::id())
+            ->where('week_start', now()->startOfWeek()->toDateString())
+            ->exists();
+
         return view('digest.weekly', compact(
             'weekStart',
             'weekEnd',
@@ -78,7 +84,33 @@ class DigestController extends Controller
             'completedThisWeek',
             'daysStudied',
             'pastNote',
-            'pastNoteType'
+            'pastNoteType',
+            'savedThisWeek'
         ));
+    }
+
+    public function history()
+    {
+        $digests = SharedDigest::where('user_id', Auth::id())
+            ->orderByDesc('week_start')
+            ->get();
+
+        return view('digest.history', compact('digests'));
+    }
+
+    public function show(SharedDigest $shared)
+    {
+        abort_if($shared->user_id !== Auth::id(), 403);
+
+        return view('digest.show', compact('shared'));
+    }
+
+    public function markShared(SharedDigest $shared)
+    {
+        abort_if($shared->user_id !== Auth::id(), 403);
+
+        $shared->update(['is_shared' => true]);
+
+        return redirect()->route('digest.share.link', $shared->uuid);
     }
 }

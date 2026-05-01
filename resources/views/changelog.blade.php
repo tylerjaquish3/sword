@@ -14,6 +14,68 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.4.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.4</span>
+                <div>
+                    <div class="changelog-title">Digest History, Reading Log & Dashboard</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Digest history page — browse all past weekly digests, view them in-app, and share any saved digest at any time
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            "Complete Digest" replaces "Share" — save your weekly reflection privately or generate a shareable link; digests are now preserved even if never shared
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Saturday reminder notification when the week's digest hasn't been filled out yet
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Reading activity heatmap now spans Jan–Dec of the current year instead of a rolling 52-week window
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Current streak now correctly shows days even when today hasn't been read yet; longest streak calculation fixed
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            "Mark as Read" now logs every read session as a separate record, building a full reading history rather than overwriting
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Active memory verse displayed on the dashboard for quick reference
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Study page link appears under the book title on the Read page
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Changing Bible version on the Read page no longer resets the current chapter
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Prayer counts in the digest and weekly stats now reflect unique prayer sessions per day, not per type
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Notifications job scheduled to run automatically daily at 8am
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.3.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +84,6 @@
                     <div class="changelog-title">In-App Notifications</div>
                     <div class="changelog-date">April 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

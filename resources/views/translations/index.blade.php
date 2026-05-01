@@ -7,7 +7,12 @@
 <div class="row">
     <div class="col-12 mb-4 mb-xl-0">
         <div class="d-flex align-items-center justify-content-between">
-            <h3 class="text-dark font-weight-bold mb-0">Read &amp; Compare</h3>
+            <div>
+                <h3 class="text-dark font-weight-bold mb-0">Read &amp; Compare</h3>
+                <a id="book-study-link" href="#" class="d-none" style="font-size: 0.78rem; color: var(--sword-gold); text-decoration: none;">
+                    <i class="mdi mdi-book-open-page-variant"></i> <span id="book-study-link-text"></span>
+                </a>
+            </div>
             <div class="d-flex">
                 <button type="button" id="btn-edit-book-info" class="btn bg-white btn-icon me-2" title="Edit book info" data-bs-toggle="modal" data-bs-target="#bookEditModal">
                     <i class="mdi mdi-pencil-outline"></i>
@@ -478,11 +483,15 @@ $(document).ready(function() {
     }
     syncCompareOptions();
 
-    // When translation changes, update chapter options
+    // When translation changes, preserve the current chapter
     $('#translation_select').change(function() {
         syncCompareOptions();
         book_id = $('#book_select').val();
+        var currentChapter = $('#chapter_select').val();
         loadChapters(book_id, function() {
+            if (currentChapter) {
+                $('#chapter_select').val(currentChapter);
+            }
             lookupVerses('');
             lookupVerses(2);
             loadReadStatus();
@@ -614,6 +623,7 @@ $(document).ready(function() {
 
     function loadBookInfo(bookId) {
         if (!bookId) return;
+        $('#book-study-link').attr('href', '/books/' + bookId + '/study').removeClass('d-none');
         $.get('/books/' + bookId, function(book) {
             var desc = book.description || '';
             $('#book-author').text(book.author || '—');
@@ -624,6 +634,7 @@ $(document).ready(function() {
             $('#book-edit-author').val(book.author || '');
             $('#book-edit-timeframe').val(book.timeframe || '');
             $('#book-edit-description').val(book.description || '');
+            $('#book-study-link-text').text('Study ' + book.name);
         });
     }
 

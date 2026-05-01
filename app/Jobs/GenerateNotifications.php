@@ -2,12 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Models\Memory;
 use App\Models\Prayer;
+use App\Models\SharedDigest;
 use App\Models\Translation;
 use App\Models\User;
 use App\Models\UserNotification;
 use App\Models\UserRead;
-use App\Models\Memory;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,6 +43,7 @@ class GenerateNotifications implements ShouldQueue
         $this->checkDefaultTranslation($user);
         $this->checkPrayerReminder($user);
         $this->checkExpiringMemoryVerses($user);
+        $this->checkDigestReminder($user);
     }
 
     private function checkReadingStreak(User $user): void
@@ -155,6 +157,31 @@ class GenerateNotifications implements ShouldQueue
                 route('memory.index')
             );
         }
+    }
+
+    private function checkDigestReminder(User $user): void
+    {
+        if (!now()->isSaturday()) return;
+
+        $weekStart = now()->startOfWeek()->toDateString();
+
+        $alreadySaved = SharedDigest::where('user_id', $user->id)
+            ->where('week_start', $weekStart)
+            ->exists();
+
+        if ($alreadySaved) return;
+
+        $uniqueKey = 'digest_reminder_' . now()->format('Y_W');
+        $this->createIfNotExists(
+            $user->id,
+            'digest_reminder',
+            $uniqueKey,
+            'Weekly Digest Ready',
+            "Take a few minutes to reflect on this week — your digest is waiting to be filled out.",
+            'mdi-book-open-page-variant',
+            'bg-info',
+            '/digest/complete'
+        );
     }
 
     private function createIfNotExists(

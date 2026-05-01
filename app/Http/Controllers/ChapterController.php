@@ -72,15 +72,13 @@ class ChapterController extends Controller
             'translation_id' => 'required|exists:translations,id',
         ]);
 
-        UserRead::updateOrCreate(
-            [
-                'user_id'        => Auth::id(),
-                'book_id'        => $request->book_id,
-                'chapter_number' => $request->chapter_number,
-                'translation_id' => $request->translation_id,
-            ],
-            ['read_at' => now()]
-        );
+        UserRead::create([
+            'user_id'        => Auth::id(),
+            'book_id'        => $request->book_id,
+            'chapter_number' => $request->chapter_number,
+            'translation_id' => $request->translation_id,
+            'read_at'        => now(),
+        ]);
 
         return response()->json(['success' => true]);
     }
@@ -91,6 +89,7 @@ class ChapterController extends Controller
             ->where('book_id', $request->book_id)
             ->where('chapter_number', $request->chapter_number)
             ->where('translation_id', $request->translation_id)
+            ->orderByDesc('read_at')
             ->first();
 
         return response()->json(['read_at' => $read ? $read->read_at : null]);

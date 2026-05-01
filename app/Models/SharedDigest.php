@@ -17,7 +17,13 @@ class SharedDigest extends Model
         'show_commentary' => 'boolean',
         'show_memory' => 'boolean',
         'show_past_note' => 'boolean',
+        'is_shared' => 'boolean',
         'week_start' => 'date',
         'week_end' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 }

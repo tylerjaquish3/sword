@@ -88,6 +88,88 @@
     </div>
 </div>
 
+{{-- Active Memory Verse --}}
+@if($activeMemory && $activeMemory->verses->isNotEmpty())
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(160deg, #fff 70%, rgba(201,168,76,0.05) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                    <div style="flex: 1; min-width: 0;">
+                        <p class="mb-2" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">
+                            <i class="mdi mdi-brain me-1"></i>Memory Verse{{ $activeMemory->verses->count() > 1 ? 's' : '' }}
+                            @if($activeMemory->title)
+                                &mdash; {{ $activeMemory->title }}
+                            @endif
+                        </p>
+                        @foreach($activeMemory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number) as $ref => $grouped)
+                        <div class="{{ !$loop->last ? 'mb-3' : '' }}">
+                            <p class="mb-1 fw-bold" style="font-size: 0.78rem; color: var(--sword-navy);">
+                                {{ $ref }}:{{ implode(',', $grouped->pluck('number')->all()) }}
+                            </p>
+                            <p class="mb-0" style="font-size: 0.88rem; color: #374151; line-height: 1.65; font-style: italic;">
+                                @foreach($grouped->sortBy('number') as $verse)
+                                    <sup style="font-style: normal; font-weight: 700; color: var(--sword-gold); font-size: 0.62rem;">{{ $verse->number }}</sup>{{ $verse->text }}{{ $loop->last ? '' : ' ' }}
+                                @endforeach
+                            </p>
+                        </div>
+                        @endforeach
+                    </div>
+                    <a href="{{ route('memory.index') }}" class="btn btn-sm flex-shrink-0" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap; align-self: flex-start;">
+                        All Memory Verses <i class="mdi mdi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Weekly Digest Preview --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(135deg, rgba(14,22,40,0.02) 0%, rgba(201,168,76,0.04) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-4 flex-wrap">
+                        <div>
+                            <p class="mb-0" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">This Week's Digest</p>
+                            <p class="mb-0" style="font-size: 0.78rem; color: #9ca3af;">{{ now()->startOfWeek()->format('M j') }} – {{ now()->endOfWeek()->format('M j') }}</p>
+                        </div>
+                        <div class="d-flex gap-4">
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['days'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Days</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['chapters'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Chapters</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['prayers'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Prayers</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['notes'] }}</div>
+                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Notes</div>
+                            </div>
+                        </div>
+                        @if($digestPastNote)
+                        <div class="d-none d-xl-block ps-4" style="border-left: 1px solid rgba(201,168,76,0.3); max-width: 300px;">
+                            <p class="mb-1" style="font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-gold);">From your notes, one year ago</p>
+                            <p class="mb-0" style="font-size: 0.78rem; color: #4b5563; line-height: 1.4; font-style: italic;">"{{ Str::limit($digestPastNote->comment, 80) }}"</p>
+                        </div>
+                        @endif
+                    </div>
+                    <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap;">
+                        View Full Digest <i class="mdi mdi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     {{-- Bible Overview --}}
     <div class="col-12 col-lg-6 grid-margin grid-margin-md-0 stretch-card">
@@ -192,51 +274,6 @@
     </div>
 </div>
 
-{{-- Weekly Digest Preview --}}
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(135deg, rgba(14,22,40,0.02) 0%, rgba(201,168,76,0.04) 100%);">
-            <div class="card-body py-3">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center gap-4 flex-wrap">
-                        <div>
-                            <p class="mb-0" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">This Week's Digest</p>
-                            <p class="mb-0" style="font-size: 0.78rem; color: #9ca3af;">{{ now()->startOfWeek()->format('M j') }} – {{ now()->endOfWeek()->format('M j') }}</p>
-                        </div>
-                        <div class="d-flex gap-4">
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['days'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Days</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['chapters'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Chapters</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['prayers'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Prayers</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['notes'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Notes</div>
-                            </div>
-                        </div>
-                        @if($digestPastNote)
-                        <div class="d-none d-xl-block ps-4" style="border-left: 1px solid rgba(201,168,76,0.3); max-width: 300px;">
-                            <p class="mb-1" style="font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-gold);">From your notes, one year ago</p>
-                            <p class="mb-0" style="font-size: 0.78rem; color: #4b5563; line-height: 1.4; font-style: italic;">"{{ Str::limit($digestPastNote->comment, 80) }}"</p>
-                        </div>
-                        @endif
-                    </div>
-                    <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap;">
-                        View Full Digest <i class="mdi mdi-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 {{-- Reading Activity Heatmap --}}
 <div class="row mt-4">
     <div class="col-12">
@@ -272,7 +309,7 @@
                 <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                     <div style="min-width: max-content;">
                         <div id="heatmap-months" style="position: relative; height: 16px; margin-bottom: 4px;"></div>
-                        <div id="reading-heatmap" style="display: grid; grid-template-columns: repeat(53, 12px); grid-auto-rows: 12px; gap: 2px;"></div>
+                        <div id="reading-heatmap" style="display: grid; grid-auto-rows: 12px; gap: 2px;"></div>
                         <div class="d-flex align-items-center gap-2 mt-2" style="font-size: 0.75rem; color: #9ca3af;">
                             <span>Less</span>
                             <div style="width:12px;height:12px;border-radius:2px;background:rgba(201,168,76,0.08);display:inline-block;"></div>
@@ -335,17 +372,26 @@
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
 
-    // Align start to the Sunday of the week that is 52 weeks before today's week
-    const startDate = new Date(todayDate);
-    startDate.setDate(todayDate.getDate() - 364 - todayDate.getDay());
+    const year = todayDate.getFullYear();
+    const jan1  = new Date(year, 0, 1);
+    const dec31 = new Date(year, 11, 31);
 
-    const WEEKS = 53;
+    // Align start to the Sunday on or before Jan 1
+    const startDate = new Date(jan1);
+    startDate.setDate(jan1.getDate() - jan1.getDay());
+
+    // How many week columns to cover through Dec 31
+    const daySpan = Math.floor((dec31 - startDate) / 86400000) + 1;
+    const WEEKS = Math.ceil(daySpan / 7);
+
     const CELL = 12;
-    const GAP = 2;
+    const GAP  = 2;
 
-    const grid = document.getElementById('reading-heatmap');
+    const grid     = document.getElementById('reading-heatmap');
     const monthBar = document.getElementById('heatmap-months');
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    grid.style.gridTemplateColumns = 'repeat(' + WEEKS + ', ' + CELL + 'px)';
 
     function toKey(d) {
         return d.getFullYear() + '-' +
@@ -361,15 +407,16 @@
         return '#c9a84c';
     }
 
-    // Month labels above the grid
+    // Month labels — only emit when we cross into a new month within the current year
     let lastMonth = -1;
     for (let w = 0; w < WEEKS; w++) {
         const d = new Date(startDate);
         d.setDate(startDate.getDate() + w * 7);
-        if (d.getMonth() !== lastMonth) {
-            lastMonth = d.getMonth();
+        const m = d.getMonth();
+        if (m !== lastMonth && d.getFullYear() === year) {
+            lastMonth = m;
             const span = document.createElement('span');
-            span.textContent = monthNames[lastMonth];
+            span.textContent = monthNames[m];
             span.style.cssText = 'position:absolute;left:' + (w * (CELL + GAP)) + 'px;font-size:10px;color:#9ca3af;white-space:nowrap;';
             monthBar.appendChild(span);
         }
@@ -382,16 +429,18 @@
             date.setDate(startDate.getDate() + w * 7 + d);
 
             const div = document.createElement('div');
-            div.style.width = CELL + 'px';
+            div.style.width  = CELL + 'px';
             div.style.height = CELL + 'px';
             div.style.borderRadius = '2px';
             div.style.gridColumn = (w + 1).toString();
-            div.style.gridRow = (d + 1).toString();
+            div.style.gridRow    = (d + 1).toString();
 
-            if (date > todayDate) {
+            const inYear = date >= jan1 && date <= dec31;
+
+            if (!inYear || date > todayDate) {
                 div.style.background = 'transparent';
             } else {
-                const key = toKey(date);
+                const key   = toKey(date);
                 const count = readData[key] || 0;
                 div.style.background = getColor(count);
                 if (date.getTime() === todayDate.getTime()) {

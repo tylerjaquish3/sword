@@ -92,9 +92,15 @@ Route::middleware('auth')->group(function () {
 
     // Digest routes
     Route::get('/digest/weekly', [DigestController::class, 'weekly'])->name('digest.weekly');
+    Route::get('/digest/history', [DigestController::class, 'history'])->name('digest.history');
+    Route::get('/digest/complete', [SharedDigestController::class, 'create'])->name('digest.complete.create');
+    Route::post('/digest/complete', [SharedDigestController::class, 'store'])->name('digest.complete.store');
+    Route::get('/digest/share/{uuid}/link', [SharedDigestController::class, 'link'])->name('digest.share.link');
+    Route::post('/digest/{shared}/share', [DigestController::class, 'markShared'])->name('digest.mark-shared');
+    Route::get('/digest/{shared}', [DigestController::class, 'show'])->name('digest.show');
+    // Legacy alias so old /digest/share links still work
     Route::get('/digest/share', [SharedDigestController::class, 'create'])->name('digest.share.create');
     Route::post('/digest/share', [SharedDigestController::class, 'store'])->name('digest.share.store');
-    Route::get('/digest/share/{uuid}/link', [SharedDigestController::class, 'link'])->name('digest.share.link');
 
     // Memory routes
     Route::resource('memory', MemoryController::class)->except(['create', 'show', 'edit']);

@@ -21,7 +21,7 @@ class ProfileController extends Controller
             ->orderByDesc('read_at')
             ->get();
 
-        $digests = SharedDigest::orderByDesc('created_at')->get();
+        $digests = SharedDigest::where('user_id', Auth::id())->orderByDesc('week_start')->get();
 
         $verseComments = VerseComment::with(['chapter.book'])
             ->get()

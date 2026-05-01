@@ -20,7 +20,8 @@ class SharedDigestController extends Controller
 
         return view('digest.share', array_merge($data, [
             'weekStart' => $weekStart,
-            'weekEnd' => $weekEnd,
+            'weekEnd'   => $weekEnd,
+            'formAction' => route('digest.complete.store'),
         ]));
     }
 
@@ -55,12 +56,16 @@ class SharedDigestController extends Controller
             }
         }
 
+        $isSharing = $request->input('submit_action') === 'share';
+
         $shared = SharedDigest::create([
             'uuid' => Str::uuid()->toString(),
+            'user_id' => Auth::id(),
             'sharer_name' => Auth::user()->name,
             'week_start' => $weekStart->toDateString(),
             'week_end' => $weekEnd->toDateString(),
             'snapshot' => $snapshot,
+            'is_shared' => $isSharing,
             'show_chapters' => $request->boolean('show_chapters'),
             'show_prayers' => $request->boolean('show_prayers'),
             'show_commentary' => $request->boolean('show_commentary'),
@@ -72,7 +77,11 @@ class SharedDigestController extends Controller
             'additional_content' => $request->input('additional_content'),
         ]);
 
-        return redirect()->route('digest.share.link', $shared->uuid);
+        if ($isSharing) {
+            return redirect()->route('digest.share.link', $shared->uuid);
+        }
+
+        return redirect()->route('digest.history')->with('success', 'Digest saved for ' . $weekStart->format('M j') . '–' . $weekEnd->format('M j, Y') . '.');
     }
 
     public function link(string $uuid)
@@ -216,7 +225,7 @@ class SharedDigestController extends Controller
         return [
             'daysStudied' => $data['daysStudied'],
             'totalChapters' => $data['chaptersRead']->sum(fn($r) => $r->count()),
-            'totalPrayers' => $data['prayers']->count(),
+            'totalPrayers' => $data['prayers']->pluck('date')->unique()->count(),
             'totalNotes' => $data['chapterComments']->count() + $data['verseComments']->count(),
             'chaptersRead' => $chaptersRead,
             'prayers' => $prayers,
