@@ -7,7 +7,7 @@
 @import './style.css';
 
 /* ==========================================================================
-   DataTables Custom Styling
+   DataTables Custom Styling (DataTables v2 — uses dt-container class names)
    ========================================================================== */
 
 /* Topic Row Hover */
@@ -15,115 +15,90 @@
     background-color: #f8f9fa;
 }
 
-/* DataTable Header Styling */
-#datatable-topics thead th {
-    background-color: #4a5568;
-    color: #fff;
-    font-weight: 600;
-    border-color: #4a5568;
-    padding: 12px 15px;
-}
-
-/* DataTable Body Styling */
-#datatable-topics tbody td {
-    padding: 12px 15px;
-    vertical-align: middle;
-}
-
-/* DataTables Wrapper Layout */
-#datatable-topics_wrapper .dt-layout-row:first-child {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-/* Search Box - Force Right */
-#datatable-topics_wrapper .dt-search,
-#datatable-topics_wrapper .dataTables_filter,
-div.dataTables_filter {
-    float: right !important;
-    text-align: right !important;
-    margin-left: auto !important;
-}
-
-#datatable-topics_wrapper .dt-search input,
-#datatable-topics_wrapper .dataTables_filter input,
-div.dataTables_filter input {
-    border: 1px solid #e2e8f0 !important;
+/* Global compact sizing for all DataTables v2 controls */
+div.dt-container .dt-search input {
+    padding: 3px 8px !important;
+    font-size: 0.78rem !important;
+    border-color: #e2e8f0 !important;
     border-radius: 6px !important;
-    padding: 8px 12px !important;
-    margin-left: 8px !important;
+    margin-left: 6px !important;
+}
+div.dt-container .dt-search input:focus {
+    border-color: var(--sword-gold) !important;
+    box-shadow: 0 0 0 2px rgba(201,168,76,0.18) !important;
+    outline: none !important;
+}
+div.dt-container select.dt-input {
+    padding: 2px 6px !important;
+    font-size: 0.78rem !important;
+    border-color: #e2e8f0 !important;
+    border-radius: 6px !important;
+}
+div.dt-container .dt-length label,
+div.dt-container .dt-search label,
+div.dt-container .dt-info {
+    font-size: 0.78rem !important;
+    color: #718096 !important;
+}
+div.dt-container .dt-paging .dt-paging-button {
+    padding: 0.15em 0.5em !important;
+    font-size: 0.78rem !important;
+    min-width: 1.8em !important;
+    border-radius: 4px !important;
+}
+div.dt-container .dt-paging .dt-paging-button.current,
+div.dt-container .dt-paging .dt-paging-button.current:hover {
+    background: var(--sword-gold) !important;
+    border-color: var(--sword-gold) !important;
+    color: var(--sword-navy) !important;
+}
+div.dt-container .dt-paging .dt-paging-button:hover {
+    background: var(--sword-navy) !important;
+    border-color: var(--sword-navy) !important;
+    color: var(--sword-gold) !important;
+}
+
+/* ==========================================================================
+   Select2 — match Bootstrap form-select / sword-modal-select appearance
+   ========================================================================== */
+
+.select2-container--default .select2-selection--single {
+    height: auto !important;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+    font-size: 0.88rem !important;
+    font-weight: 400;
+    line-height: 1.5 !important;
+    color: #1a2545 !important;
+    background-color: #fff !important;
+    border: 1px solid #e2ddd5 !important;
+    border-radius: 8px !important;
+    appearance: none;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding: 0 !important;
+    line-height: 1.5 !important;
+    color: #1a2545 !important;
+    font-size: 0.88rem !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #9ca3af !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 50% !important;
+    right: 0.5rem !important;
+    transform: translateY(-50%);
+    height: auto !important;
+    width: 1.2rem !important;
+}
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--sword-gold) !important;
+    box-shadow: 0 0 0 0.2rem rgba(201,168,76,0.18) !important;
     outline: none !important;
 }
 
-#datatable-topics_wrapper .dt-search input:focus,
-#datatable-topics_wrapper .dataTables_filter input:focus,
-div.dataTables_filter input:focus {
-    border-color: #6c7ae0 !important;
-    box-shadow: 0 0 0 2px rgba(108, 122, 224, 0.2) !important;
-}
-
-/* Length Select - Force Left */
-#datatable-topics_wrapper .dt-length,
-#datatable-topics_wrapper .dataTables_length,
-div.dataTables_length {
-    float: left !important;
-}
-
-#datatable-topics_wrapper .dt-length select,
-#datatable-topics_wrapper .dataTables_length select,
-div.dataTables_length select {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 6px !important;
-    padding: 6px 10px !important;
-    margin: 0 8px !important;
-}
-
-/* Pagination Styling */
-#datatable-topics_wrapper .dt-paging,
-#datatable-topics_wrapper .dataTables_paginate,
-div.dataTables_paginate {
-    float: right !important;
-    padding-top: 10px !important;
-}
-
-#datatable-topics_wrapper .dt-paging-button,
-#datatable-topics_wrapper .paginate_button,
-.dataTables_paginate .paginate_button {
-    display: inline-block !important;
-    padding: 8px 14px !important;
-    margin: 0 3px !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 6px !important;
-    background: #fff !important;
-    color: #4a5568 !important;
-    cursor: pointer !important;
-    text-decoration: none !important;
-}
-
-#datatable-topics_wrapper .dt-paging-button:hover,
-#datatable-topics_wrapper .paginate_button:hover,
-.dataTables_paginate .paginate_button:hover {
-    background: #f7fafc !important;
-    border-color: #6c7ae0 !important;
-    color: #2d3748 !important;
-}
-
-#datatable-topics_wrapper .dt-paging-button.current,
-#datatable-topics_wrapper .paginate_button.current,
-.dataTables_paginate .paginate_button.current {
-    background: #6c7ae0 !important;
-    border-color: #6c7ae0 !important;
-    color: #fff !important;
-}
-
-#datatable-topics_wrapper .dt-paging-button.disabled,
-#datatable-topics_wrapper .paginate_button.disabled,
-.dataTables_paginate .paginate_button.disabled {
-    color: #a0aec0 !important;
-    cursor: not-allowed !important;
-    opacity: 0.6 !important;
+.card-body:has(.dt-container) {
+    padding: 0.5rem !important;
 }
 
 /* ==========================================================================
@@ -378,43 +353,6 @@ div.dataTables_paginate {
 #datatable-topics thead th {
     background-color: var(--sword-navy) !important;
     border-color: var(--sword-navy-mid) !important;
-}
-#datatable-topics_wrapper .dt-paging-button.current,
-#datatable-topics_wrapper .paginate_button.current,
-.dataTables_paginate .paginate_button.current {
-    background: var(--sword-gold) !important;
-    border-color: var(--sword-gold) !important;
-    color: var(--sword-navy) !important;
-}
-#datatable-topics_wrapper .dt-paging-button:hover,
-#datatable-topics_wrapper .paginate_button:hover,
-.dataTables_paginate .paginate_button:hover {
-    border-color: var(--sword-gold) !important;
-    color: var(--sword-navy-mid) !important;
-}
-#datatable-topics_wrapper .dt-search input:focus,
-#datatable-topics_wrapper .dataTables_filter input:focus,
-div.dataTables_filter input:focus {
-    border-color: var(--sword-gold) !important;
-    box-shadow: 0 0 0 2px rgba(201,168,76,0.18) !important;
-}
-
-/* Info Text Styling */
-#datatable-topics_wrapper .dt-info,
-#datatable-topics_wrapper .dataTables_info,
-div.dataTables_info {
-    float: left !important;
-    padding-top: 14px !important;
-    color: #718096 !important;
-    font-size: 14px !important;
-}
-
-/* Bottom row layout */
-#datatable-topics_wrapper .dt-layout-row:last-child {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
 }
 
 /* ==========================================================================

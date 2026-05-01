@@ -15,7 +15,10 @@ class SearchController extends Controller
 
         if (strlen($q) >= 2) {
             $verses = Verse::with(['chapter.book', 'translation'])
-                ->where('text', 'LIKE', '%' . $q . '%')
+                ->where(function ($query) use ($q) {
+                    $query->where('text', 'LIKE', '%' . $q . '%')
+                          ->orWhere('reference', 'LIKE', '%' . $q . '%');
+                })
                 ->orderBy('id')
                 ->limit(500)
                 ->get();

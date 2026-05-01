@@ -91,7 +91,7 @@
                                                 <span class="toggle-icon" style="color:#1a3a6b; font-size:1rem; line-height:1; user-select:none;">+</span>
                                             @endif
                                         </td>
-                                        <td style="white-space: nowrap;">
+                                        <td data-sort="{{ $first->chapter->book->name }}-{{ str_pad($first->chapter->number, 4, '0', STR_PAD_LEFT) }}-{{ str_pad($first->number, 4, '0', STR_PAD_LEFT) }}" style="white-space: nowrap;">
                                             <a class="sword-link" href="{{ route('translations.index') }}?translation={{ $first->translation_id }}&book={{ $first->chapter->book->id }}&chapter={{ $first->chapter->number }}">
                                                 {{ $reference }}
                                             </a>

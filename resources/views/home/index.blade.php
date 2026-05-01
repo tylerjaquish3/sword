@@ -94,31 +94,29 @@
     <div class="col-12">
         <div class="card" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(160deg, #fff 70%, rgba(201,168,76,0.05) 100%);">
             <div class="card-body py-3">
-                <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
-                    <div style="flex: 1; min-width: 0;">
-                        <p class="mb-2" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">
-                            <i class="mdi mdi-brain me-1"></i>Memory Verse{{ $activeMemory->verses->count() > 1 ? 's' : '' }}
-                            @if($activeMemory->title)
-                                &mdash; {{ $activeMemory->title }}
-                            @endif
-                        </p>
-                        @foreach($activeMemory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number) as $ref => $grouped)
-                        <div class="{{ !$loop->last ? 'mb-3' : '' }}">
-                            <p class="mb-1 fw-bold" style="font-size: 0.78rem; color: var(--sword-navy);">
-                                {{ $ref }}:{{ implode(',', $grouped->pluck('number')->all()) }}
-                            </p>
-                            <p class="mb-0" style="font-size: 0.88rem; color: #374151; line-height: 1.65; font-style: italic;">
-                                @foreach($grouped->sortBy('number') as $verse)
-                                    <sup style="font-style: normal; font-weight: 700; color: var(--sword-gold); font-size: 0.62rem;">{{ $verse->number }}</sup>{{ $verse->text }}{{ $loop->last ? '' : ' ' }}
-                                @endforeach
-                            </p>
-                        </div>
-                        @endforeach
-                    </div>
-                    <a href="{{ route('memory.index') }}" class="btn btn-sm flex-shrink-0" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap; align-self: flex-start;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <p class="mb-0" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">
+                        <i class="mdi mdi-brain me-1"></i>Memory Verse{{ $activeMemory->verses->count() > 1 ? 's' : '' }}
+                        @if($activeMemory->title)
+                            &mdash; {{ $activeMemory->title }}
+                        @endif
+                    </p>
+                    <a href="{{ route('memory.index') }}" class="btn btn-sm flex-shrink-0" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap;">
                         All Memory Verses <i class="mdi mdi-arrow-right"></i>
                     </a>
                 </div>
+                @foreach($activeMemory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number) as $ref => $grouped)
+                <div class="{{ !$loop->last ? 'mb-3' : '' }}">
+                    <p class="mb-1 fw-bold" style="font-size: 0.78rem; color: var(--sword-navy);">
+                        {{ $ref }}:{{ implode(',', $grouped->pluck('number')->all()) }}
+                    </p>
+                    <p class="mb-0" style="font-size: 0.88rem; color: #374151; line-height: 1.65; font-style: italic;">
+                        @foreach($grouped->sortBy('number') as $verse)
+                            <sup style="font-style: normal; font-weight: 700; color: var(--sword-gold); font-size: 0.62rem;">{{ $verse->number }}</sup>{{ $verse->text }}{{ $loop->last ? '' : ' ' }}
+                        @endforeach
+                    </p>
+                </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -130,40 +128,38 @@
     <div class="col-12">
         <div class="card" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(135deg, rgba(14,22,40,0.02) 0%, rgba(201,168,76,0.04) 100%);">
             <div class="card-body py-3">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center gap-4 flex-wrap">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <p class="mb-0" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">This Week's Digest</p>
+                    <a href="{{ route('digest.weekly') }}" class="btn btn-sm flex-shrink-0" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap;">
+                        View Full Digest <i class="mdi mdi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="d-flex align-items-center gap-4 flex-wrap">
+                    <p class="mb-0" style="font-size: 0.78rem; color: #9ca3af;">{{ now()->startOfWeek()->format('M j') }} – {{ now()->endOfWeek()->format('M j') }}</p>
+                    <div class="text-center">
+                        <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['days'] }}</div>
+                        <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Days</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['chapters'] }}</div>
+                        <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Chapters</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['prayers'] }}</div>
+                        <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Prayers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['notes'] }}</div>
+                        <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Notes</div>
+                    </div>
+                    @if($digestPastNote)
+                    <div class="d-none d-xl-flex align-items-center ps-4" style="border-left: 1px solid rgba(201,168,76,0.3); max-width: 300px;">
                         <div>
-                            <p class="mb-0" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sword-gold); font-weight: 700;">This Week's Digest</p>
-                            <p class="mb-0" style="font-size: 0.78rem; color: #9ca3af;">{{ now()->startOfWeek()->format('M j') }} – {{ now()->endOfWeek()->format('M j') }}</p>
-                        </div>
-                        <div class="d-flex gap-4">
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['days'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Days</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['chapters'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Chapters</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['prayers'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Prayers</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold" style="color: var(--sword-navy); font-size: 1.05rem;">{{ $digestStats['notes'] }}</div>
-                                <div style="color: #9ca3af; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em;">Notes</div>
-                            </div>
-                        </div>
-                        @if($digestPastNote)
-                        <div class="d-none d-xl-block ps-4" style="border-left: 1px solid rgba(201,168,76,0.3); max-width: 300px;">
                             <p class="mb-1" style="font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-gold);">From your notes, one year ago</p>
                             <p class="mb-0" style="font-size: 0.78rem; color: #4b5563; line-height: 1.4; font-style: italic;">"{{ Str::limit($digestPastNote->comment, 80) }}"</p>
                         </div>
-                        @endif
                     </div>
-                    <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.78rem; white-space: nowrap;">
-                        View Full Digest <i class="mdi mdi-arrow-right"></i>
-                    </a>
+                    @endif
                 </div>
             </div>
         </div>

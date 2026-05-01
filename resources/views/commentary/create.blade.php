@@ -24,7 +24,7 @@
 </div>
 
 <div class="row mt-3">
-    <div class="col-md-8">
+    <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title mb-0">Commentary Details</h4>
@@ -93,17 +93,6 @@
                         <button type="submit" class="btn btn-primary" id="save-btn">Save Commentary</button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title mb-0">Tips</h4>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-2"><strong>Chapter Comments:</strong> Use for commentary on an entire chapter's theme or context.</p>
-                <p class="text-muted mb-0"><strong>Verse Comments:</strong> Use for specific verse-by-verse analysis or notes.</p>
             </div>
         </div>
     </div>
