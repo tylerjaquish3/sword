@@ -43,9 +43,10 @@
                                 @endforeach
                                 <td class="text-center">
                                     <div class="d-flex gap-2 justify-content-center">
-                                        <button type="button" class="btn btn-sm btn-outline-primary btn-icon" data-bs-toggle="modal" data-bs-target="#sendPrayerModal" data-date="{{ $date }}" data-prayers='@json($dayPrayers)'>
+                                        {{-- email button hidden until send-prayer feature is built --}}
+                                        {{-- <button type="button" class="btn btn-sm btn-outline-primary btn-icon" data-bs-toggle="modal" data-bs-target="#sendPrayerModal" data-date="{{ $date }}" data-prayers='@json($dayPrayers)'>
                                             <i class="mdi mdi-email-outline"></i>
-                                        </button>
+                                        </button> --}}
                                         <button type="button" class="btn btn-sm btn-outline-danger btn-icon btn-delete-prayer" data-date="{{ $date }}">
                                             <i class="mdi mdi-trash-can-outline"></i>
                                         </button>

@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -35,13 +35,26 @@ class RegisterController extends Controller
             return back()->withErrors(['g-recaptcha-response' => 'Please complete the CAPTCHA.'])->withInput();
         }
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_active' => false,
             'is_admin' => false,
         ]);
+
+        $adminEmail = env('ADMIN_EMAIL');
+        if ($adminEmail) {
+            $name      = $user->name;
+            $email     = $user->email;
+            $createdAt = now()->toDateTimeString();
+            dispatch(function () use ($adminEmail, $name, $email, $createdAt) {
+                Mail::raw(
+                    "New user registered and is pending activation:\n\nName: {$name}\nEmail: {$email}\nRegistered: {$createdAt}",
+                    fn ($msg) => $msg->to($adminEmail)->subject('Sword – New Pending User')
+                );
+            })->afterResponse();
+        }
 
         return redirect()->route('login')
             ->with('warning', 'Your account has been created and is pending activation. An administrator will review your account shortly.');

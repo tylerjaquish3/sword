@@ -35,7 +35,7 @@
 </div>
 
 <div class="row mt-2">
-    <div id="reading-col" class="col-sm-12 grid-margin grid-margin-md-0 stretch-card">
+    <div id="reading-col" class="col-12 grid-margin grid-margin-md-0 stretch-card">
         <div class="card">
             <div class="card-header p-0">
                 <div class="reader-selector-bar">
