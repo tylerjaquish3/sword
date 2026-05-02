@@ -24,7 +24,7 @@ class HomeController extends Controller
         
         // Dashboard metrics
         $prayerCount = Prayer::distinct('date')->count('date');
-        $topicCount = Topic::count();
+        $topicCount = Topic::where('user_id', Auth::id())->count();
         $chapterCommentCount = ChapterComment::count();
         $verseCommentCount = VerseComment::count();
         $commentaryCount = $chapterCommentCount + $verseCommentCount;
@@ -32,7 +32,7 @@ class HomeController extends Controller
         // Bible stats
         $bookCount = Book::count();
         $chapterCount = Chapter::count();
-        $verseCount = Verse::where('translation_id', Auth::user()->default_translation_id)->count();
+        $verseCount = \DB::table(\DB::raw('(SELECT DISTINCT chapter_id, number FROM verses) as sub'))->count();
         $translationCount = Translation::count();
         
         // Prayer breakdown by type

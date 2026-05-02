@@ -18,7 +18,7 @@ class TopicController extends Controller
      */
     public function index()
     {
-        $topics = Topic::all();
+        $topics = Topic::where('user_id', Auth::id())->get();
 
         $books = Book::withCount('chapters')->get();
         $chaptersReadByBook = UserRead::where('user_id', Auth::id())
@@ -46,9 +46,10 @@ class TopicController extends Controller
         ]);
 
         Topic::create([
-            'name' => $request->name,
+            'user_id'     => Auth::id(),
+            'name'        => $request->name,
             'description' => $request->description,
-            'keywords' => $request->keywords,
+            'keywords'    => $request->keywords,
         ]);
 
         if ($request->ajax()) {
@@ -116,7 +117,7 @@ class TopicController extends Controller
     {
         $request->validate(['note' => 'required|string']);
 
-        $note = $topic->notes()->create(['note' => $request->note]);
+        $note = $topic->notes()->create(['user_id' => Auth::id(), 'note' => $request->note]);
 
         if ($request->filled('verse_ids')) {
             $note->verses()->attach(

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\ChapterComment;
+use App\Models\UserBookMetadata;
 use App\Models\UserRead;
 use App\Models\Verse;
 use App\Models\VerseComment;
@@ -21,12 +22,16 @@ class BookController extends Controller
 
     public function show(Book $book)
     {
+        $meta = UserBookMetadata::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->first();
+
         return response()->json([
             'id'          => $book->id,
             'name'        => $book->name,
-            'author'      => $book->author,
-            'description' => $book->description,
-            'timeframe'   => $book->timeframe,
+            'author'      => $meta?->author,
+            'description' => $meta?->description,
+            'timeframe'   => $meta?->timeframe,
         ]);
     }
 
@@ -38,11 +43,10 @@ class BookController extends Controller
             'timeframe'   => 'nullable|string|max:255',
         ]);
 
-        $book->update([
-            'author'      => $request->author,
-            'description' => $request->description,
-            'timeframe'   => $request->timeframe,
-        ]);
+        UserBookMetadata::updateOrCreate(
+            ['user_id' => Auth::id(), 'book_id' => $book->id],
+            $request->only(['author', 'description', 'timeframe'])
+        );
 
         return response()->json(['success' => true]);
     }
@@ -101,6 +105,14 @@ class BookController extends Controller
             ->map(fn($count, $text) => ['text' => $text, 'size' => $count])
             ->values();
 
+        // Merge user-specific metadata onto the book object for the view
+        $meta = UserBookMetadata::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->first();
+        foreach (['author', 'timeframe', 'description', 'history', 'themes', 'notes'] as $field) {
+            $book->$field = $meta?->$field;
+        }
+
         return view('books.study', compact('book', 'chapterCount', 'chaptersRead', 'commentaryCount', 'wordCloud', 'bookNotes'));
     }
 
@@ -115,7 +127,10 @@ class BookController extends Controller
             'notes'       => 'nullable|string',
         ]);
 
-        $book->update($request->only(['author', 'timeframe', 'description', 'history', 'themes', 'notes']));
+        UserBookMetadata::updateOrCreate(
+            ['user_id' => Auth::id(), 'book_id' => $book->id],
+            $request->only(['author', 'timeframe', 'description', 'history', 'themes', 'notes'])
+        );
 
         return redirect()->route('books.study', $book)->with('success', 'Study notes saved.');
     }

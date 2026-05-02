@@ -8,12 +8,10 @@
     <div class="col-sm-6 mb-4 mb-xl-0">
         <div class="d-lg-flex align-items-center">
             <div>
-                <h3 class="font-weight-bold mb-2" style="color: var(--sword-navy);">Hi, welcome back!</h3>
+                <h3 class="font-weight-bold mb-2" style="color: var(--sword-navy);">Welcome, {{ explode(' ', trim(Auth::user()->name))[0] }}!</h3>
                 <p class="page-subtitle mb-0">
                     @if($lastLogin)
                         Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
-                    @else
-                        Welcome!
                     @endif
                 </p>
             </div>

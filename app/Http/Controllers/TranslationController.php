@@ -7,9 +7,8 @@ use App\Models\Chapter;
 use App\Models\Translation;
 use App\Models\UserLogin;
 use App\Models\Verse;
+use App\Models\UserVersePreference;
 use App\Models\VerseComment;
-use App\Models\VerseFavorite;
-use App\Models\VerseHighlight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -60,18 +59,18 @@ class TranslationController extends Controller
             ->pluck('verse_number')
             ->toArray();
 
-        // Get highlights and favorites keyed by verse_number
-        $highlights = VerseHighlight::where('chapter_id', $chapter->id)
-            ->pluck('color', 'verse_number');
+        // Get user preferences (highlights, favorites, prefix) keyed by verse_number
+        $prefs = UserVersePreference::where('user_id', Auth::id())
+            ->where('chapter_id', $chapter->id)
+            ->get()
+            ->keyBy('verse_number');
 
-        $favoriteNumbers = VerseFavorite::where('chapter_id', $chapter->id)
-            ->pluck('verse_number')
-            ->toArray();
-
-        $verses = $verses->map(function ($verse) use ($verseNumbersWithCommentary, $highlights, $favoriteNumbers) {
+        $verses = $verses->map(function ($verse) use ($verseNumbersWithCommentary, $prefs) {
+            $pref = $prefs[$verse->number] ?? null;
             $verse->has_commentary  = in_array($verse->number, $verseNumbersWithCommentary);
-            $verse->highlight_color = $highlights[$verse->number] ?? null;
-            $verse->is_favorite     = in_array($verse->number, $favoriteNumbers);
+            $verse->highlight_color = $pref?->highlight_color;
+            $verse->is_favorite     = (bool) ($pref?->is_favorite);
+            $verse->prefix          = $pref?->prefix;
             return $verse;
         });
 
@@ -91,20 +90,19 @@ class TranslationController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $highlight = VerseHighlight::where('chapter_id', $verse->chapter_id)
+        $pref = UserVersePreference::where('user_id', Auth::id())
+            ->where('chapter_id', $verse->chapter_id)
             ->where('verse_number', $verse->number)
             ->first();
 
-        $isFavorite = VerseFavorite::where('chapter_id', $verse->chapter_id)
-            ->where('verse_number', $verse->number)
-            ->exists();
+        $verse->prefix = $pref?->prefix;
 
         return response()->json([
             'verse'           => $verse,
             'reference'       => $verse->chapter->book->name . ' ' . $verse->chapter->number . ':' . $verse->number,
             'comments'        => $comments,
-            'highlight_color' => $highlight?->color,
-            'is_favorite'     => $isFavorite,
+            'highlight_color' => $pref?->highlight_color,
+            'is_favorite'     => (bool) ($pref?->is_favorite),
         ]);
     }
 
@@ -154,17 +152,10 @@ class TranslationController extends Controller
             $prefix .= '<p>';
         }
 
-        // Get all verses with the same chapter and verse number across all translations
-        $matchingVerses = Verse::where('chapter_id', $verse->chapter_id)
-            ->where('number', $verse->number)
-            ->get();
-
-        // Update the prefix on all matching verses
-        foreach ($matchingVerses as $matchingVerse) {
-            $matchingVerse->update([
-                'prefix' => $prefix ?: null
-            ]);
-        }
+        UserVersePreference::updateOrCreate(
+            ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $verse->number],
+            ['prefix' => $prefix ?: null]
+        );
 
         // Create a single comment (linked by chapter_id and verse_number, not verse_id)
         if ($request->commentary) {

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VerseHighlight;
+use App\Models\UserVersePreference;
 use App\Models\Verse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VerseHighlightController extends Controller
 {
@@ -17,26 +18,21 @@ class VerseHighlightController extends Controller
 
         $verse = Verse::find($request->verse_id);
 
-        $existing = VerseHighlight::where('chapter_id', $verse->chapter_id)
+        $pref = UserVersePreference::where('user_id', Auth::id())
+            ->where('chapter_id', $verse->chapter_id)
             ->where('verse_number', $verse->number)
             ->first();
 
-        // Same color → remove (toggle off)
-        if ($existing && $existing->color === $request->color) {
-            $existing->delete();
+        // Same color → remove highlight (toggle off)
+        if ($pref && $pref->highlight_color === $request->color) {
+            $pref->update(['highlight_color' => null]);
             return response()->json(['color' => null]);
         }
 
-        // Different color or no highlight → set
-        if ($existing) {
-            $existing->update(['color' => $request->color]);
-        } else {
-            VerseHighlight::create([
-                'chapter_id'   => $verse->chapter_id,
-                'verse_number' => $verse->number,
-                'color'        => $request->color,
-            ]);
-        }
+        UserVersePreference::updateOrCreate(
+            ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $verse->number],
+            ['highlight_color' => $request->color]
+        );
 
         return response()->json(['color' => $request->color]);
     }

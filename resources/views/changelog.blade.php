@@ -14,6 +14,48 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.5.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.5</span>
+                <div>
+                    <div class="changelog-title">Multi-User Support</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Verse highlights, favorites, and section formatting are now per-user — changes you make are only visible to you
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Book study notes (author, timeframe, description, history, themes) are now per-user
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Topics and topic notes are now per-user — each user builds their own set of study topics independently
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Dashboard greeting now shows your first name
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Dashboard verse count now shows the correct total Bible verse count for all users, not 0 for new accounts
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Dashboard topic count now reflects only your own topics
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.4.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +64,6 @@
                     <div class="changelog-title">Digest History, Reading Log & Dashboard</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

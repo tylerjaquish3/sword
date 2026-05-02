@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VerseFavorite;
+use App\Models\UserVersePreference;
 use App\Models\Verse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VerseFavoriteController extends Controller
 {
@@ -16,19 +17,20 @@ class VerseFavoriteController extends Controller
 
         $verse = Verse::find($request->verse_id);
 
-        $existing = VerseFavorite::where('chapter_id', $verse->chapter_id)
+        $pref = UserVersePreference::where('user_id', Auth::id())
+            ->where('chapter_id', $verse->chapter_id)
             ->where('verse_number', $verse->number)
             ->first();
 
-        if ($existing) {
-            $existing->delete();
+        if ($pref?->is_favorite) {
+            $pref->update(['is_favorite' => false]);
             return response()->json(['favorite' => false]);
         }
 
-        VerseFavorite::create([
-            'chapter_id'   => $verse->chapter_id,
-            'verse_number' => $verse->number,
-        ]);
+        UserVersePreference::updateOrCreate(
+            ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $verse->number],
+            ['is_favorite' => true]
+        );
 
         return response()->json(['favorite' => true]);
     }
