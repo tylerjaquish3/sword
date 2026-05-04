@@ -83,9 +83,24 @@ $formatVerseRange = function($numbers) {
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100" style="border-top: 3px solid var(--sword-gold); background: linear-gradient(160deg, #fff 70%, rgba(201,168,76,0.05) 100%);">
             <div class="card-body">
-                <h5 class="card-title mb-3">
-                    {{ $memory->title ?? 'Memory Goal #' . $memory->id }}
-                </h5>
+                @php
+                    $cardMasteries = collect($masteryByMemory[$memory->id] ?? [])->filter(fn($m) => $m['total'] > 0);
+                    $cardPct = $cardMasteries->count() > 0 ? (int) round($cardMasteries->avg('pct')) : null;
+                    if ($cardPct !== null) {
+                        $cardBg  = $cardPct >= 80 ? 'rgba(34,197,94,0.12)' : ($cardPct >= 50 ? 'rgba(201,168,76,0.15)' : 'rgba(239,68,68,0.10)');
+                        $cardClr = $cardPct >= 80 ? '#16a34a' : ($cardPct >= 50 ? 'var(--sword-gold)' : '#dc2626');
+                        $cardBdr = $cardPct >= 80 ? 'rgba(34,197,94,0.3)'  : ($cardPct >= 50 ? 'rgba(201,168,76,0.35)' : 'rgba(239,68,68,0.25)');
+                    }
+                @endphp
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">
+                        {{ $memory->title ?? 'Memory Goal #' . $memory->id }}
+                    </h5>
+                    <span id="card-mastery-{{ $memory->id }}"
+                          style="display:{{ $cardPct !== null ? 'inline-block' : 'none' }}; font-size:0.72rem; padding:3px 10px; border-radius:12px; font-weight:600; white-space:nowrap; flex-shrink:0; margin-left:8px;{{ $cardPct !== null ? ' background:' . $cardBg . '; color:' . $cardClr . '; border:1px solid ' . $cardBdr . ';' : '' }}">
+                        {{ $cardPct !== null ? $cardPct . '% mastery' : '' }}
+                    </span>
+                </div>
                 
                 <div class="mb-3">
                     <small class="text-muted">
@@ -119,6 +134,17 @@ $formatVerseRange = function($numbers) {
                 </div>
                 @endif
             </div>
+            @php
+                $quizVerses = $memory->verses->sortBy(fn($v) => sprintf('%05d-%05d-%05d', $v->chapter->book->id, $v->chapter->number, $v->number))->map(fn($v) => [
+                    'id'        => $v->id,
+                    'book'      => $v->chapter->book->name,
+                    'chapter'   => $v->chapter->number,
+                    'verse'     => $v->number,
+                    'reference' => $v->chapter->book->name . ' ' . $v->chapter->number . ':' . $v->number,
+                    'text'      => $v->text,
+                    'mastery'   => $masteryByMemory[$memory->id][$v->id] ?? ['correct' => 0, 'total' => 0, 'pct' => null],
+                ])->values();
+            @endphp
             <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-sm btn-outline-secondary edit-memory-btn"
@@ -138,6 +164,14 @@ $formatVerseRange = function($numbers) {
                             <i class="mdi mdi-delete"></i>
                         </button>
                     </form>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-warning take-quiz-btn"
+                            title="Take Quiz"
+                            data-memory-id="{{ $memory->id }}"
+                            data-memory-title="{{ $memory->title ?? 'Memory Goal #' . $memory->id }}"
+                            data-quiz-verses='@json($quizVerses)'>
+                        <i class="mdi mdi-head-cog me-1"></i>Quiz
+                    </button>
                 </div>
                 <form action="{{ route('memory.complete', $memory) }}" method="POST">
                     @csrf
@@ -554,6 +588,115 @@ $formatVerseRange = function($numbers) {
     </div>
 </div>
 
+<!-- Quiz Modal -->
+<div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-brain"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="quizModalLabel">Scripture Quiz</h5>
+                        <p class="sword-modal-subtitle mb-0" id="quizModalSubtitle">Loading…</p>
+                    </div>
+                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+
+            <div class="modal-body sword-modal-body p-0">
+
+                {{-- Phase: question --}}
+                <div id="quiz-phase-question" class="quiz-phase p-4">
+                    <div class="sword-modal-section mb-3">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                            <span class="sword-modal-section-title" id="quiz-progress-label">Verse 1 of N</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <p class="mb-0 fw-bold" style="font-size:1.15rem; color:var(--sword-navy);" id="quiz-reference"></p>
+                        </div>
+                    </div>
+                    <div class="sword-modal-section">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-pencil-outline"></i></span>
+                            <span class="sword-modal-section-title">Type the verse from memory</span>
+                        </div>
+                        <div class="sword-modal-section-body p-0">
+                            <textarea id="quiz-answer-input"
+                                      class="form-control sword-modal-textarea"
+                                      rows="4"
+                                      placeholder="Type the verse text here…"
+                                      style="border-radius:0 0 12px 12px; border:none; resize:none;"></textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3 gap-2">
+                        <button type="button" class="btn sword-modal-btn-cancel" id="quiz-skip-btn">
+                            <i class="mdi mdi-skip-next me-1"></i>Skip
+                        </button>
+                        <button type="button" class="btn sword-modal-btn-save" id="quiz-reveal-btn">
+                            <i class="mdi mdi-eye-outline me-1"></i>Reveal Answer
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Phase: answer --}}
+                <div id="quiz-phase-answer" class="quiz-phase p-4" style="display:none;">
+                    <div class="text-center mb-4">
+                        <div id="quiz-score-badge" style="display:inline-flex; align-items:center; justify-content:center; width:84px; height:84px; border-radius:50%; font-size:1.5rem; font-weight:700; border:3px solid;"></div>
+                        <p id="quiz-score-verdict" class="mb-0 mt-2 fw-semibold" style="font-size:0.95rem;"></p>
+                    </div>
+                    <div class="sword-modal-section mb-3">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                            <span class="sword-modal-section-title" id="quiz-answer-reference-label"></span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <p class="mb-1" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af;">Your answer</p>
+                            <p id="quiz-user-answer-display"
+                               style="font-size:0.9rem; line-height:1.6; color:#6b7280; font-style:italic; background:#f9f8f5; padding:10px 12px; border-radius:8px; border:1px solid #ede8df; margin-bottom:12px;"></p>
+                            <p class="mb-1" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af;">Correct verse</p>
+                            <p id="quiz-correct-answer-display"
+                               style="font-size:0.9rem; line-height:1.6; color:#1a2545; font-style:italic; margin-bottom:0;"></p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn sword-modal-btn-save" id="quiz-next-btn">
+                            Next Verse <i class="mdi mdi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Phase: summary --}}
+                <div id="quiz-phase-summary" class="quiz-phase p-4" style="display:none;">
+                    <div class="sword-modal-section">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-trophy-outline"></i></span>
+                            <span class="sword-modal-section-title">Session Complete</span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <div class="text-center mb-4">
+                                <p class="mb-1" style="font-size:2.5rem; font-weight:700; color:var(--sword-navy);" id="quiz-summary-score"></p>
+                                <p class="text-muted mb-0" style="font-size:0.85rem;">verses correct this session</p>
+                            </div>
+                            <div id="quiz-summary-verse-list"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Done</button>
+                        <button type="button" class="btn sword-modal-btn-save" id="quiz-restart-btn">
+                            <i class="mdi mdi-restart me-1"></i>Quiz Again
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 
@@ -920,6 +1063,189 @@ $(document).ready(function() {
         $('#submitMemoryBtn').prop('disabled', true);
         $('#verse-preview-row').hide();
         $('#verse-preview').html('');
+    });
+
+    // =========================================================
+    // Scripture Quiz State Machine
+    // =========================================================
+
+    let quiz = {
+        memoryId:       null,
+        verses:         [],
+        index:          0,
+        sessionResults: [],
+        attemptUrl:     '{{ route("quiz.attempt") }}',
+    };
+
+    function quizCalcSimilarity(typed, actual) {
+        const normalize = s => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 0);
+        const typedWords  = normalize(typed);
+        const actualWords = normalize(actual);
+        if (actualWords.length === 0 || typedWords.length === 0) return 0;
+        // Bag-of-words match: count how many words from the actual verse appear in the typed answer (respecting frequency)
+        const freq = {};
+        typedWords.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+        let matched = 0;
+        actualWords.forEach(function(w) {
+            if (freq[w] && freq[w] > 0) { matched++; freq[w]--; }
+        });
+        return Math.round((matched / actualWords.length) * 100);
+    }
+
+    function quizScoreStyle(pct) {
+        if (pct >= 80) return { bg: 'rgba(34,197,94,0.1)', color: '#16a34a', border: 'rgba(34,197,94,0.4)', verdict: 'Correct!' };
+        if (pct >= 50) return { bg: 'rgba(201,168,76,0.1)', color: 'var(--sword-gold)', border: 'rgba(201,168,76,0.5)', verdict: 'Almost There' };
+        return { bg: 'rgba(239,68,68,0.08)', color: '#dc2626', border: 'rgba(239,68,68,0.3)', verdict: 'Keep Practicing' };
+    }
+
+    function quizShowPhase(phase) {
+        $('#quiz-phase-question, #quiz-phase-answer, #quiz-phase-summary').hide();
+        $('#quiz-phase-' + phase).show();
+    }
+
+    function quizRenderCurrentVerse() {
+        const v = quiz.verses[quiz.index];
+        const n = quiz.verses.length;
+        $('#quiz-progress-label').text('Verse ' + (quiz.index + 1) + ' of ' + n);
+        $('#quiz-reference').text(v.reference);
+        $('#quiz-answer-input').val('').trigger('focus');
+        $('#quizModalSubtitle').text((quiz.index + 1) + ' / ' + n + ' — ' + v.book);
+        quizShowPhase('question');
+    }
+
+    function quizUpdateCardBadge() {
+        const versesWithData = quiz.verses.filter(v => v.mastery && v.mastery.total > 0);
+        if (!versesWithData.length) return;
+        const avgPct = Math.round(versesWithData.reduce((sum, v) => sum + v.mastery.pct, 0) / versesWithData.length);
+        const style  = quizScoreStyle(avgPct);
+        const bg     = avgPct >= 80 ? 'rgba(34,197,94,0.12)' : (avgPct >= 50 ? 'rgba(201,168,76,0.15)' : 'rgba(239,68,68,0.10)');
+        const bdr    = avgPct >= 80 ? 'rgba(34,197,94,0.3)'  : (avgPct >= 50 ? 'rgba(201,168,76,0.35)' : 'rgba(239,68,68,0.25)');
+        $('#card-mastery-' + quiz.memoryId)
+            .css({ background: bg, color: style.color, border: '1px solid ' + bdr, display: 'inline-block' })
+            .text(avgPct + '% mastery');
+    }
+
+    function quizRecordAttempt(verseObj, correct) {
+        const deferred = $.Deferred();
+        $.ajax({
+            url:  quiz.attemptUrl,
+            type: 'POST',
+            data: {
+                _token:    '{{ csrf_token() }}',
+                memory_id: quiz.memoryId,
+                verse_id:  verseObj.id,
+                correct:   correct ? 1 : 0,
+            },
+            success: function(resp) {
+                verseObj.mastery = { correct: resp.correct, total: resp.total, pct: resp.pct };
+                quizUpdateCardBadge();
+                deferred.resolve(resp);
+            },
+            error: function() {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Could not save attempt. Please try again.' });
+                deferred.reject();
+            }
+        });
+        return deferred.promise();
+    }
+
+    function quizShowAnswer(typed, verseObj) {
+        const pct     = quizCalcSimilarity(typed, verseObj.text);
+        const correct = pct >= 80;
+        const style   = quizScoreStyle(pct);
+
+        // Score badge
+        $('#quiz-score-badge').css({
+            background: style.bg,
+            color:      style.color,
+            border:     '3px solid ' + style.border,
+        }).text(pct + '%');
+        $('#quiz-score-verdict').css('color', style.color).text(style.verdict);
+
+        // Answers
+        $('#quiz-answer-reference-label').text(verseObj.reference);
+        $('#quiz-user-answer-display').text(typed || '(nothing typed)');
+        $('#quiz-correct-answer-display').text(verseObj.text);
+
+        // Record attempt — fire and forget; pill updates when response arrives
+        quiz.sessionResults.push({ verse: verseObj, correct: correct, score: pct });
+        quizRecordAttempt(verseObj, correct);
+
+        quizShowPhase('answer');
+    }
+
+    function quizAdvance() {
+        quiz.index++;
+        if (quiz.index < quiz.verses.length) {
+            quizRenderCurrentVerse();
+        } else {
+            quizShowSummary();
+        }
+    }
+
+    function quizShowSummary() {
+        const correctCount = quiz.sessionResults.filter(r => r.correct).length;
+        const total        = quiz.sessionResults.length;
+        $('#quiz-summary-score').text(correctCount + ' / ' + total);
+        let html = '';
+        quiz.sessionResults.forEach(function(r) {
+            const style    = quizScoreStyle(r.score);
+            const allTime  = (r.verse.mastery && r.verse.mastery.pct !== null)
+                ? ' <small class="text-muted">(' + r.verse.mastery.pct + '% all-time)</small>'
+                : '';
+            html += '<div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="font-size:0.85rem;">' +
+                    '<span>' + r.verse.reference + allTime + '</span>' +
+                    '<span class="badge ms-2" style="background:' + style.bg + '; color:' + style.color + '; border:1px solid ' + style.border + '; font-weight:600;">' + r.score + '%</span>' +
+                    '</div>';
+        });
+        $('#quiz-summary-verse-list').html(html || '<p class="text-muted">No verses attempted.</p>');
+        quizShowPhase('summary');
+        $('#quizModalSubtitle').text('Session complete — ' + correctCount + '/' + total + ' correct');
+    }
+
+    $(document).on('click', '.take-quiz-btn', function() {
+        const btn = $(this);
+        quiz.memoryId       = btn.data('memory-id');
+        quiz.verses         = btn.data('quiz-verses');
+        quiz.index          = 0;
+        quiz.sessionResults = [];
+        quiz.verses.sort(() => Math.random() - 0.5);
+        $('#quizModalLabel').text(btn.data('memory-title'));
+        quizRenderCurrentVerse();
+        // Hide verse text on all active memory cards so nothing is visible through the overlay
+        $('.verses-list').addClass('quiz-verses-hidden').css('visibility', 'hidden');
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('quizModal')).show();
+    });
+
+    $('#quiz-reveal-btn').on('click', function() {
+        const v     = quiz.verses[quiz.index];
+        const typed = $('#quiz-answer-input').val().trim();
+        quizShowAnswer(typed, v);
+    });
+
+    $('#quiz-skip-btn').on('click', function() {
+        const v = quiz.verses[quiz.index];
+        quizShowAnswer('', v);
+    });
+
+    $('#quiz-next-btn').on('click', quizAdvance);
+
+    $('#quiz-restart-btn').on('click', function() {
+        quiz.index          = 0;
+        quiz.sessionResults = [];
+        quiz.verses.sort(() => Math.random() - 0.5);
+        quizRenderCurrentVerse();
+    });
+
+    $('#quizModal').on('hidden.bs.modal', function() {
+        quiz.memoryId       = null;
+        quiz.verses         = [];
+        quiz.index          = 0;
+        quiz.sessionResults = [];
+        quizShowPhase('question');
+        $('#quiz-answer-input').val('');
+        // Restore verse text on cards
+        $('.verses-list').removeClass('quiz-verses-hidden').css('visibility', '');
     });
 });
 </script>

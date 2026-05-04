@@ -190,3 +190,45 @@ All models use `protected $guarded = []` for mass assignment flexibility:
 - Frontend assets are compiled with Vite (replaces Laravel Mix)
 - Verse text is indexed for full-text search capabilities
 - The app tracks user study patterns, commentary, and prayer history
+
+## Changelog
+
+Whenever pushing or completing a meaningful set of changes, update `resources/views/changelog.blade.php` with a new version entry. Follow this format exactly:
+
+1. **Bump the version number** — increment the minor version (v1.6 → v1.7, etc.)
+2. **Move the `Latest` badge** — remove it from the previous top entry and add it to the new one
+3. **Add the new entry above the previous top entry**, using this structure:
+
+```blade
+{{-- ── vX.Y.0 ──────────────────────────────────────────────── --}}
+<div class="changelog-entry mb-4">
+    <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+        <span class="changelog-version">vX.Y</span>
+        <div>
+            <div class="changelog-title">Short Feature Title</div>
+            <div class="changelog-date">Month YYYY</div>
+        </div>
+        <span class="badge changelog-badge-latest ms-auto">Latest</span>
+    </div>
+    <div class="card changelog-card">
+        <div class="card-body">
+            <ul class="changelog-list">
+                <li>
+                    <span class="changelog-tag tag-new">New</span>
+                    Description of what was added
+                </li>
+                <li>
+                    <span class="changelog-tag tag-improved">Improved</span>
+                    Description of what was enhanced
+                </li>
+                <li>
+                    <span class="changelog-tag tag-fix">Fix</span>
+                    Description of what was fixed
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+```
+
+**Tag types**: `tag-new` (blue) for new features, `tag-improved` (gold) for enhancements, `tag-fix` (green) for bug fixes.

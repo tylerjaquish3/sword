@@ -6,6 +6,7 @@ use App\Models\Memory;
 use App\Models\Book;
 use App\Models\Translation;
 use App\Models\Verse;
+use App\Models\VerseQuizAttempt;
 use Illuminate\Http\Request;
 
 class MemoryController extends Controller
@@ -22,11 +23,16 @@ class MemoryController extends Controller
             ->orderBy('completed_at', 'desc')
             ->get();
 
+        $masteryByMemory = [];
+        foreach ($activeMemories as $memory) {
+            $masteryByMemory[$memory->id] = VerseQuizAttempt::masteryForMemory($memory->id);
+        }
+
         $books = Book::orderBy('id')->get();
         $translations = Translation::all();
         $defaultTranslationId = auth()->user()->default_translation_id;
 
-        return view('memory.index', compact('activeMemories', 'completedMemories', 'books', 'translations', 'defaultTranslationId'));
+        return view('memory.index', compact('activeMemories', 'completedMemories', 'masteryByMemory', 'books', 'translations', 'defaultTranslationId'));
     }
 
     public function store(Request $request)

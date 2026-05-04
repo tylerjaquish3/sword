@@ -14,6 +14,44 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.7.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.7</span>
+                <div>
+                    <div class="changelog-title">Scripture Memory Quiz</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Scripture Memory Flashcard Quiz — each active memory card now has a Quiz button that opens an interactive modal to drill your verses
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Quiz shows the verse reference, you type from memory, then reveal the correct text — the system automatically scores how closely your answer matches
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Mastery badge on each memory card shows your average quiz score across all verses in that set, updating live after each attempt
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Quiz session summary shows per-verse similarity scores and all-time mastery percentages
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Verse text on memory cards is hidden while the quiz modal is open so you can't peek at the answer
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.6.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +60,6 @@
                     <div class="changelog-title">Digest & Memory Improvements</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

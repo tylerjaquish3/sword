@@ -12,6 +12,7 @@ use App\Models\Topic;
 use App\Models\Translation;
 use App\Models\UserLogin;
 use App\Models\UserRead;
+use App\Models\UserVersePreference;
 use App\Models\Verse;
 use App\Models\VerseComment;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,20 @@ class HomeController extends Controller
         $chapterCount = Chapter::count();
         $verseCount = \DB::table(\DB::raw('(SELECT DISTINCT chapter_id, number FROM verses) as sub'))->count();
         $translationCount = Translation::count();
+
+        // Bible reading progress
+        $totalBibleChapters = $chapterCount;
+        $chaptersRead = UserRead::where('user_id', Auth::id())
+            ->select('book_id', 'chapter_number')
+            ->distinct()
+            ->count();
+
+        // Verse highlights by color/type
+        $highlightsByColor = UserVersePreference::where('user_id', Auth::id())
+            ->whereNotNull('highlight_color')
+            ->selectRaw('highlight_color, count(*) as total')
+            ->groupBy('highlight_color')
+            ->pluck('total', 'highlight_color');
         
         // Prayer breakdown by type
         $prayersByType = Prayer::selectRaw('prayer_type_id, count(*) as count')
@@ -149,6 +164,9 @@ class HomeController extends Controller
             'chapterCount',
             'verseCount',
             'translationCount',
+            'totalBibleChapters',
+            'chaptersRead',
+            'highlightsByColor',
             'prayersByType',
             'recentPrayers',
             'recentComments',

@@ -15,7 +15,7 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 
 ## Tech Stack
 
-- **Backend:** Laravel 10, PHP 8.1+
+- **Backend:** Laravel 11, PHP 8.3+
 - **Database:** SQLite (`database/database.sqlite`)
 - **Frontend:** Blade templates, Bootstrap 5, jQuery 4, DataTables, Chart.js, Moment.js
 - **Build tool:** Vite
@@ -45,8 +45,6 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 
 - Prophecy & Fulfillment Tracker — A specialized version of verse links: tag OT verses as prophecies and link them to NT fulfillments. A dedicated browser shows pairs side-by-side. Just needs a link_type column on verse_links.
 
-- Scripture Memory Flashcard Quiz — Turn memory goals into interactive quizzes. Show the reference, user types the verse, reveal the text, mark Got It / Try Again. Track mastery percentage per verse over time.
-
 - Reading Plan Builder — Create structured plans ("NT in 90 days," custom). Daily assignments surface on the dashboard. Today's reading shows "Day 14 of 90" in the chapter view.
 
 ---
@@ -55,7 +53,7 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 
 ### Prerequisites
 
-- PHP 8.1+
+- PHP 8.3+
 - Composer
 - Node.js & npm
 - [Laravel Valet](https://laravel.com/docs/valet)

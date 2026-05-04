@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VerseFavoriteController;
 use App\Http\Controllers\VerseHighlightController;
+use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (guest only)
@@ -107,6 +108,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/memory/{memory}/complete', [MemoryController::class, 'complete'])->name('memory.complete');
     Route::post('/memory/{memory}/uncomplete', [MemoryController::class, 'uncomplete'])->name('memory.uncomplete');
     Route::get('/memory/verses', [MemoryController::class, 'getVerses'])->name('memory.verses');
+
+    // Quiz routes
+    Route::post('/quiz/attempt', [QuizController::class, 'attempt'])->name('quiz.attempt');
 
     // Notification routes
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

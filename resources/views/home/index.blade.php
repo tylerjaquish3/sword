@@ -196,21 +196,59 @@
                         </div>
                     </div>
                 </div>
+                @php
+                    $readPct = $totalBibleChapters > 0 ? round(($chaptersRead / $totalBibleChapters) * 100, 1) : 0;
+                    $commentPct = $commentaryCount > 0 ? round(($chapterCommentCount / $commentaryCount) * 100) : 0;
+                    $highlightTypes = [
+                        'yellow' => ['label' => 'Important',  'color' => '#fbbf24'],
+                        'blue'   => ['label' => 'Prophecy',   'color' => '#60a5fa'],
+                        'green'  => ['label' => 'Promise',    'color' => '#34d399'],
+                        'red'    => ['label' => 'Command',    'color' => '#f87171'],
+                    ];
+                @endphp
+
+                {{-- Bible Reading Progress --}}
                 <div class="mt-4">
-                    <h6 class="mb-3" style="color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;">Commentary Breakdown</h6>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span style="color: #4b5563; font-size: 0.9rem;">Chapter Comments</span>
-                        <span class="badge" style="background: var(--sword-navy); color: #fff;">{{ $chapterCommentCount }}</span>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="mb-0" style="color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;">Bible Read</h6>
+                        <span style="font-size: 0.78rem; color: var(--sword-navy); font-weight: 600;">{{ number_format($chaptersRead) }} <span style="color:#9ca3af;font-weight:400;">/ {{ number_format($totalBibleChapters) }} chapters</span></span>
                     </div>
-                    <div class="progress mb-3" style="height: 6px; background: rgba(14,22,40,0.08);">
-                        <div class="progress-bar" role="progressbar" style="width: {{ $commentaryCount > 0 ? ($chapterCommentCount / $commentaryCount) * 100 : 0 }}%; background: var(--sword-gold);"></div>
+                    <div class="progress mb-1" style="height: 8px; background: rgba(14,22,40,0.08); border-radius: 4px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ $readPct }}%; background: var(--sword-gold); border-radius: 4px;"></div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span style="color: #4b5563; font-size: 0.9rem;">Verse Comments</span>
-                        <span class="badge" style="background: var(--sword-navy); color: #fff;">{{ $verseCommentCount }}</span>
+                    <div class="text-end" style="font-size: 0.7rem; color: #9ca3af;">{{ $readPct }}% complete</div>
+                </div>
+
+                {{-- Highlighted Verses --}}
+                <div class="mt-3">
+                    <h6 class="mb-2" style="color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;">Highlighted Verses</h6>
+                    <div class="d-flex gap-2 flex-wrap">
+                        @foreach($highlightTypes as $color => $meta)
+                        <div class="d-flex align-items-center gap-1 px-2 py-1 rounded" style="background: rgba(14,22,40,0.04); border: 1px solid rgba(14,22,40,0.08);">
+                            <div style="width:10px;height:10px;border-radius:50%;background:{{ $meta['color'] }};flex-shrink:0;"></div>
+                            <span style="font-size:0.72rem;color:#6b7280;">{{ $meta['label'] }}</span>
+                            <span style="font-size:0.78rem;font-weight:600;color:var(--sword-navy);">{{ $highlightsByColor->get($color, 0) }}</span>
+                        </div>
+                        @endforeach
                     </div>
-                    <div class="progress" style="height: 6px; background: rgba(14,22,40,0.08);">
-                        <div class="progress-bar" role="progressbar" style="width: {{ $commentaryCount > 0 ? ($verseCommentCount / $commentaryCount) * 100 : 0 }}%; background: var(--sword-gold);"></div>
+                </div>
+
+                {{-- Combined Comments --}}
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="mb-0" style="color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;">Comments</h6>
+                        <span style="font-size: 0.78rem; color: var(--sword-navy); font-weight: 600;">{{ $commentaryCount }} <span style="color:#9ca3af;font-weight:400;">total</span></span>
+                    </div>
+                    @php
+                        $versePct = $commentaryCount > 0 ? round(($verseCommentCount / $commentaryCount) * 100) : 0;
+                    @endphp
+                    <div class="progress mb-1" style="height: 8px; background: rgba(14,22,40,0.08); border-radius: 4px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ $commentPct }}%; background: var(--sword-navy); border-radius: 0;"></div>
+                        <div class="progress-bar" role="progressbar" style="width: {{ $versePct }}%; background: var(--sword-gold); border-radius: 0;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between" style="font-size: 0.7rem; color: #9ca3af;">
+                        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sword-navy);margin-right:3px;vertical-align:middle;"></span>{{ $chapterCommentCount }} chapter</span>
+                        <span>{{ $verseCommentCount }} verse<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sword-gold);margin-left:3px;vertical-align:middle;"></span></span>
                     </div>
                 </div>
             </div>
