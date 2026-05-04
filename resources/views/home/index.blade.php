@@ -4,18 +4,19 @@
 
 @section('content')
 
-<div class="row">
-    <div class="col-sm-6 mb-4 mb-xl-0">
-        <div class="d-lg-flex align-items-center">
-            <div>
-                <h3 class="font-weight-bold mb-2" style="color: var(--sword-navy);">Welcome, {{ explode(' ', trim(Auth::user()->name))[0] }}!</h3>
-                <p class="page-subtitle mb-0">
-                    @if($lastLogin)
-                        Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
-                    @endif
-                </p>
-            </div>
-        </div>
+<div class="d-flex align-items-center justify-content-between mb-4 mb-xl-0">
+    <div>
+        <h3 class="font-weight-bold mb-2" style="color: var(--sword-navy);">Welcome, {{ explode(' ', trim(Auth::user()->name))[0] }}!</h3>
+        <p class="page-subtitle mb-0">
+            @if($lastLogin)
+                Last login: {{ $lastLogin->logged_in_at->diffForHumans() }}
+            @endif
+        </p>
+    </div>
+    <div class="flex-shrink-0 d-sm-none">
+        <a href="{{ route('translations.index') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+            <i class="mdi mdi-book-open-page-variant"></i> Read
+        </a>
     </div>
 </div>
 

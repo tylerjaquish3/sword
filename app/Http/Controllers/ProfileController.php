@@ -64,6 +64,7 @@ class ProfileController extends Controller
                     'book'      => $pref->chapter->book->name ?? '—',
                     'chapter'   => $pref->chapter->number ?? '',
                     'text'      => $verse?->text ?? '—',
+                    'verse_id'  => $verse?->id,
                     'book_id'   => $pref->chapter->book_id ?? null,
                     'favorited' => $pref->created_at,
                 ];

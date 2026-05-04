@@ -114,6 +114,15 @@ class DigestController extends Controller
         return view('digest.show', compact('shared'));
     }
 
+    public function destroy(SharedDigest $shared)
+    {
+        abort_if($shared->user_id !== Auth::id(), 403);
+
+        $shared->delete();
+
+        return response()->json(['success' => true]);
+    }
+
     public function markShared(SharedDigest $shared)
     {
         abort_if($shared->user_id !== Auth::id(), 403);

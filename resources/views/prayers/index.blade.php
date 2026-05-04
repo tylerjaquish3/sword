@@ -4,37 +4,31 @@
 
 @section('content')  
 
-<div class="row">
-    <div class="col-sm-6 mb-4 mb-xl-0">
-        <div class="d-lg-flex align-items-center">
-            <div>
-                <h3 class="text-dark font-weight-bold mb-2">All Prayers</h3>
-                <p class="page-subtitle mb-0">
-                    @if($lastPrayer)
-                        Last entry {{ $lastPrayer->created_at->diffForHumans() }}
-                    @else
-                        No entries yet
-                    @endif
-                </p>
-            </div>
-            <div class="ms-lg-5 d-lg-flex d-none">
-                    <button type="button" class="btn bg-white btn-icon view-toggle active" id="card-view-btn" data-view="card">
-                        <i class="mdi mdi-view-grid text-success"></i>
-                </button>
-                    <button type="button" class="btn bg-white btn-icon ms-2 view-toggle" id="table-view-btn" data-view="table">
-                        <i class="mdi mdi-format-list-bulleted font-weight-bold text-primary"></i>
-                    </button>
-            </div>
+<div class="d-flex align-items-center justify-content-between mb-4 mb-xl-0">
+    <div class="d-flex align-items-center">
+        <div>
+            <h3 class="text-dark font-weight-bold mb-2">All Prayers</h3>
+            <p class="page-subtitle mb-0">
+                @if($lastPrayer)
+                    Last entry {{ $lastPrayer->created_at->diffForHumans() }}
+                @else
+                    No entries yet
+                @endif
+            </p>
+        </div>
+        <div class="ms-lg-5 d-lg-flex d-none">
+            <button type="button" class="btn bg-white btn-icon view-toggle active" id="card-view-btn" data-view="card">
+                <i class="mdi mdi-view-grid text-success"></i>
+            </button>
+            <button type="button" class="btn bg-white btn-icon ms-2 view-toggle" id="table-view-btn" data-view="table">
+                <i class="mdi mdi-format-list-bulleted font-weight-bold text-primary"></i>
+            </button>
         </div>
     </div>
-    <div class="col-sm-6">
-        <div class="d-flex align-items-center justify-content-md-end">
-            <div class="pe-1 mb-3 mb-xl-0">
-                <button type="button" class="btn btn-outline-inverse-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#createPrayerModal">
-                    Create New
-                </button>
-            </div>
-        </div>
+    <div class="flex-shrink-0">
+        <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#createPrayerModal" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+            <i class="mdi mdi-plus"></i> New Prayer
+        </button>
     </div>
 </div>
 

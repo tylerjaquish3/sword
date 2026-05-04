@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/digest/complete', [SharedDigestController::class, 'store'])->name('digest.complete.store');
     Route::get('/digest/share/{uuid}/link', [SharedDigestController::class, 'link'])->name('digest.share.link');
     Route::post('/digest/{shared}/share', [DigestController::class, 'markShared'])->name('digest.mark-shared');
+    Route::delete('/digest/{shared}', [DigestController::class, 'destroy'])->name('digest.destroy');
     Route::get('/digest/{shared}', [DigestController::class, 'show'])->name('digest.show');
     // Legacy alias so old /digest/share links still work
     Route::get('/digest/share', [SharedDigestController::class, 'create'])->name('digest.share.create');

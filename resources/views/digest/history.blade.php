@@ -39,7 +39,8 @@
 @else
 <div class="card" style="border-top: 3px solid var(--sword-gold);">
     <div class="card-body p-0">
-        <table class="table mb-0" style="font-size: 0.85rem;">
+        <div class="table-responsive">
+        <table class="table mb-0" style="font-size: 0.85rem; min-width: 640px;">
             <thead>
                 <tr style="border-bottom: 1px solid rgba(14,22,40,0.08);">
                     <th style="padding: 0.75rem 1.25rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; font-weight: 700; background: rgba(14,22,40,0.02);">Week</th>
@@ -55,7 +56,7 @@
                 @foreach($digests as $digest)
                 @php $snap = $digest->snapshot ?? []; @endphp
                 <tr style="border-bottom: 1px solid rgba(14,22,40,0.05);">
-                    <td style="padding: 0.85rem 1.25rem; color: var(--sword-navy); font-weight: 600;">
+                    <td style="padding: 0.85rem 1.25rem; color: var(--sword-navy); font-weight: 600; white-space: nowrap;">
                         {{ $digest->week_start->format('M j') }} – {{ $digest->week_end->format('M j, Y') }}
                     </td>
                     <td style="padding: 0.85rem 1rem; color: #4b5563;">{{ $snap['daysStudied'] ?? '—' }}</td>
@@ -89,12 +90,21 @@
                                     </button>
                                 </form>
                             @endif
+                            <button type="button"
+                                class="btn btn-sm delete-digest-btn"
+                                data-id="{{ $digest->id }}"
+                                data-url="{{ route('digest.destroy', $digest) }}"
+                                data-label="{{ $digest->week_start->format('M j') }} – {{ $digest->week_end->format('M j, Y') }}"
+                                style="font-size: 0.75rem; padding: 0.25rem 0.5rem; background: transparent; color: #dc2626; border: 1px solid rgba(220,38,38,0.25);">
+                                <i class="mdi mdi-delete"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @endif
@@ -125,6 +135,43 @@ function copyToClipboard(text, btn) {
 }
 document.querySelectorAll('.copy-link-btn').forEach(function(btn) {
     btn.addEventListener('click', function() { copyToClipboard(this.dataset.url, this); });
+});
+
+document.querySelectorAll('.delete-digest-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var url   = this.dataset.url;
+        var label = this.dataset.label;
+        var row   = this.closest('tr');
+
+        Swal.fire({
+            title: 'Delete this digest?',
+            html: '<span style="font-size:0.9rem;color:#6b7280;">' + label + '</span>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#dc2626',
+            cancelButtonText: 'Cancel',
+        }).then(function(result) {
+            if (!result.isConfirmed) return;
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+            }).then(function(res) {
+                if (res.ok) {
+                    row.style.transition = 'opacity 0.2s';
+                    row.style.opacity = '0';
+                    setTimeout(function() { row.remove(); }, 200);
+                    Swal.fire({ icon: 'success', title: 'Deleted', timer: 1200, showConfirmButton: false });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Could not delete digest.' });
+                }
+            });
+        });
+    });
 });
 </script>
 @endpush

@@ -40,13 +40,12 @@
 
                     <dt class="col-sm-2">Keywords</dt>
                     <dd class="col-sm-10 mb-0" id="display-keywords">
-                        @if($topic->keywords)
-                            @foreach(explode(',', $topic->keywords) as $keyword)
+                        <span class="badge btn-success me-1 mb-1 keyword-filter" style="cursor:pointer;" data-keyword="{{ $topic->name }}">{{ $topic->name }}</span>
+                        @foreach(explode(',', $topic->keywords ?? '') as $keyword)
+                            @if(trim($keyword))
                                 <span class="badge btn-success me-1 mb-1 keyword-filter" style="cursor:pointer;" data-keyword="{{ trim($keyword) }}">{{ trim($keyword) }}</span>
-                            @endforeach
-                        @else
-                            <span class="text-muted">No keywords defined</span>
-                        @endif
+                            @endif
+                        @endforeach
                     </dd>
                 </dl>
             </div>
@@ -624,6 +623,13 @@
 
                     var $kw = $('#display-keywords');
                     $kw.empty();
+                    $kw.append(
+                        $('<span>')
+                            .addClass('badge btn-success me-1 mb-1 keyword-filter')
+                            .css('cursor', 'pointer')
+                            .attr('data-keyword', data.name)
+                            .text(data.name)
+                    );
                     if (data.keywords) {
                         data.keywords.split(',').forEach(function(kw) {
                             kw = kw.trim();
@@ -637,8 +643,6 @@
                                 );
                             }
                         });
-                    } else {
-                        $kw.html('<span class="text-muted">No keywords defined</span>');
                     }
 
                     $('.topic-hero-title').text(data.name);

@@ -4,23 +4,15 @@
 
 @section('content')  
 
-<div class="row">
-    <div class="col-sm-6 mb-4 mb-xl-0">
-        <div class="d-lg-flex align-items-center">
-            <div>
-                <h3 class="text-dark font-weight-bold mb-2">Memory Goals</h3>
-                <p class="page-subtitle mb-0">{{ count($activeMemories) }} active &middot; {{ count($completedMemories) }} completed</p>
-            </div>
-        </div>
+<div class="d-flex align-items-center justify-content-between mb-4 mb-xl-0">
+    <div>
+        <h3 class="text-dark font-weight-bold mb-2">Memory Goals</h3>
+        <p class="page-subtitle mb-0">{{ count($activeMemories) }} active &middot; {{ count($completedMemories) }} completed</p>
     </div>
-    <div class="col-sm-6">
-        <div class="d-flex align-items-center justify-content-md-end">
-            <div class="pe-1 mb-3 mb-xl-0">
-                <button type="button" class="btn btn-outline-inverse-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#createMemoryModal">
-                    Create New                        
-                </button>
-            </div>
-        </div>
+    <div class="flex-shrink-0">
+        <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#createMemoryModal" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+            <i class="mdi mdi-plus"></i> New Goal
+        </button>
     </div>
 </div>
 

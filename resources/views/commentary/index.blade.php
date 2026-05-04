@@ -4,23 +4,15 @@
 
 @section('content')  
 
-<div class="row">
-    <div class="col-sm-6 mb-4 mb-xl-0">
-        <div class="d-lg-flex align-items-center">
-            <div>
-                <h3 class="text-dark font-weight-bold mb-2">Commentary</h3>
-                <p class="page-subtitle mb-0">{{ count($chapterComments) }} chapter &middot; {{ count($verseComments) }} verse</p>
-            </div>
-        </div>
+<div class="d-flex align-items-center justify-content-between mb-4 mb-xl-0">
+    <div>
+        <h3 class="text-dark font-weight-bold mb-2">Commentary</h3>
+        <p class="page-subtitle mb-0">{{ count($chapterComments) }} chapter &middot; {{ count($verseComments) }} verse</p>
     </div>
-    <div class="col-sm-6">
-        <div class="d-flex align-items-center justify-content-md-end">
-            <div class="pe-1 mb-3 mb-xl-0">
-                <a type="button" href="{{ route('commentary.create') }}" class="btn btn-outline-inverse-info btn-icon-text">
-                    Add Commentary                        
-                </a>
-            </div>
-        </div>
+    <div class="flex-shrink-0">
+        <a href="{{ route('commentary.create') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+            <i class="mdi mdi-plus"></i> New Commentary
+        </a>
     </div>
 </div>
 
@@ -152,11 +144,15 @@
     $(document).ready(function() {
         $('#datatable-chapter-comments').DataTable({
             "order": [[2, "desc"]],
-            "pageLength": 10
+            "pageLength": 10,
+            "lengthChange": false,
+            "info": false
         });
         $('#datatable-verse-comments').DataTable({
             "order": [[2, "desc"]],
-            "pageLength": 10
+            "pageLength": 10,
+            "lengthChange": false,
+            "info": false
         });
 
         // Open verse modal when clicking Edit button

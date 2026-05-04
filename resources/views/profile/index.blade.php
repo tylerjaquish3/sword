@@ -34,11 +34,17 @@
                             @foreach($favorites as $fav)
                             <tr>
                                 <td style="white-space:nowrap;">
-                                    <a class="sword-link" href="{{ route('translations.index') }}?book={{ $fav['book_id'] }}">
+                                    <a class="sword-link" href="{{ route('translations.index') }}?book={{ $fav['book_id'] }}&chapter={{ $fav['chapter'] }}">
                                         {{ $fav['reference'] }}
                                     </a>
                                 </td>
-                                <td class="text-muted" style="max-width:480px;">{{ Str::limit($fav['text'], 100) }}</td>
+                                <td class="text-muted" style="max-width:480px;">
+                                    @if($fav['verse_id'])
+                                        <span class="verse-clickable" data-verse-id="{{ $fav['verse_id'] }}" style="cursor:pointer;" title="Click to view full verse">{{ Str::limit($fav['text'], 100) }}</span>
+                                    @else
+                                        {{ Str::limit($fav['text'], 100) }}
+                                    @endif
+                                </td>
                                 <td style="white-space:nowrap;">{{ $fav['favorited']->format('M j, Y') }}</td>
                             </tr>
                             @endforeach
@@ -161,32 +167,32 @@
                     <p class="text-muted p-4 mb-0">No commentary added yet.</p>
                 @else
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="commentary-table">
+                    <table class="table table-hover mb-0" id="commentary-table" style="min-width:700px;">
                         <thead class="table-light">
                             <tr>
-                                <th>Type</th>
-                                <th>Reference</th>
-                                <th>Comment</th>
-                                <th>Date</th>
+                                <th style="white-space:nowrap;">Type</th>
+                                <th style="white-space:nowrap;">Reference</th>
+                                <th style="min-width:420px;">Comment</th>
+                                <th style="white-space:nowrap;">Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($commentary as $entry)
                             <tr data-date="{{ $entry['created_at']?->toISOString() }}">
-                                <td>
+                                <td style="white-space:nowrap;">
                                     <span class="badge {{ $entry['type'] === 'Verse' ? 'bg-primary' : 'bg-secondary' }}">
                                         {{ $entry['type'] }}
                                     </span>
                                 </td>
-                                <td>
+                                <td style="white-space:nowrap;">
                                     <a class="sword-link" href="{{ route('translations.index') }}?book={{ $entry['book_id'] }}">
                                         {{ $entry['reference'] }}
                                     </a>
                                 </td>
-                                <td class="text-muted" style="max-width: 420px;">
-                                    {{ Str::limit($entry['comment'], 80) }}
+                                <td class="text-muted">
+                                    {{ Str::limit($entry['comment'], 180) }}
                                 </td>
-                                <td style="white-space: nowrap;">
+                                <td style="white-space:nowrap;">
                                     <span title="{{ $entry['created_at']?->format('F j, Y g:i A') }}">
                                         {{ $entry['created_at']?->format('M j, Y') }}
                                     </span>
@@ -233,6 +239,8 @@
         </div>
     </div>
 </div>
+
+@include('commentary.modals.verse')
 
 @push('js')
 <script>
