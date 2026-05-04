@@ -195,9 +195,16 @@ $formatVerseRange = function($numbers) {
                             <tr>
                                 <td>{{ $memory->title ?? 'Memory Goal #' . $memory->id }}</td>
                                 <td>
-                                    @foreach($memory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number) as $reference => $verses)
-                                        <span class="badge bg-success-subtle text-success border mb-1">
-                                            {{ $reference }}:{{ $verses->pluck('number')->sort()->values()->join(', ') }}
+                                    @foreach($memory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number) as $reference => $groupVerses)
+                                        @php
+                                            $verseRange = $groupVerses->pluck('number')->sort()->values()->join(', ');
+                                            $versesJson = $groupVerses->sortBy('number')->map(fn($v) => ['number' => $v->number, 'text' => $v->text])->values()->toJson();
+                                        @endphp
+                                        <span class="badge bg-success-subtle text-success border mb-1 verse-badge-clickable"
+                                              style="cursor: pointer;"
+                                              data-reference="{{ $reference }}:{{ $verseRange }}"
+                                              data-verses='{{ $versesJson }}'>
+                                            {{ $reference }}:{{ $verseRange }}
                                         </span>
                                     @endforeach
                                 </td>
@@ -205,7 +212,7 @@ $formatVerseRange = function($numbers) {
                                 <td>{{ $memory->completed_at->format('M d, Y') }}</td>
                                 <td>
                                     <span class="badge bg-info">
-                                        {{ $memory->start_date->diffInDays($memory->completed_at) }} days
+                                        {{ round($memory->start_date->floatDiffInDays($memory->completed_at)) }} days
                                     </span>
                                 </td>
                                 <td>
@@ -524,6 +531,28 @@ $formatVerseRange = function($numbers) {
     </div>
 </div>
 
+
+<!-- Verse Text Modal -->
+<div class="modal fade" id="verseTextModal" tabindex="-1" aria-labelledby="verseTextModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content sword-modal">
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-book-open-page-variant"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="verseTextModalLabel"></h5>
+                    </div>
+                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body sword-modal-body">
+                <p id="verseTextModalBody" style="font-size: 0.9rem; line-height: 1.7; color: #4b5563; font-style: italic;"></p>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -859,6 +888,19 @@ $(document).ready(function() {
             allowClear: true,
             width: '100%',
         });
+    });
+
+    // Verse text modal
+    $(document).on('click', '.verse-badge-clickable', function() {
+        const reference = $(this).data('reference');
+        const verses = $(this).data('verses');
+        $('#verseTextModalLabel').text(reference);
+        let html = '';
+        verses.forEach(function(v) {
+            html += `<sup class="fw-bold me-1" style="font-style: normal;">${v.number}</sup>${v.text} `;
+        });
+        $('#verseTextModalBody').html(html);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('verseTextModal')).show();
     });
 
     // Reset modal on close

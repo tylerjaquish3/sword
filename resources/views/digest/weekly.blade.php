@@ -191,14 +191,34 @@
             <div class="card-body">
                 <p class="digest-section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
 
-                @if($completedThisWeek > 0)
+                @foreach($completedMemories as $memory)
                     <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
-                        <span style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
+                        <div class="mb-1" style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
                             <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
-                            {{ $completedThisWeek }} {{ Str::plural('set', $completedThisWeek) }} completed this week!
-                        </span>
+                            {{ $memory->title ?? 'Untitled Set' }} — completed!
+                        </div>
+                        @foreach($memory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number) as $ref => $verses)
+                            <div class="mb-1" style="font-size: 0.78rem; color: var(--sword-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">
+                                {{ $ref }}:{{ $verses->pluck('number')->sort()->values()->join(', ') }}
+                            </div>
+                            <p class="mb-0" style="font-size: 0.78rem; line-height: 1.55; color: #4b5563; font-style: italic;">
+                                @foreach($verses->sortBy('number') as $verse)
+                                    <sup class="fw-bold me-1" style="font-style: normal;">{{ $verse->number }}</sup>{{ $verse->text }}
+                                @endforeach
+                            </p>
+                        @endforeach
                     </div>
-                @endif
+                @endforeach
+
+                @foreach($startedThisWeek as $memory)
+                    <div class="digest-item mb-2">
+                        <div style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;">New memory goal started</div>
+                        <span class="digest-ref">{{ $memory->title ?? 'Untitled Set' }}</span>
+                        <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">
+                            {{ $memory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number)->map(fn($vs, $ref) => $ref . ':' . $vs->pluck('number')->sort()->values()->join(', '))->values()->join(' · ') }}
+                        </div>
+                    </div>
+                @endforeach
 
                 @if($activeMemories->isNotEmpty())
                     @foreach($activeMemories as $memory)
@@ -207,7 +227,7 @@
                             <span style="font-size: 0.75rem; color: #9ca3af;">{{ $memory->verses_count }} {{ Str::plural('verse', $memory->verses_count) }}</span>
                         </div>
                     @endforeach
-                @else
+                @elseif($completedMemories->isEmpty() && $startedThisWeek->isEmpty())
                     <div class="digest-empty">
                         <i class="mdi mdi-brain mdi-36px d-block mb-2" style="color: rgba(14,22,40,0.15);"></i>
                         No active memory sets
@@ -235,7 +255,14 @@
                                 </span>
                                 <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
                             </div>
-                            <p class="digest-snippet mb-0">{{ Str::limit($m->comment, 120) }}</p>
+                            @if(strlen($m->comment) > 120)
+                            <p class="digest-snippet mb-0">
+                                <span class="snip-short">{{ Str::limit($m->comment, 120) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>
+                                <span class="snip-full" hidden>{{ $m->comment }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">Less</a></span>
+                            </p>
+                            @else
+                            <p class="digest-snippet mb-0">{{ $m->comment }}</p>
+                            @endif
                         </div>
                     @endforeach
                 @else
@@ -284,3 +311,16 @@
 @endif
 
 @endsection
+
+@push('js')
+<script>
+document.querySelectorAll('.snip-toggle').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var p = link.closest('p');
+        p.querySelector('.snip-short').hidden = !p.querySelector('.snip-short').hidden;
+        p.querySelector('.snip-full').hidden = !p.querySelector('.snip-full').hidden;
+    });
+});
+</script>
+@endpush

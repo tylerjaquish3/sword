@@ -42,9 +42,16 @@ class DigestController extends Controller
 
         $activeMemories = Memory::active()->withCount('verses')->get();
 
-        $completedThisWeek = Memory::completed()
+        $completedMemories = Memory::completed()
             ->whereBetween('completed_at', [$weekStart, $weekEnd])
-            ->count();
+            ->with(['verses.chapter.book'])
+            ->get();
+
+        $completedThisWeek = $completedMemories->count();
+
+        $startedThisWeek = Memory::whereBetween('start_date', [$weekStart, $weekEnd])
+            ->with(['verses.chapter.book'])
+            ->get();
 
         $daysStudied = UserRead::where('user_id', Auth::id())
             ->whereBetween('read_at', [$weekStart, $weekEnd])
@@ -81,7 +88,9 @@ class DigestController extends Controller
             'chapterComments',
             'verseComments',
             'activeMemories',
+            'completedMemories',
             'completedThisWeek',
+            'startedThisWeek',
             'daysStudied',
             'pastNote',
             'pastNoteType',

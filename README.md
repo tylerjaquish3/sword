@@ -33,13 +33,9 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - collaboration tools, accountability partner
 - look at other bible apps and what features they have
 - check how long session is (maybe set to 12 hrs?)
-- prayers have an email button but havent set that up yet
+- prayers have an email button hidden, havent set that up yet
 - commentary page, is it needed?
-- the message (MSG) version
 
-php artisan msg:import --limit=100
-php artisan msg:export-migration  # generates the migration file
-then commit that migration and migrate on prod
 
 ## Claude ideas
 

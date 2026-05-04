@@ -35,11 +35,14 @@ class SharedDigestController extends Controller
             'show_past_note' => 'nullable|boolean',
             'fruits_needing_prayer' => 'nullable|array',
             'fruits_needing_prayer.*' => 'string',
+            'fruits_description' => 'nullable|string|max:2000',
             'impactful_scripture' => 'nullable|string|max:2000',
             'idols' => 'nullable|array',
             'idols.*' => 'string',
             'idols_other' => 'nullable|string|max:500',
+            'idols_description' => 'nullable|string|max:2000',
             'additional_content' => 'nullable|string|max:5000',
+            'sermon_notes' => 'nullable|string|max:5000',
         ]);
 
         [$weekStart, $weekEnd, $data] = $this->fetchWeeklyData();
@@ -72,9 +75,12 @@ class SharedDigestController extends Controller
             'show_memory' => $request->boolean('show_memory'),
             'show_past_note' => $request->boolean('show_past_note'),
             'fruits_needing_prayer' => $request->input('fruits_needing_prayer', []),
+            'fruits_description' => $request->input('fruits_description'),
             'impactful_scripture' => $request->input('impactful_scripture'),
             'idols' => $idols,
+            'idols_description' => $request->input('idols_description'),
             'additional_content' => $request->input('additional_content'),
+            'sermon_notes' => $request->input('sermon_notes'),
         ]);
 
         if ($isSharing) {
@@ -127,9 +133,16 @@ class SharedDigestController extends Controller
 
         $activeMemories = Memory::active()->withCount('verses')->get();
 
-        $completedThisWeek = Memory::completed()
+        $completedMemories = Memory::completed()
             ->whereBetween('completed_at', [$weekStart, $weekEnd])
-            ->count();
+            ->with(['verses.chapter.book'])
+            ->get();
+
+        $completedThisWeek = $completedMemories->count();
+
+        $startedThisWeek = Memory::whereBetween('start_date', [$weekStart, $weekEnd])
+            ->with(['verses.chapter.book'])
+            ->get();
 
         $daysStudied = UserRead::where('user_id', Auth::id())
             ->whereBetween('read_at', [$weekStart, $weekEnd])
@@ -160,7 +173,9 @@ class SharedDigestController extends Controller
             'chapterComments',
             'verseComments',
             'activeMemories',
+            'completedMemories',
             'completedThisWeek',
+            'startedThisWeek',
             'daysStudied',
             'pastNote',
             'pastNoteType'
@@ -205,6 +220,29 @@ class SharedDigestController extends Controller
             ];
         })->all();
 
+        $completedMemoriesSnap = $data['completedMemories']->map(function ($m) {
+            return [
+                'title' => $m->title ?? 'Untitled Set',
+                'verses' => $m->verses->sortBy(fn($v) => [$v->chapter->book->id ?? 0, $v->chapter->number ?? 0, $v->number])->map(function ($v) {
+                    return [
+                        'reference' => ($v->chapter->book->name ?? '') . ' ' . ($v->chapter->number ?? '') . ':' . $v->number,
+                        'text' => $v->text,
+                    ];
+                })->values()->all(),
+            ];
+        })->all();
+
+        $startedThisWeekSnap = $data['startedThisWeek']->map(function ($m) {
+            return [
+                'title' => $m->title ?? 'Untitled Set',
+                'verses' => $m->verses->sortBy(fn($v) => [$v->chapter->book->id ?? 0, $v->chapter->number ?? 0, $v->number])->map(function ($v) {
+                    return [
+                        'reference' => ($v->chapter->book->name ?? '') . ' ' . ($v->chapter->number ?? '') . ':' . $v->number,
+                    ];
+                })->values()->all(),
+            ];
+        })->all();
+
         $pastNote = null;
         if ($data['pastNote']) {
             $n = $data['pastNote'];
@@ -232,6 +270,8 @@ class SharedDigestController extends Controller
             'commentary' => $commentary,
             'memories' => $memories,
             'completedThisWeek' => $data['completedThisWeek'],
+            'completedMemories' => $completedMemoriesSnap,
+            'startedThisWeek' => $startedThisWeekSnap,
             'pastNote' => $pastNote,
         ];
     }

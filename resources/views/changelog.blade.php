@@ -14,6 +14,60 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.6.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.6</span>
+                <div>
+                    <div class="changelog-title">Digest & Memory Improvements</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Memory page: click any verse reference on a completed goal to see a modal with the full verse text
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Memory page: days elapsed on completed goals now rounds to the nearest whole day instead of truncating
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Weekly digest memory section now shows the full verse reference and text for any sets completed that week
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Weekly digest now calls out newly started memory goals with their verse references
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Commentary snippets in the digest now have a "More" link to expand the full text inline
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Digest form: optional description field on Fruits of the Spirit to explain why those areas are on your heart
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Digest form: optional description field on Idols to Surrender for personal reflection
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Digest form: Sermon Notes section to capture theme, takeaways, and questions from the week's sermon
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Digest form redesigned as a single centered column — cleaner to fill out on any screen size
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.5.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +76,6 @@
                     <div class="changelog-title">Multi-User Support</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

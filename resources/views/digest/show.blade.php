@@ -167,15 +167,44 @@
         @endif
 
         {{-- Memory --}}
-        @if($shared->show_memory && (!empty($snap['memories']) || ($snap['completedThisWeek'] ?? 0) > 0))
+        @php
+            $hasMemoryContent = !empty($snap['memories']) || ($snap['completedThisWeek'] ?? 0) > 0 || !empty($snap['completedMemories']) || !empty($snap['startedThisWeek']);
+        @endphp
+        @if($shared->show_memory && $hasMemoryContent)
         <div class="card mb-3" style="border-top: 2px solid var(--sword-gold);">
             <div class="card-body">
                 <p class="digest-section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
-                @if(($snap['completedThisWeek'] ?? 0) > 0)
-                <div class="digest-item">
-                    <span style="color: var(--sword-gold); font-weight: 600;">{{ $snap['completedThisWeek'] }}</span> set{{ $snap['completedThisWeek'] > 1 ? 's' : '' }} completed this week
-                </div>
+
+                @if(!empty($snap['completedMemories']))
+                    @foreach($snap['completedMemories'] as $mem)
+                    <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
+                        <div class="mb-1" style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
+                            <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
+                            {{ $mem['title'] }} — completed!
+                        </div>
+                        @foreach($mem['verses'] as $verse)
+                        <div style="font-size: 0.75rem; color: var(--sword-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">{{ $verse['reference'] }}</div>
+                        <p class="mb-1" style="font-size: 0.78rem; line-height: 1.55; color: #4b5563; font-style: italic;">{{ $verse['text'] }}</p>
+                        @endforeach
+                    </div>
+                    @endforeach
+                @elseif(($snap['completedThisWeek'] ?? 0) > 0)
+                    {{-- backward compat: old snapshots only have the count --}}
+                    <div class="digest-item">
+                        <span style="color: var(--sword-gold); font-weight: 600;">{{ $snap['completedThisWeek'] }}</span> set{{ $snap['completedThisWeek'] > 1 ? 's' : '' }} completed this week
+                    </div>
                 @endif
+
+                @foreach($snap['startedThisWeek'] ?? [] as $mem)
+                <div class="digest-item mb-2">
+                    <div style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;">New memory goal started</div>
+                    <span class="digest-ref">{{ $mem['title'] }}</span>
+                    <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">
+                        {{ collect($mem['verses'])->pluck('reference')->join(' · ') }}
+                    </div>
+                </div>
+                @endforeach
+
                 @foreach($snap['memories'] ?? [] as $mem)
                 <div class="digest-item d-flex justify-content-between">
                     <span>{{ $mem['title'] }}</span>
@@ -191,7 +220,8 @@
             $hasReflections = !empty($shared->fruits_needing_prayer)
                 || !empty($shared->idols)
                 || $shared->impactful_scripture
-                || $shared->additional_content;
+                || $shared->additional_content
+                || $shared->sermon_notes;
         @endphp
         @if($hasReflections)
         <div class="card mb-3" style="border-top: 2px solid var(--sword-gold);">
@@ -200,25 +230,40 @@
 
                 @if(!empty($shared->fruits_needing_prayer))
                 <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 0.4rem;">Fruits Needing Prayer</p>
-                <div class="d-flex flex-wrap gap-1 mb-3">
+                <div class="d-flex flex-wrap gap-1 mb-2">
                     @foreach($shared->fruits_needing_prayer as $fruit)
                     <span class="digest-badge" style="background: rgba(201,168,76,0.1); color: var(--sword-gold);">{{ $fruit }}</span>
                     @endforeach
                 </div>
+                @if($shared->fruits_description)
+                <p class="mb-3" style="font-size: 0.83rem; color: #374151; line-height: 1.6; white-space: pre-wrap;">{{ $shared->fruits_description }}</p>
+                @else
+                <div class="mb-3"></div>
+                @endif
                 @endif
 
                 @if(!empty($shared->idols))
                 <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 0.4rem;">Idols to Surrender</p>
-                <div class="d-flex flex-wrap gap-1 mb-3">
+                <div class="d-flex flex-wrap gap-1 mb-2">
                     @foreach($shared->idols as $idol)
                     <span class="digest-badge" style="background: rgba(14,22,40,0.07); color: var(--sword-navy);">{{ $idol }}</span>
                     @endforeach
                 </div>
+                @if($shared->idols_description)
+                <p class="mb-3" style="font-size: 0.83rem; color: #374151; line-height: 1.6; white-space: pre-wrap;">{{ $shared->idols_description }}</p>
+                @else
+                <div class="mb-3"></div>
+                @endif
                 @endif
 
                 @if($shared->impactful_scripture)
                 <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 0.4rem;">Impactful Scripture</p>
                 <p class="mb-3" style="font-size: 0.83rem; color: #374151; line-height: 1.6; white-space: pre-wrap;">{{ $shared->impactful_scripture }}</p>
+                @endif
+
+                @if($shared->sermon_notes)
+                <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 0.4rem;">Sermon Notes</p>
+                <p class="mb-3" style="font-size: 0.83rem; color: #374151; line-height: 1.6; white-space: pre-wrap;">{{ $shared->sermon_notes }}</p>
                 @endif
 
                 @if($shared->additional_content)

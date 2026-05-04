@@ -254,14 +254,38 @@
                 <div class="card-body">
                     <p class="section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
 
-                    @if($snapshot['completedThisWeek'] > 0)
-                    <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
-                        <span style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
-                            <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
-                            {{ $snapshot['completedThisWeek'] }} {{ $snapshot['completedThisWeek'] === 1 ? 'set' : 'sets' }} completed this week!
-                        </span>
-                    </div>
+                    @if(!empty($snapshot['completedMemories']))
+                        @foreach($snapshot['completedMemories'] as $mem)
+                        <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
+                            <div class="mb-1" style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
+                                <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
+                                {{ $mem['title'] }} — completed!
+                            </div>
+                            @foreach($mem['verses'] as $verse)
+                            <div style="font-size: 0.75rem; color: var(--sword-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">{{ $verse['reference'] }}</div>
+                            <p class="mb-1" style="font-size: 0.78rem; line-height: 1.55; color: #4b5563; font-style: italic;">{{ $verse['text'] }}</p>
+                            @endforeach
+                        </div>
+                        @endforeach
+                    @elseif($snapshot['completedThisWeek'] > 0)
+                        {{-- backward compat: old snapshots only have the count --}}
+                        <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
+                            <span style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
+                                <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
+                                {{ $snapshot['completedThisWeek'] }} {{ $snapshot['completedThisWeek'] === 1 ? 'set' : 'sets' }} completed this week!
+                            </span>
+                        </div>
                     @endif
+
+                    @foreach($snapshot['startedThisWeek'] ?? [] as $mem)
+                    <div class="digest-item mb-2">
+                        <div style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;">New memory goal started</div>
+                        <span class="digest-ref">{{ $mem['title'] }}</span>
+                        <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">
+                            {{ collect($mem['verses'])->pluck('reference')->join(' · ') }}
+                        </div>
+                    </div>
+                    @endforeach
 
                     @if(!empty($snapshot['memories']))
                         @foreach($snapshot['memories'] as $memory)
@@ -270,7 +294,7 @@
                             <span style="font-size: 0.75rem; color: #9ca3af;">{{ $memory['verses'] }} {{ $memory['verses'] === 1 ? 'verse' : 'verses' }}</span>
                         </div>
                         @endforeach
-                    @else
+                    @elseif(empty($snapshot['completedMemories']) && ($snapshot['completedThisWeek'] ?? 0) === 0 && empty($snapshot['startedThisWeek']))
                         <div class="digest-empty">No active memory sets</div>
                     @endif
                 </div>
@@ -288,7 +312,14 @@
                                 <span class="digest-ref">{{ $note['ref'] }}</span>
                                 <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
                             </div>
-                            <p class="digest-snippet mb-0">{{ Str::limit($note['comment'], 120) }}</p>
+                            @if(strlen($note['comment']) > 120)
+                            <p class="digest-snippet mb-0">
+                                <span class="snip-short">{{ Str::limit($note['comment'], 120) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>
+                                <span class="snip-full" hidden>{{ $note['comment'] }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">Less</a></span>
+                            </p>
+                            @else
+                            <p class="digest-snippet mb-0">{{ $note['comment'] }}</p>
+                            @endif
                         </div>
                         @endforeach
                     @else
@@ -326,7 +357,8 @@
         $hasScripture = !empty(trim($shared->impactful_scripture ?? ''));
         $hasIdols = !empty($shared->idols);
         $hasAdditional = !empty(trim($shared->additional_content ?? ''));
-        $hasAnyReflection = $hasFruits || $hasScripture || $hasIdols || $hasAdditional;
+        $hasSermonNotes = !empty(trim($shared->sermon_notes ?? ''));
+        $hasAnyReflection = $hasFruits || $hasScripture || $hasIdols || $hasAdditional || $hasSermonNotes;
     @endphp
 
     @if($hasAnyReflection)
@@ -340,11 +372,14 @@
             <div class="reflection-card">
                 <div class="card-body">
                     <p class="section-label"><i class="mdi mdi-spa me-1"></i>Fruits Needing Prayer</p>
-                    <div>
+                    <div class="mb-2">
                         @foreach($shared->fruits_needing_prayer as $fruit)
                             <span class="fruit-badge">{{ $fruit }}</span>
                         @endforeach
                     </div>
+                    @if($shared->fruits_description)
+                    <p style="font-size: 0.83rem; color: #374151; line-height: 1.6; white-space: pre-wrap; margin: 0;">{{ $shared->fruits_description }}</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -355,11 +390,14 @@
             <div class="reflection-card">
                 <div class="card-body">
                     <p class="section-label"><i class="mdi mdi-alert-circle-outline me-1"></i>Idols to Surrender</p>
-                    <div>
+                    <div class="mb-2">
                         @foreach($shared->idols as $idol)
                             <span class="idol-badge">{{ $idol }}</span>
                         @endforeach
                     </div>
+                    @if($shared->idols_description)
+                    <p style="font-size: 0.83rem; color: #374151; line-height: 1.6; white-space: pre-wrap; margin: 0;">{{ $shared->idols_description }}</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -371,6 +409,17 @@
                 <div class="card-body">
                     <p class="section-label"><i class="mdi mdi-star me-1"></i>Impactful Scripture</p>
                     <p style="font-size: 0.88rem; color: #374151; line-height: 1.65; white-space: pre-wrap; margin: 0;">{{ $shared->impactful_scripture }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        @if($hasSermonNotes)
+        <div class="col-12">
+            <div class="reflection-card">
+                <div class="card-body">
+                    <p class="section-label"><i class="mdi mdi-microphone me-1"></i>Sermon Notes</p>
+                    <p style="font-size: 0.88rem; color: #374151; line-height: 1.65; white-space: pre-wrap; margin: 0;">{{ $shared->sermon_notes }}</p>
                 </div>
             </div>
         </div>
@@ -396,5 +445,15 @@
 
 </div>
 
+<script>
+document.querySelectorAll('.snip-toggle').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var p = link.closest('p');
+        p.querySelector('.snip-short').hidden = !p.querySelector('.snip-short').hidden;
+        p.querySelector('.snip-full').hidden = !p.querySelector('.snip-full').hidden;
+    });
+});
+</script>
 </body>
 </html>

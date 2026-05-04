@@ -69,10 +69,17 @@
 <form action="{{ $formAction ?? route('digest.complete.store') }}" method="POST">
     @csrf
 
-    <div class="row g-3">
+    <div class="row justify-content-center mb-1">
+        <div class="col-12 col-lg-8">
+            <div class="p-3 rounded" style="background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.25); font-size: 0.82rem; color: #4b5563; line-height: 1.6;">
+                <i class="mdi mdi-information-outline me-1" style="color: var(--sword-gold);"></i>
+                All sections below are optional. Use <strong>Save</strong> to record this digest privately, or <strong>Save &amp; Share</strong> to generate a link you can send to an accountability partner.
+            </div>
+        </div>
+    </div>
 
-        {{-- Left column --}}
-        <div class="col-lg-6">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
 
             {{-- What to include --}}
             <div class="card share-card mb-3">
@@ -139,7 +146,7 @@
                 <div class="card-body">
                     <p class="share-section-label"><i class="mdi mdi-spa me-1"></i>Fruits of the Spirit</p>
                     <p style="font-size: 0.8rem; color: #6b7280; margin-bottom: 1rem;">Which fruits could use prayer this week?</p>
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
                         @foreach(['Love', 'Joy', 'Peace', 'Patience', 'Kindness', 'Goodness', 'Faithfulness', 'Self Control'] as $fruit)
                         <label class="fruit-check">
                             <input type="checkbox" name="fruits_needing_prayer[]" value="{{ $fruit }}" style="display:none;">
@@ -147,13 +154,15 @@
                         </label>
                         @endforeach
                     </div>
+                    <textarea
+                        name="fruits_description"
+                        class="form-control"
+                        rows="2"
+                        placeholder="Optional — why are these areas on your heart this week?"
+                        style="font-size: 0.82rem; resize: vertical;"
+                    ></textarea>
                 </div>
             </div>
-
-        </div>
-
-        {{-- Right column --}}
-        <div class="col-lg-6">
 
             {{-- Impactful Scripture --}}
             <div class="card share-card mb-3">
@@ -186,10 +195,32 @@
                     <input
                         type="text"
                         name="idols_other"
-                        class="form-control"
+                        class="form-control mb-3"
                         placeholder="Other (comma-separated)"
                         style="font-size: 0.82rem;"
                     >
+                    <textarea
+                        name="idols_description"
+                        class="form-control"
+                        rows="2"
+                        placeholder="Optional — reflect on how these have shown up this week"
+                        style="font-size: 0.82rem; resize: vertical;"
+                    ></textarea>
+                </div>
+            </div>
+
+            {{-- Sermon Notes --}}
+            <div class="card share-card mb-3">
+                <div class="card-body">
+                    <p class="share-section-label"><i class="mdi mdi-microphone me-1"></i>Sermon Notes </p>
+                    <p style="font-size: 0.8rem; color: #6b7280; margin-bottom: 1rem;">What was the theme? What did you learn? What questions do you have?</p>
+                    <textarea
+                        name="sermon_notes"
+                        class="form-control"
+                        rows="5"
+                        placeholder="e.g. Theme: grace in suffering. Learned that Paul's thorn wasn't removed but redeemed. Questions: what does 'strength in weakness' look like practically?"
+                        style="font-size: 0.85rem; resize: vertical;"
+                    ></textarea>
                 </div>
             </div>
 
@@ -209,19 +240,22 @@
             </div>
 
         </div>
-
     </div>
 
-    <div class="d-flex justify-content-end gap-2 mb-4">
-        <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem;">
-            Cancel
-        </a>
-        <button type="submit" name="submit_action" value="save" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
-            <i class="mdi mdi-content-save-outline me-1"></i> Save
-        </button>
-        <button type="submit" name="submit_action" value="share" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
-            <i class="mdi mdi-share-variant me-1"></i> Save &amp; Share
-        </button>
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="d-flex justify-content-end gap-2 mb-4">
+                <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem;">
+                    Cancel
+                </a>
+                <button type="submit" name="submit_action" value="save" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
+                    <i class="mdi mdi-content-save-outline me-1"></i> Save
+                </button>
+                <button type="submit" name="submit_action" value="share" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">
+                    <i class="mdi mdi-share-variant me-1"></i> Save &amp; Share
+                </button>
+            </div>
+        </div>
     </div>
 
 </form>
