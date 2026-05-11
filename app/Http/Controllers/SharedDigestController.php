@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChapterComment;
+use App\Models\DigestGuestComment;
 use App\Models\Memory;
 use App\Models\Prayer;
 use App\Models\SharedDigest;
+use App\Models\UserNotification;
 use App\Models\UserRead;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
@@ -100,8 +102,40 @@ class SharedDigestController extends Controller
     public function show(string $uuid)
     {
         $shared = SharedDigest::where('uuid', $uuid)->firstOrFail();
+        $comments = $shared->guestComments()->orderBy('created_at')->get();
 
-        return view('digest.shared', ['shared' => $shared]);
+        return view('digest.shared', ['shared' => $shared, 'comments' => $comments]);
+    }
+
+    public function storeComment(Request $request, string $uuid)
+    {
+        $shared = SharedDigest::where('uuid', $uuid)->firstOrFail();
+
+        $request->validate([
+            'name'    => 'nullable|string|max:100',
+            'comment' => 'required|string|max:2000',
+        ]);
+
+        $comment = DigestGuestComment::create([
+            'shared_digest_id' => $shared->id,
+            'name'             => filled($request->name) ? trim($request->name) : null,
+            'comment'          => trim($request->comment),
+        ]);
+
+        UserNotification::withoutGlobalScopes()->create([
+            'user_id'    => $shared->user_id,
+            'type'       => 'digest_comment',
+            'title'      => ($comment->displayName()) . ' commented on your digest',
+            'message'    => Str::limit($comment->comment, 120),
+            'icon'       => 'mdi-comment-text-outline',
+            'icon_color' => 'bg-warning',
+            'url'        => route('digest.show', $shared->id),
+            'unique_key' => null,
+        ]);
+
+        return redirect()
+            ->to(route('digest.shared.show', $uuid) . '#comments')
+            ->with('comment_success', true);
     }
 
     private function fetchWeeklyData(): array
@@ -127,7 +161,7 @@ class SharedDigestController extends Controller
             ->get();
 
         $verseComments = VerseComment::whereBetween('created_at', [$weekStart, $weekEnd])
-            ->with('chapter.book')
+            ->with(['chapter.book', 'verse'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -210,6 +244,7 @@ class SharedDigestController extends Controller
                 'type' => 'verse',
                 'ref' => ($c->chapter?->book?->name ?? '') . ' ' . ($c->chapter?->number ?? '') . ':' . $c->verse_number,
                 'comment' => $c->comment,
+                'verse_text' => $c->verse?->text,
             ];
         }))->sortByDesc(fn($n) => $n['type'])->values()->all();
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VerseFavoriteController;
 use App\Http\Controllers\VerseHighlightController;
+use App\Http\Controllers\BookStudyController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Public shared digest (no auth required)
 Route::get('/shared/digest/{uuid}', [SharedDigestController::class, 'show'])->name('digest.shared.show');
+Route::post('/shared/digest/{uuid}/comments', [SharedDigestController::class, 'storeComment'])->name('digest.shared.comment');
 
 
 // All application routes require authentication
@@ -90,6 +92,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('topics', TopicController::class);
     Route::post('/topics/{topic}/notes', [TopicController::class, 'storeNote'])->name('topics.notes.store');
     Route::delete('/topics/notes/{note}', [TopicController::class, 'destroyNote'])->name('topics.notes.destroy');
+
+    Route::post('/book-studies', [BookStudyController::class, 'store'])->name('book-studies.store');
+    Route::post('/book-studies/{bookStudy}/complete', [BookStudyController::class, 'complete'])->name('book-studies.complete');
+    Route::delete('/book-studies/{bookStudy}', [BookStudyController::class, 'destroy'])->name('book-studies.destroy');
 
     // Digest routes
     Route::get('/digest/weekly', [DigestController::class, 'weekly'])->name('digest.weekly');

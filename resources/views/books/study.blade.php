@@ -201,6 +201,13 @@
             </div>
 
             <div class="d-flex justify-content-end gap-2">
+                @if($activeStudy)
+                <button type="button" class="btn"
+                    style="background: transparent; color: #6b7280; border: 1px solid rgba(14,22,40,0.2); font-weight: 600; font-size: 0.88rem; padding: 0.5rem 1.25rem;"
+                    onclick="Swal.fire({ title: 'Study Complete?', text: 'Mark your study of {{ $book->name }} as finished?', icon: 'question', showCancelButton: true, confirmButtonText: 'Yes, complete it', cancelButtonText: 'Not yet' }).then(r => { if (r.isConfirmed) document.getElementById('studyCompleteForm').submit(); })">
+                    <i class="mdi mdi-check-circle-outline me-1"></i> Study Complete
+                </button>
+                @endif
                 <button type="submit"
                         class="btn"
                         style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.88rem; padding: 0.5rem 1.5rem;">
@@ -209,6 +216,12 @@
             </div>
 
         </form>
+
+        @if($activeStudy)
+        <form id="studyCompleteForm" method="POST" action="{{ route('book-studies.complete', $activeStudy) }}" style="display:none;">
+            @csrf
+        </form>
+        @endif
     </div>
 
     {{-- Right: Stats Sidebar (first on mobile, right column on desktop) --}}
@@ -309,7 +322,14 @@
                                 {{ $note['type'] }}
                             </span>
                         </div>
-                        <p class="mb-0" style="font-size: 0.76rem; color: #4b5563; line-height: 1.4;">{{ Str::limit($note['text'], 72) }}</p>
+                        @if(strlen($note['text']) > 144)
+                        <p class="mb-0" style="font-size: 0.76rem; color: #4b5563; line-height: 1.4;">
+                            <span class="snip-short">{{ Str::limit($note['text'], 144) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">More</a></span>
+                            <span class="snip-full" hidden>{{ $note['text'] }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">Less</a></span>
+                        </p>
+                        @else
+                        <p class="mb-0" style="font-size: 0.76rem; color: #4b5563; line-height: 1.4;">{{ $note['text'] }}</p>
+                        @endif
                     </div>
                 @endforeach
                 @if($commentaryCount > 6)
@@ -327,6 +347,19 @@
 </div>
 
 @endsection
+
+@push('js')
+<script>
+document.querySelectorAll('.snip-toggle').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var p = link.closest('p');
+        p.querySelector('.snip-short').hidden = !p.querySelector('.snip-short').hidden;
+        p.querySelector('.snip-full').hidden = !p.querySelector('.snip-full').hidden;
+    });
+});
+</script>
+@endpush
 
 @if($wordCloud->isNotEmpty())
 @push('js')

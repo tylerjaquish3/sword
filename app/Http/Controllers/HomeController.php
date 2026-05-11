@@ -153,6 +153,8 @@ class HomeController extends Controller
             ->latest()
             ->first();
 
+        $memorizedCount = Memory::completed()->count();
+
         return view('home.index', compact(
             'books',
             'prayerCount',
@@ -177,7 +179,8 @@ class HomeController extends Controller
             'todayReadCount',
             'digestStats',
             'digestPastNote',
-            'activeMemory'
+            'activeMemory',
+            'memorizedCount'
         ));
     }
     

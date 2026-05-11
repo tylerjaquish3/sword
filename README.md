@@ -35,9 +35,8 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - check how long session is (maybe set to 12 hrs?)
 - prayers have an email button hidden, havent set that up yet
 - commentary page, is it needed?
-- ability to mark book study as complete, but allow them to study multiple times
-- study page, make user add book they want to study instead of showing all books
-- show completed studies somewhere
+- if you study the same book twice, it should be a blank slate?
+- verify notifications job works on prod
 
 
 ## Claude ideas

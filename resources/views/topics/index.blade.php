@@ -25,7 +25,7 @@
         <button class="nav-link px-4 py-2" id="tab-books" data-bs-toggle="tab" data-bs-target="#pane-books" type="button" role="tab"
             style="border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; border-radius: 0; font-size: 0.88rem; color: #6b7280; background: transparent; font-weight: 600;">
             <i class="mdi mdi-book-open-variant me-1"></i> Books
-            <span class="ms-1 badge" style="background: rgba(14,22,40,0.08); color: var(--sword-navy); font-size: 0.68rem;">66</span>
+            <span class="ms-1 badge" style="background: rgba(14,22,40,0.08); color: var(--sword-navy); font-size: 0.68rem;">{{ $activeStudies->count() }}</span>
         </button>
     </li>
 </ul>
@@ -59,82 +59,100 @@
     {{-- ── Books Tab ──────────────────────────────────────────────── --}}
     <div class="tab-pane fade pt-3" id="pane-books" role="tabpanel">
 
-        @php
-            $otBooks = $books->where('new_testament', 0);
-            $ntBooks = $books->where('new_testament', 1);
-        @endphp
-
-        {{-- Old Testament --}}
-        <div class="mb-4">
-            <p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--sword-gold);" class="mb-3">
-                Old Testament &mdash; {{ $otBooks->count() }} Books
+        {{-- Header row --}}
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <p class="mb-0" style="font-size: 0.85rem; color: #9ca3af;">
+                {{ $activeStudies->count() }} active {{ Str::plural('study', $activeStudies->count()) }}
             </p>
-            <div class="row g-2">
-                @foreach($otBooks as $book)
-                    @php
-                        $read = $chaptersReadByBook->get($book->id, 0);
-                        $total = $book->chapters_count;
-                        $pct = $total > 0 ? round($read / $total * 100) : 0;
-                        $hasStudy = $book->author || $book->description || $book->history || $book->themes || $book->notes;
-                    @endphp
-                    <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                        <a href="{{ route('books.study', $book) }}"
-                           class="card h-100 text-decoration-none book-study-card"
-                           style="transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s; border-top: 2px solid {{ $hasStudy ? 'var(--sword-gold)' : 'transparent' }};">
-                            <div class="card-body p-3">
-                                <div class="d-flex align-items-start justify-content-between mb-1">
-                                    <span style="font-size: 0.62rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em;">{{ $book->abbr }}</span>
-                                    @if($hasStudy)
-                                        <i class="mdi mdi-pencil-circle" style="font-size: 0.8rem; color: var(--sword-gold);"></i>
-                                    @endif
-                                </div>
-                                <p class="mb-2 fw-bold" style="font-size: 0.85rem; color: var(--sword-navy); line-height: 1.3;">{{ $book->name }}</p>
-                                <div class="progress mb-1" style="height: 3px; background: rgba(14,22,40,0.08);">
-                                    <div class="progress-bar" style="width: {{ $pct }}%; background: var(--sword-gold);"></div>
-                                </div>
-                                <p class="mb-0" style="font-size: 0.65rem; color: #9ca3af;">{{ $read }}/{{ $total }} ch</p>
-                            </div>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
+            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#addBookStudyModal"
+                style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+                <i class="mdi mdi-plus"></i> Add Book to Study
+            </button>
         </div>
 
-        {{-- New Testament --}}
+        {{-- Active studies --}}
+        @if($activeStudies->isNotEmpty())
+        <div class="row g-2 mb-4">
+            @foreach($activeStudies as $study)
+                @php
+                    $book = $study->book;
+                    $read = $chaptersReadByBook->get($book->id, 0);
+                    $total = $book->chapters_count;
+                    $pct = $total > 0 ? round($read / $total * 100) : 0;
+                @endphp
+                <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                    <div class="card h-100 book-study-card" style="border-top: 2px solid var(--sword-gold); position: relative;">
+                        <form method="POST" action="{{ route('book-studies.destroy', $study) }}" class="book-study-delete-form" style="position: absolute; top: 6px; right: 6px; z-index: 2;">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-sm p-0" style="line-height:1; background: none; border: none; color: #9ca3af; font-size: 0.8rem;" title="Remove study" onclick="return confirm('Remove this book study?')">
+                                <i class="mdi mdi-close-circle"></i>
+                            </button>
+                        </form>
+                        <a href="{{ route('books.study', $book) }}" class="card-body p-3 text-decoration-none d-block">
+                            <span style="font-size: 0.62rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 2px;">
+                                {{ $book->new_testament ? 'NT' : 'OT' }}
+                            </span>
+                            <p class="mb-2 fw-bold" style="font-size: 0.85rem; color: var(--sword-navy); line-height: 1.3; padding-right: 1rem;">{{ $book->name }}</p>
+                            <div class="progress mb-1" style="height: 3px; background: rgba(14,22,40,0.08);">
+                                <div class="progress-bar" style="width: {{ $pct }}%; background: var(--sword-gold);"></div>
+                            </div>
+                            <p class="mb-0" style="font-size: 0.65rem; color: #9ca3af;">{{ $read }} of {{ $total }} {{ Str::plural('chapter', $total) }} read</p>
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        @else
+        <div class="text-center py-5 mb-3" style="border: 2px dashed rgba(14,22,40,0.1); border-radius: 10px;">
+            <i class="mdi mdi-book-open-page-variant mdi-48px mb-2 d-block" style="color: rgba(14,22,40,0.15);"></i>
+            <p class="mb-2" style="font-size: 0.9rem; color: #6b7280; font-weight: 600;">No active book studies</p>
+            <p class="mb-3" style="font-size: 0.82rem; color: #9ca3af;">Choose a book of the Bible to dive into.</p>
+            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#addBookStudyModal"
+                style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
+                <i class="mdi mdi-plus"></i> Add Book to Study
+            </button>
+        </div>
+        @endif
+
+        {{-- Completed studies --}}
+        @if($completedStudies->isNotEmpty())
         <div>
-            <p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--sword-gold);" class="mb-3">
-                New Testament &mdash; {{ $ntBooks->count() }} Books
+            <p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #9ca3af;" class="mb-2">
+                Completed &mdash; {{ $completedStudies->count() }}
             </p>
             <div class="row g-2">
-                @foreach($ntBooks as $book)
+                @foreach($completedStudies as $study)
                     @php
+                        $book = $study->book;
                         $read = $chaptersReadByBook->get($book->id, 0);
                         $total = $book->chapters_count;
                         $pct = $total > 0 ? round($read / $total * 100) : 0;
-                        $hasStudy = $book->author || $book->description || $book->history || $book->themes || $book->notes;
                     @endphp
                     <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                        <a href="{{ route('books.study', $book) }}"
-                           class="card h-100 text-decoration-none book-study-card"
-                           style="transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s; border-top: 2px solid {{ $hasStudy ? 'var(--sword-gold)' : 'transparent' }};">
-                            <div class="card-body p-3">
-                                <div class="d-flex align-items-start justify-content-between mb-1">
-                                    <span style="font-size: 0.62rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em;">{{ $book->abbr }}</span>
-                                    @if($hasStudy)
-                                        <i class="mdi mdi-pencil-circle" style="font-size: 0.8rem; color: var(--sword-gold);"></i>
-                                    @endif
+                        <div class="card h-100 book-study-card" style="border-top: 2px solid rgba(14,22,40,0.12); opacity: 0.75; position: relative;">
+                            <form method="POST" action="{{ route('book-studies.destroy', $study) }}" style="position: absolute; top: 6px; right: 6px; z-index: 2;">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm p-0" style="line-height:1; background: none; border: none; color: #9ca3af; font-size: 0.8rem;" title="Remove" onclick="return confirm('Remove this book study?')">
+                                    <i class="mdi mdi-close-circle"></i>
+                                </button>
+                            </form>
+                            <a href="{{ route('books.study', $book) }}" class="card-body p-3 text-decoration-none d-block">
+                                <div class="d-flex align-items-center gap-1 mb-1">
+                                    <span style="font-size: 0.62rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em;">{{ $book->new_testament ? 'NT' : 'OT' }}</span>
+                                    <i class="mdi mdi-check-circle" style="font-size: 0.72rem; color: #6b7280;"></i>
                                 </div>
-                                <p class="mb-2 fw-bold" style="font-size: 0.85rem; color: var(--sword-navy); line-height: 1.3;">{{ $book->name }}</p>
+                                <p class="mb-2 fw-bold" style="font-size: 0.85rem; color: #6b7280; line-height: 1.3; padding-right: 1rem;">{{ $book->name }}</p>
                                 <div class="progress mb-1" style="height: 3px; background: rgba(14,22,40,0.08);">
-                                    <div class="progress-bar" style="width: {{ $pct }}%; background: var(--sword-gold);"></div>
+                                    <div class="progress-bar" style="width: {{ $pct }}%; background: rgba(14,22,40,0.2);"></div>
                                 </div>
-                                <p class="mb-0" style="font-size: 0.65rem; color: #9ca3af;">{{ $read }}/{{ $total }} ch</p>
-                            </div>
-                        </a>
+                                <p class="mb-0" style="font-size: 0.65rem; color: #9ca3af;">Completed {{ $study->completed_at->format('M j, Y') }}</p>
+                            </a>
+                        </div>
                     </div>
                 @endforeach
             </div>
         </div>
+        @endif
 
     </div>
 
@@ -197,6 +215,62 @@
                 <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn sword-modal-btn-save" id="create-topic-save">
                     <i class="mdi mdi-tag-plus me-1"></i>Save Topic
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{{-- Add Book Study Modal --}}
+<div class="modal fade" id="addBookStudyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-book-open-variant"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Add Book to Study</h5>
+                        <p class="sword-modal-subtitle mb-0">Choose a book of the Bible to study</p>
+                    </div>
+                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+
+            <div class="modal-body sword-modal-body">
+                <form method="POST" action="{{ route('book-studies.store') }}" id="addBookStudyForm">
+                    @csrf
+                    <div class="sword-modal-section mb-2">
+                        <div class="sword-modal-section-header">
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                            <span class="sword-modal-section-title">Book <span class="sword-modal-required">required</span></span>
+                        </div>
+                        <div class="sword-modal-section-body">
+                            <select name="book_id" id="bookStudySelect" class="form-select sword-modal-input" required>
+                                <option value="">Select a book…</option>
+                                <optgroup label="Old Testament">
+                                    @foreach($allBooks->where('new_testament', 0) as $b)
+                                        <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="New Testament">
+                                    @foreach($allBooks->where('new_testament', 1) as $b)
+                                        <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addBookStudyForm" class="btn sword-modal-btn-save">
+                    <i class="mdi mdi-plus me-1"></i>Start Study
                 </button>
             </div>
 
@@ -303,6 +377,25 @@ $(document).ready(function () {
                 btn.prop('disabled', false).text('Save Topic');
             }
         });
+    });
+
+    // Select2 for Add Book Study modal
+    $('#addBookStudyModal').on('shown.bs.modal', function () {
+        if ($('#bookStudySelect').hasClass('select2-hidden-accessible')) {
+            $('#bookStudySelect').select2('destroy');
+        }
+        $('#bookStudySelect').select2({
+            dropdownParent: $('#addBookStudyModal'),
+            placeholder: 'Select a book…',
+            allowClear: true,
+            width: '100%',
+        });
+    });
+
+    $('#addBookStudyModal').on('hidden.bs.modal', function () {
+        if ($('#bookStudySelect').hasClass('select2-hidden-accessible')) {
+            $('#bookStudySelect').select2('destroy');
+        }
     });
 });
 </script>

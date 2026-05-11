@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\BookStudy;
 use App\Models\ChapterComment;
 use App\Models\UserBookMetadata;
 use App\Models\UserRead;
@@ -113,7 +114,11 @@ class BookController extends Controller
             $book->$field = $meta?->$field;
         }
 
-        return view('books.study', compact('book', 'chapterCount', 'chaptersRead', 'commentaryCount', 'wordCloud', 'bookNotes'));
+        $activeStudy = BookStudy::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->active()->latest()->first();
+
+        return view('books.study', compact('book', 'chapterCount', 'chaptersRead', 'commentaryCount', 'wordCloud', 'bookNotes', 'activeStudy'));
     }
 
     public function updateStudy(Request $request, Book $book)

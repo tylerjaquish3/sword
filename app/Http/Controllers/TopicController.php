@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\BookStudy;
 use App\Models\Topic;
 use App\Models\TopicNote;
 use App\Models\UserRead;
@@ -20,13 +21,21 @@ class TopicController extends Controller
     {
         $topics = Topic::where('user_id', Auth::id())->get();
 
-        $books = Book::withCount('chapters')->get();
+        $activeStudies = BookStudy::where('user_id', Auth::id())
+            ->active()->with(['book' => fn($q) => $q->withCount('chapters')])->latest()->get();
+        $completedStudies = BookStudy::where('user_id', Auth::id())
+            ->completed()->with(['book' => fn($q) => $q->withCount('chapters')])->latest('completed_at')->get();
+        $allBooks = Book::withCount('chapters')->orderBy('sort_order')->get();
+
+        $studyBookIds = $activeStudies->pluck('book_id')
+            ->concat($completedStudies->pluck('book_id'))->unique();
         $chaptersReadByBook = UserRead::where('user_id', Auth::id())
+            ->whereIn('book_id', $studyBookIds)
             ->selectRaw('book_id, COUNT(DISTINCT chapter_number) as read_count')
             ->groupBy('book_id')
             ->pluck('read_count', 'book_id');
 
-        return view('topics.index', compact('topics', 'books', 'chaptersReadByBook'));
+        return view('topics.index', compact('topics', 'activeStudies', 'completedStudies', 'allBooks', 'chaptersReadByBook'));
     }
 
     public function create()

@@ -38,7 +38,7 @@
                         @endif
                     </dd>
 
-                    <dt class="col-sm-2">Keywords</dt>
+                    <dt class="col-sm-2">Keywords/Synonyms</dt>
                     <dd class="col-sm-10 mb-0" id="display-keywords">
                         <span class="badge btn-success me-1 mb-1 keyword-filter" style="cursor:pointer;" data-keyword="{{ $topic->name }}">{{ $topic->name }}</span>
                         @foreach(explode(',', $topic->keywords ?? '') as $keyword)

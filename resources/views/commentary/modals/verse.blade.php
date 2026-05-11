@@ -47,6 +47,9 @@
                     <div class="sword-modal-section-header">
                         <span class="sword-modal-section-icon"><i class="mdi mdi-palette"></i></span>
                         <span class="sword-modal-section-title">Highlight</span>
+                        <button type="button" id="modal_favorite_btn" class="btn btn-sm ms-auto" style="font-size:0.78rem;">
+                            <i class="mdi mdi-star-outline me-1"></i><span id="modal_favorite_label">Favorite</span>
+                        </button>
                     </div>
                     <div class="sword-modal-section-body">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -62,16 +65,6 @@
                             <span><span style="display:inline-block;width:10px;height:10px;background:#86efac;border-radius:2px;"></span> Promise</span>
                             <span><span style="display:inline-block;width:10px;height:10px;background:#fca5a5;border-radius:2px;"></span> Command</span>
                         </div>
-                    </div>
-                </div>
-
-                <div class="sword-modal-section mb-4">
-                    <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-star-outline" id="modal_favorite_icon"></i></span>
-                        <span class="sword-modal-section-title">Favorite</span>
-                        <button type="button" id="modal_favorite_btn" class="btn btn-sm ms-auto" style="font-size:0.78rem;">
-                            <i class="mdi mdi-star-outline me-1"></i><span id="modal_favorite_label">Mark as Favorite</span>
-                        </button>
                     </div>
                 </div>
 
@@ -140,7 +133,7 @@
         } else {
             $('#modal_favorite_btn').removeClass('btn-warning').addClass('btn-outline-warning');
             $('#modal_favorite_btn i').removeClass('mdi-star').addClass('mdi-star-outline');
-            $('#modal_favorite_label').text('Mark as Favorite');
+            $('#modal_favorite_label').text('Favorite');
         }
     }
 
@@ -167,7 +160,9 @@
                     // Extract section title if present (look for <h5>...</h5>)
                     let titleMatch = prefix.match(/<h5[^>]*>([^<]*)<\/h5>/);
                     if (titleMatch) {
-                        sectionTitle = titleMatch[1];
+                        var ta = document.createElement('textarea');
+                        ta.innerHTML = titleMatch[1];
+                        sectionTitle = ta.value;
                     }
 
                     $('#modal_line_break').prop('checked', hasLineBreak || sectionTitle);
@@ -236,6 +231,16 @@
                     if (typeof lookupVerses === 'function') { lookupVerses(''); lookupVerses(2); }
                 }
             });
+        });
+
+        // Auto title-case the Section Title input as the user types
+        $('#modal_section_title').on('input', function() {
+            var pos = this.selectionStart;
+            var titled = $(this).val().replace(/\w\S*/g, function(w) {
+                return w.charAt(0).toUpperCase() + w.slice(1);
+            });
+            $(this).val(titled);
+            this.setSelectionRange(pos, pos);
         });
 
         // Handle save button click

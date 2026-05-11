@@ -15,6 +15,17 @@
 .digest-card {
     border-top: 2px solid var(--sword-gold);
 }
+.digest-verse-ref {
+    border-left: 3px solid rgba(201,168,76,0.35);
+    padding: 0.3rem 0.6rem 0.3rem 0.65rem;
+    margin-bottom: 0.45rem;
+    font-size: 0.78rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: #6b7280;
+    background: rgba(201,168,76,0.05);
+    border-radius: 0 3px 3px 0;
+}
 .digest-item {
     padding: 0.6rem 0;
     border-bottom: 1px solid rgba(14,22,40,0.06);
@@ -169,7 +180,14 @@
                                 @endif
                                 <span style="font-size: 0.7rem; color: #9ca3af;">{{ \Carbon\Carbon::parse($prayer->date)->format('M j') }}</span>
                             </div>
-                            <p class="digest-snippet mb-0">{{ Str::limit($prayer->content, 120) }}</p>
+                            @if(strlen($prayer->content) > 240)
+                            <p class="digest-snippet mb-0">
+                                <span class="snip-short">{{ Str::limit($prayer->content, 240) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>
+                                <span class="snip-full" hidden>{{ $prayer->content }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">Less</a></span>
+                            </p>
+                            @else
+                            <p class="digest-snippet mb-0">{{ $prayer->content }}</p>
+                            @endif
                         </div>
                     @endforeach
                 @else
@@ -255,9 +273,12 @@
                                 </span>
                                 <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
                             </div>
-                            @if(strlen($m->comment) > 120)
+                            @if($note['type'] === 'verse' && $m->verse?->text)
+                            <div class="digest-verse-ref">{{ $m->verse->text }}</div>
+                            @endif
+                            @if(strlen($m->comment) > 240)
                             <p class="digest-snippet mb-0">
-                                <span class="snip-short">{{ Str::limit($m->comment, 120) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>
+                                <span class="snip-short">{{ Str::limit($m->comment, 240) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>
                                 <span class="snip-full" hidden>{{ $m->comment }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">Less</a></span>
                             </p>
                             @else

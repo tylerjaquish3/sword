@@ -14,6 +14,64 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.8.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.8</span>
+                <div>
+                    <div class="changelog-title">Book Studies, Digest Comments & Polish</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Book Studies — track active and completed book-by-book studies from the Topics page, with progress indicators and a "Study Complete" button on the book study view
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Guest Comments on Shared Digests — anyone with a share link can now leave a named or anonymous comment; comments notify the digest owner and appear on the digest detail view
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Digest commentary now shows the actual verse text beneath each verse note, making it easier to read without jumping to the Bible
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Long comments and prayers in the digest are now collapsible with More / Less toggles instead of being hard-truncated
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Memory verse section in digest now shows a "Still working on…" label above in-progress sets
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Dashboard now shows a total memorized verse count alongside active memory cards
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Section Title input in the verse commentary modal now auto-title-cases as you type
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Favorite button moved into the Highlight section header for a cleaner modal layout
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Prayers now sort newest-first on the prayers page
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            HTML entities in commentary section titles decoded correctly when loading the verse modal
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.7.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +80,6 @@
                     <div class="changelog-title">Scripture Memory Quiz</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

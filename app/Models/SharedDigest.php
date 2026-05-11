@@ -26,4 +26,9 @@ class SharedDigest extends Model
     {
         return $this->belongsTo(\App\Models\User::class);
     }
+
+    public function guestComments()
+    {
+        return $this->hasMany(DigestGuestComment::class);
+    }
 }

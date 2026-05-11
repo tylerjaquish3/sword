@@ -11,7 +11,7 @@ class PrayerController extends Controller
 {
     public function index()
     {
-        $prayers = Prayer::with('type')->get()->groupBy('date');
+        $prayers = Prayer::with('type')->orderByDesc('date')->get()->groupBy('date');
         $prayerTypes = PrayerType::all();
         $today = Carbon::now()->format('m/d/Y');
         $lastPrayer = Prayer::orderByDesc('created_at')->first();

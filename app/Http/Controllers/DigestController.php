@@ -36,7 +36,7 @@ class DigestController extends Controller
             ->get();
 
         $verseComments = VerseComment::whereBetween('created_at', [$weekStart, $weekEnd])
-            ->with('chapter.book')
+            ->with(['chapter.book', 'verse'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -111,7 +111,9 @@ class DigestController extends Controller
     {
         abort_if($shared->user_id !== Auth::id(), 403);
 
-        return view('digest.show', compact('shared'));
+        $comments = $shared->guestComments()->orderBy('created_at')->get();
+
+        return view('digest.show', compact('shared', 'comments'));
     }
 
     public function destroy(SharedDigest $shared)

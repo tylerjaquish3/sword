@@ -144,6 +144,67 @@
             color: #9ca3af;
             padding: 2rem 0 1.5rem;
         }
+        .comment-block {
+            border-left: 3px solid rgba(201,168,76,0.3);
+            padding: 0.6rem 0.9rem;
+            margin-bottom: 0.85rem;
+            background: rgba(201,168,76,0.04);
+            border-radius: 0 6px 6px 0;
+        }
+        .comment-block:last-child { margin-bottom: 0; }
+        .comment-author {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--sword-navy);
+            letter-spacing: 0.02em;
+        }
+        .comment-date {
+            font-size: 0.68rem;
+            color: #9ca3af;
+            margin-left: 0.5rem;
+        }
+        .comment-text {
+            font-size: 0.85rem;
+            color: #374151;
+            line-height: 1.55;
+            margin: 0.2rem 0 0;
+        }
+        .comment-form-card {
+            background: #fff;
+            border-top: 2px solid var(--sword-gold);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            padding: 1.25rem;
+        }
+        .comment-form-card textarea,
+        .comment-form-card input[type=text] {
+            border: 1px solid rgba(14,22,40,0.15);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #1f2937;
+            padding: 0.55rem 0.75rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .comment-form-card textarea:focus,
+        .comment-form-card input[type=text]:focus {
+            border-color: var(--sword-gold);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+        }
+        .comment-form-card textarea { resize: vertical; min-height: 90px; }
+        .btn-submit-comment {
+            background: var(--sword-navy);
+            color: var(--sword-gold);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .btn-submit-comment:hover { opacity: 0.88; }
     </style>
 </head>
 <body>
@@ -438,6 +499,35 @@
 
     </div>
     @endif
+
+    {{-- Guest Comments --}}
+    <hr class="divider-gold" id="comments">
+    <div class="mb-4">
+        <p class="section-label" style="font-size: 0.7rem; letter-spacing: 0.12em;"><i class="mdi mdi-comment-text-outline me-1"></i>Comments</p>
+
+        @if(session('comment_success'))
+        <div style="background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.85rem; color: var(--sword-navy); margin-bottom: 1rem;">
+            <i class="mdi mdi-check-circle-outline me-1" style="color: var(--sword-gold);"></i> Your comments were sent!
+        </div>
+        @endif
+
+        <div class="comment-form-card">
+            <p style="font-size: 0.78rem; color: #6b7280; margin-bottom: 1rem;">Leave a note about this weekly digest. Your comments will only be visible for {{ $shared->sharer_name ?? 'the author' }}.</p>
+            <form method="POST" action="{{ route('digest.shared.comment', $shared->uuid) }}">
+                @csrf
+                <div style="margin-bottom: 0.75rem;">
+                    <input type="text" name="name" placeholder="Your name (optional)" value="{{ old('name') }}" autocomplete="name">
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    <textarea name="comment" placeholder='e.g. "This is so encouraging — praying for you!" or "That verse hit me too." or "Thank you for sharing this."' required>{{ old('comment') }}</textarea>
+                    @error('comment')
+                    <div style="font-size: 0.75rem; color: #dc2626; margin-top: 0.3rem;">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn-submit-comment">Send</button>
+            </form>
+        </div>
+    </div>
 
     <div class="footer-note">
         Shared via <strong style="color: var(--sword-navy);">Sword</strong> &mdash; a personal Bible study tool

@@ -60,7 +60,7 @@
         <a href="{{ route('memory.index') }}" class="card text-decoration-none dash-stat-card">
             <div class="card-body text-center py-4">
                 <i class="mdi mdi-brain mdi-36px mb-2" style="color: var(--sword-gold);"></i>
-                <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">0</h2>
+                <h2 class="font-weight-bold mb-1" style="color: var(--sword-navy);">{{ $memorizedCount }}</h2>
                 <p class="mb-0 text-uppercase font-weight-bold" style="font-size: 0.7rem; letter-spacing: 0.08em; color: #9ca3af;">Verses Memorized</p>
             </div>
         </a>

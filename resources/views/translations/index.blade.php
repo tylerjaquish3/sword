@@ -770,8 +770,9 @@ $(document).ready(function() {
                     let highlightStyle = '';
                     if (verse.highlight_color && hlBg[verse.highlight_color]) {
                         highlightStyle = 'background-color:' + hlBg[verse.highlight_color] + ';padding:2px 4px;border-radius:3px;';
-                    } else if (verse.has_commentary) {
-                        highlightStyle = 'border-bottom:2px dotted #94a3b8;';
+                    }
+                    if (verse.has_commentary) {
+                        highlightStyle += 'border-bottom:2px dotted #94a3b8;';
                     }
                     html += '<span class="verse-clickable" data-verse-id="' + verse.id + '" style="cursor:pointer;' + highlightStyle + '">';
                     html += '<sup class="text-muted">' + verse.number + '</sup> ' + verse.text;
