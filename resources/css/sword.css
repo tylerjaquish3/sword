@@ -925,6 +925,10 @@ div.dt-container .dt-paging .dt-paging-button:hover {
     color: #c9a84c;
     flex-shrink: 0;
 }
+.sword-modal-icon > i {
+    line-height: 1;
+    display: block;
+}
 .sword-modal-header .modal-title {
     color: #fff !important;
     font-size: 1.05rem;

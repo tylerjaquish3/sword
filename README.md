@@ -32,7 +32,6 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - Look into missing books, verses
 - collaboration tools, accountability partner
 - look at other bible apps and what features they have
-- check how long session is (maybe set to 12 hrs?)
 - prayers have an email button hidden, havent set that up yet
 - commentary page, is it needed?
 - if you study the same book twice, it should be a blank slate?

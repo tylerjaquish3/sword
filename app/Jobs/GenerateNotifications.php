@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Models\Memory;
 use App\Models\Prayer;
 use App\Models\SharedDigest;
-use App\Models\Translation;
 use App\Models\User;
 use App\Models\UserNotification;
 use App\Models\UserRead;
@@ -15,7 +14,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class GenerateNotifications implements ShouldQueue
@@ -57,6 +55,11 @@ class GenerateNotifications implements ShouldQueue
 
         $streak = 0;
         $checkDate = now()->startOfDay();
+        // If today hasn't been read yet, the streak should start from yesterday
+        // so a user who read the prior N days still sees their N-day streak.
+        if (!$allReadDates->contains(fn($d) => $d->eq($checkDate))) {
+            $checkDate->subDay();
+        }
         while ($allReadDates->contains(fn($d) => $d->eq($checkDate))) {
             $streak++;
             $checkDate->subDay();
@@ -74,7 +77,7 @@ class GenerateNotifications implements ShouldQueue
         foreach ($milestones as $days => $meta) {
             if ($streak >= $days) {
                 $key = "reading_streak_{$days}_{$monthKey}";
-                $this->createIfNotExists($user->id, 'reading_streak', $key, $meta['title'], $meta['message'], $meta['icon'], $meta['icon_color'], route('home.index'));
+                $this->createIfNotExists($user->id, 'reading_streak', $key, $meta['title'], $meta['message'], $meta['icon'], $meta['icon_color'], route('translations.index'));
             }
         }
     }
@@ -97,8 +100,7 @@ class GenerateNotifications implements ShouldQueue
             DB::table('user_notifications')
                 ->where('user_id', $user->id)
                 ->where('unique_key', 'profile_no_translation')
-                ->whereNull('read_at')
-                ->update(['read_at' => now()]);
+                ->delete();
         }
     }
 
@@ -196,7 +198,7 @@ class GenerateNotifications implements ShouldQueue
     ): void {
         UserNotification::withoutGlobalScopes()->firstOrCreate(
             ['user_id' => $userId, 'unique_key' => $uniqueKey],
-            compact('type', 'title', 'message', 'icon', 'iconColor', 'url') + ['icon_color' => $iconColor]
+            compact('type', 'title', 'message', 'icon', 'url') + ['icon_color' => $iconColor]
         );
     }
 

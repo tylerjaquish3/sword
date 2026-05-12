@@ -42,7 +42,7 @@
 
             <div class="modal-header sword-modal-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="sword-modal-icon"><i class="mdi mdi-hands-pray"></i></div>
+                    <div class="sword-modal-icon"><i class="mdi mdi-heart"></i></div>
                     <div>
                         <h5 class="modal-title mb-0" id="createPrayerModalLabel">Prayer Journal</h5>
                         <p class="sword-modal-subtitle mb-0">A.C.T.S. — Adoration · Confession · Thanksgiving · Supplication</p>

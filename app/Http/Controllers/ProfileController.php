@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChapterComment;
 use App\Models\SharedDigest;
 use App\Models\Translation;
+use App\Models\UserNotification;
 use App\Models\UserRead;
 use App\Models\UserVersePreference;
 use App\Models\Verse;
@@ -77,6 +78,11 @@ class ProfileController extends Controller
     {
         $request->validate(['translation_id' => 'nullable|exists:translations,id']);
         Auth::user()->update(['default_translation_id' => $request->translation_id ?: null]);
+
+        if ($request->translation_id) {
+            UserNotification::where('unique_key', 'profile_no_translation')->delete();
+        }
+
         return back()->with('success', 'Default translation saved.');
     }
 }

@@ -72,6 +72,17 @@ class ChapterController extends Controller
             'translation_id' => 'required|exists:translations,id',
         ]);
 
+        $existing = UserRead::where('user_id', Auth::id())
+            ->where('book_id', $request->book_id)
+            ->where('chapter_number', $request->chapter_number)
+            ->where('translation_id', $request->translation_id)
+            ->whereDate('read_at', now()->toDateString())
+            ->first();
+
+        if ($existing) {
+            return response()->json(['success' => true, 'already_read_today' => true]);
+        }
+
         UserRead::create([
             'user_id'        => Auth::id(),
             'book_id'        => $request->book_id,
