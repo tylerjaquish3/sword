@@ -1,6 +1,14 @@
 @extends('base.layout')
 
-@section('title', 'Complete Weekly Digest')
+@php
+    $isEditing = isset($shared);
+    $canonicalIdols = ['Laziness', 'Comfort', 'Food', 'Work', 'Money', 'Status', 'Entertainment', 'Relationships', 'Control', 'Approval'];
+    $savedIdols = $isEditing ? ($shared->idols ?? []) : [];
+    $savedFruits = $isEditing ? ($shared->fruits_needing_prayer ?? []) : [];
+    $idolsOther = $isEditing ? array_values(array_diff($savedIdols, $canonicalIdols)) : [];
+@endphp
+
+@section('title', $isEditing ? 'Edit Weekly Digest' : 'Complete Weekly Digest')
 
 @push('css')
 <style>
@@ -56,18 +64,21 @@
 <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
     <div>
         <p class="share-section-label mb-1">Weekly Digest</p>
-        <h3 class="mb-1 fw-bold" style="color: var(--sword-navy);">Complete This Week's Digest</h3>
+        <h3 class="mb-1 fw-bold" style="color: var(--sword-navy);">{{ $isEditing ? 'Edit Digest' : "Complete This Week's Digest" }}</h3>
         <p class="mb-0" style="font-size: 0.85rem; color: #6b7280;">
             {{ $weekStart->format('M j') }} – {{ $weekEnd->format('M j, Y') }}
         </p>
     </div>
-    <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
-        <i class="mdi mdi-arrow-left"></i> Back to Digest
+    <a href="{{ $isEditing ? route('digest.history') : route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem;">
+        <i class="mdi mdi-arrow-left"></i> {{ $isEditing ? 'Back to History' : 'Back to Digest' }}
     </a>
 </div>
 
 <form action="{{ $formAction ?? route('digest.complete.store') }}" method="POST">
     @csrf
+    @if($isEditing)
+        @method('PUT')
+    @endif
 
     <div class="row justify-content-center mb-1">
         <div class="col-12 col-lg-8">
@@ -89,7 +100,7 @@
 
                     <div class="section-toggle">
                         <input class="form-check-input" type="checkbox" name="show_chapters" id="show_chapters" value="1"
-                            {{ $chaptersRead->isNotEmpty() ? 'checked' : '' }}>
+                            {{ ($isEditing ? $shared->show_chapters : $chaptersRead->isNotEmpty()) ? 'checked' : '' }}>
                         <label class="form-check-label" for="show_chapters" style="font-size: 0.85rem; cursor: pointer;">
                             <i class="mdi mdi-book-open-variant me-1" style="color: var(--sword-gold);"></i>
                             Chapters Read
@@ -99,7 +110,7 @@
 
                     <div class="section-toggle">
                         <input class="form-check-input" type="checkbox" name="show_prayers" id="show_prayers" value="1"
-                            {{ $prayers->isNotEmpty() ? 'checked' : '' }}>
+                            {{ ($isEditing ? $shared->show_prayers : $prayers->isNotEmpty()) ? 'checked' : '' }}>
                         <label class="form-check-label" for="show_prayers" style="font-size: 0.85rem; cursor: pointer;">
                             <i class="mdi mdi-heart me-1" style="color: var(--sword-gold);"></i>
                             Prayers Written
@@ -109,7 +120,7 @@
 
                     <div class="section-toggle">
                         <input class="form-check-input" type="checkbox" name="show_commentary" id="show_commentary" value="1"
-                            {{ ($chapterComments->isNotEmpty() || $verseComments->isNotEmpty()) ? 'checked' : '' }}>
+                            {{ ($isEditing ? $shared->show_commentary : ($chapterComments->isNotEmpty() || $verseComments->isNotEmpty())) ? 'checked' : '' }}>
                         <label class="form-check-label" for="show_commentary" style="font-size: 0.85rem; cursor: pointer;">
                             <i class="mdi mdi-pencil me-1" style="color: var(--sword-gold);"></i>
                             Commentary
@@ -119,7 +130,7 @@
 
                     <div class="section-toggle">
                         <input class="form-check-input" type="checkbox" name="show_memory" id="show_memory" value="1"
-                            {{ $activeMemories->isNotEmpty() ? 'checked' : '' }}>
+                            {{ ($isEditing ? $shared->show_memory : $activeMemories->isNotEmpty()) ? 'checked' : '' }}>
                         <label class="form-check-label" for="show_memory" style="font-size: 0.85rem; cursor: pointer;">
                             <i class="mdi mdi-brain me-1" style="color: var(--sword-gold);"></i>
                             Memory Practice
@@ -129,7 +140,7 @@
 
                     <div class="section-toggle">
                         <input class="form-check-input" type="checkbox" name="show_past_note" id="show_past_note" value="1"
-                            {{ $pastNote ? 'checked' : '' }}>
+                            {{ ($isEditing ? $shared->show_past_note : (bool) $pastNote) ? 'checked' : '' }}>
                         <label class="form-check-label" for="show_past_note" style="font-size: 0.85rem; cursor: pointer;">
                             <i class="mdi mdi-clock-time-eight-outline me-1" style="color: var(--sword-gold);"></i>
                             Note from One Year Ago
@@ -149,7 +160,7 @@
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         @foreach(['Love', 'Joy', 'Peace', 'Patience', 'Kindness', 'Goodness', 'Faithfulness', 'Self Control'] as $fruit)
                         <label class="fruit-check">
-                            <input type="checkbox" name="fruits_needing_prayer[]" value="{{ $fruit }}" style="display:none;">
+                            <input type="checkbox" name="fruits_needing_prayer[]" value="{{ $fruit }}" style="display:none;" {{ in_array($fruit, $savedFruits) ? 'checked' : '' }}>
                             <span>{{ $fruit }}</span>
                         </label>
                         @endforeach
@@ -160,7 +171,7 @@
                         rows="2"
                         placeholder="Optional — why are these areas on your heart this week?"
                         style="font-size: 0.82rem; resize: vertical;"
-                    ></textarea>
+                    >{{ $isEditing ? $shared->fruits_description : '' }}</textarea>
                 </div>
             </div>
 
@@ -175,7 +186,7 @@
                         rows="5"
                         placeholder="e.g. Romans 8:28 — this verse reminded me that even in difficulty, God is working..."
                         style="font-size: 0.85rem; resize: vertical;"
-                    ></textarea>
+                    >{{ $isEditing ? $shared->impactful_scripture : '' }}</textarea>
                 </div>
             </div>
 
@@ -185,9 +196,9 @@
                     <p class="share-section-label"><i class="mdi mdi-alert-circle-outline me-1"></i>Idols to Surrender</p>
                     <p style="font-size: 0.8rem; color: #6b7280; margin-bottom: 1rem;">What have you been putting above God this week?</p>
                     <div class="d-flex flex-wrap gap-2 mb-3">
-                        @foreach(['Laziness', 'Comfort', 'Food', 'Work', 'Money', 'Status', 'Entertainment', 'Relationships', 'Control', 'Approval'] as $idol)
+                        @foreach($canonicalIdols as $idol)
                         <label class="idol-check">
-                            <input type="checkbox" name="idols[]" value="{{ $idol }}" style="display:none;">
+                            <input type="checkbox" name="idols[]" value="{{ $idol }}" style="display:none;" {{ in_array($idol, $savedIdols) ? 'checked' : '' }}>
                             <span>{{ $idol }}</span>
                         </label>
                         @endforeach
@@ -198,6 +209,7 @@
                         class="form-control mb-3"
                         placeholder="Other (comma-separated)"
                         style="font-size: 0.82rem;"
+                        value="{{ implode(', ', $idolsOther) }}"
                     >
                     <textarea
                         name="idols_description"
@@ -205,7 +217,7 @@
                         rows="2"
                         placeholder="Optional — reflect on how these have shown up this week"
                         style="font-size: 0.82rem; resize: vertical;"
-                    ></textarea>
+                    >{{ $isEditing ? $shared->idols_description : '' }}</textarea>
                 </div>
             </div>
 
@@ -220,7 +232,7 @@
                         rows="5"
                         placeholder="e.g. Theme: grace in suffering. Learned that Paul's thorn wasn't removed but redeemed. Questions: what does 'strength in weakness' look like practically?"
                         style="font-size: 0.85rem; resize: vertical;"
-                    ></textarea>
+                    >{{ $isEditing ? $shared->sermon_notes : '' }}</textarea>
                 </div>
             </div>
 
@@ -235,7 +247,7 @@
                         rows="4"
                         placeholder="Prayer requests, reflections, encouragement..."
                         style="font-size: 0.85rem; resize: vertical;"
-                    ></textarea>
+                    >{{ $isEditing ? $shared->additional_content : '' }}</textarea>
                 </div>
             </div>
 
@@ -245,7 +257,7 @@
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
             <div class="d-flex justify-content-end gap-2 mb-4">
-                <a href="{{ route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem;">
+                <a href="{{ $isEditing ? route('digest.history') : route('digest.weekly') }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem;">
                     Cancel
                 </a>
                 <button type="submit" name="submit_action" value="save" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.85rem; font-weight: 600; padding: 0.4rem 1.25rem;">

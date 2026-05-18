@@ -261,7 +261,7 @@
         <div class="card digest-card">
             <div class="card-body">
                 <p class="digest-section-label"><i class="mdi mdi-pencil me-1"></i>Commentary Added</p>
-                @php $allNotes = $chapterComments->map(fn($c) => ['type' => 'chapter', 'model' => $c])->concat($verseComments->map(fn($c) => ['type' => 'verse', 'model' => $c]))->sortByDesc(fn($n) => $n['model']->created_at); @endphp
+                @php $allNotes = $chapterComments->map(fn($c) => ['type' => 'chapter', 'model' => $c])->concat($verseComments->map(fn($c) => ['type' => 'verse', 'model' => $c]))->sortBy(fn($n) => $n['model']->created_at); @endphp
                 @if($allNotes->isNotEmpty())
                     @foreach($allNotes as $note)
                         @php $m = $note['model']; $book = $m->chapter?->book; @endphp
@@ -272,6 +272,7 @@
                                     {{ $m->chapter?->number }}@if($note['type'] === 'verse'):{{ $m->verse_number }}@endif
                                 </span>
                                 <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
+                                <span style="font-size: 0.7rem; color: #9ca3af;">{{ $m->created_at->format('M j') }}</span>
                             </div>
                             @if($note['type'] === 'verse' && $m->verse?->text)
                             <div class="digest-verse-ref">{{ $m->verse->text }}</div>

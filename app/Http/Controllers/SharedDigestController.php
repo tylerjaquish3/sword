@@ -92,6 +92,84 @@ class SharedDigestController extends Controller
         return redirect()->route('digest.history')->with('success', 'Digest saved for ' . $weekStart->format('M j') . '–' . $weekEnd->format('M j, Y') . '.');
     }
 
+    public function edit(SharedDigest $shared)
+    {
+        abort_if($shared->user_id !== Auth::id(), 403);
+        abort_if($shared->is_shared, 403, 'Shared digests cannot be edited.');
+
+        [$weekStart, $weekEnd, $data] = $this->fetchWeeklyData(\Carbon\Carbon::parse($shared->week_start));
+
+        return view('digest.share', array_merge($data, [
+            'weekStart' => $weekStart,
+            'weekEnd'   => $weekEnd,
+            'formAction' => route('digest.update', $shared),
+            'shared'    => $shared,
+        ]));
+    }
+
+    public function update(Request $request, SharedDigest $shared)
+    {
+        abort_if($shared->user_id !== Auth::id(), 403);
+        abort_if($shared->is_shared, 403, 'Shared digests cannot be edited.');
+
+        $request->validate([
+            'show_chapters' => 'nullable|boolean',
+            'show_prayers' => 'nullable|boolean',
+            'show_commentary' => 'nullable|boolean',
+            'show_memory' => 'nullable|boolean',
+            'show_past_note' => 'nullable|boolean',
+            'fruits_needing_prayer' => 'nullable|array',
+            'fruits_needing_prayer.*' => 'string',
+            'fruits_description' => 'nullable|string|max:2000',
+            'impactful_scripture' => 'nullable|string|max:2000',
+            'idols' => 'nullable|array',
+            'idols.*' => 'string',
+            'idols_other' => 'nullable|string|max:500',
+            'idols_description' => 'nullable|string|max:2000',
+            'additional_content' => 'nullable|string|max:5000',
+            'sermon_notes' => 'nullable|string|max:5000',
+        ]);
+
+        [, , $data] = $this->fetchWeeklyData(\Carbon\Carbon::parse($shared->week_start));
+        $snapshot = $this->buildSnapshot($data);
+
+        $idols = $request->input('idols', []);
+        if ($request->filled('idols_other')) {
+            foreach (explode(',', $request->input('idols_other')) as $extra) {
+                $trimmed = trim($extra);
+                if ($trimmed) {
+                    $idols[] = $trimmed;
+                }
+            }
+        }
+
+        $isSharing = $request->input('submit_action') === 'share';
+
+        $shared->update([
+            'is_shared' => $isSharing,
+            'snapshot' => $snapshot,
+            'show_chapters' => $request->boolean('show_chapters'),
+            'show_prayers' => $request->boolean('show_prayers'),
+            'show_commentary' => $request->boolean('show_commentary'),
+            'show_memory' => $request->boolean('show_memory'),
+            'show_past_note' => $request->boolean('show_past_note'),
+            'fruits_needing_prayer' => $request->input('fruits_needing_prayer', []),
+            'fruits_description' => $request->input('fruits_description'),
+            'impactful_scripture' => $request->input('impactful_scripture'),
+            'idols' => $idols,
+            'idols_description' => $request->input('idols_description'),
+            'additional_content' => $request->input('additional_content'),
+            'sermon_notes' => $request->input('sermon_notes'),
+        ]);
+
+        if ($isSharing) {
+            return redirect()->route('digest.share.link', $shared->uuid);
+        }
+
+        return redirect()->route('digest.history')
+            ->with('success', 'Digest updated for ' . $shared->week_start->format('M j') . '–' . $shared->week_end->format('M j, Y') . '.');
+    }
+
     public function link(string $uuid)
     {
         $shared = SharedDigest::where('uuid', $uuid)->firstOrFail();
@@ -138,10 +216,11 @@ class SharedDigestController extends Controller
             ->with('comment_success', true);
     }
 
-    private function fetchWeeklyData(): array
+    private function fetchWeeklyData(?\Carbon\Carbon $forWeekOf = null): array
     {
-        $weekStart = now()->startOfWeek();
-        $weekEnd = now()->endOfWeek();
+        $base = $forWeekOf ?? now();
+        $weekStart = $base->copy()->startOfWeek();
+        $weekEnd = $base->copy()->endOfWeek();
 
         $chaptersRead = UserRead::where('user_id', Auth::id())
             ->whereBetween('read_at', [$weekStart, $weekEnd])
@@ -238,6 +317,8 @@ class SharedDigestController extends Controller
                 'type' => 'chapter',
                 'ref' => ($c->chapter?->book?->name ?? '') . ' ' . ($c->chapter?->number ?? ''),
                 'comment' => $c->comment,
+                'date' => $c->created_at->format('M j'),
+                'created_at' => $c->created_at->toIso8601String(),
             ];
         })->concat(collect($data['verseComments'])->map(function ($c) {
             return [
@@ -245,8 +326,10 @@ class SharedDigestController extends Controller
                 'ref' => ($c->chapter?->book?->name ?? '') . ' ' . ($c->chapter?->number ?? '') . ':' . $c->verse_number,
                 'comment' => $c->comment,
                 'verse_text' => $c->verse?->text,
+                'date' => $c->created_at->format('M j'),
+                'created_at' => $c->created_at->toIso8601String(),
             ];
-        }))->sortByDesc(fn($n) => $n['type'])->values()->all();
+        }))->sortBy('created_at')->values()->all();
 
         $memories = $data['activeMemories']->map(function ($m) {
             return [

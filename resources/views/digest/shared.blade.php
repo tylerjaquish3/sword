@@ -152,6 +152,17 @@
             border-radius: 0 6px 6px 0;
         }
         .comment-block:last-child { margin-bottom: 0; }
+        .digest-verse-ref {
+            border-left: 3px solid rgba(201,168,76,0.35);
+            padding: 0.3rem 0.6rem 0.3rem 0.65rem;
+            margin: 0.25rem 0 0.45rem;
+            font-size: 0.78rem;
+            font-style: italic;
+            line-height: 1.5;
+            color: #6b7280;
+            background: rgba(201,168,76,0.05);
+            border-radius: 0 3px 3px 0;
+        }
         .comment-author {
             font-size: 0.72rem;
             font-weight: 700;
@@ -295,7 +306,14 @@
                                 @endif
                                 <span style="font-size: 0.7rem; color: #9ca3af;">{{ $prayer['date'] }}</span>
                             </div>
-                            <p class="digest-snippet mb-0">{{ Str::limit($prayer['content'], 120) }}</p>
+                            @if(strlen($prayer['content']) > 240)
+                            <p class="digest-snippet mb-0">
+                                <span class="snip-short">{{ Str::limit($prayer['content'], 240) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>
+                                <span class="snip-full" hidden>{{ $prayer['content'] }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">Less</a></span>
+                            </p>
+                            @else
+                            <p class="digest-snippet mb-0">{{ $prayer['content'] }}</p>
+                            @endif
                         </div>
                         @endforeach
                     @else
@@ -372,7 +390,13 @@
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span class="digest-ref">{{ $note['ref'] }}</span>
                                 <span class="badge" style="background: rgba(14,22,40,0.07); color: #6b7280; font-size: 0.65rem;">{{ $note['type'] === 'verse' ? 'Verse' : 'Chapter' }}</span>
+                                @if(!empty($note['date']))
+                                    <span style="font-size: 0.7rem; color: #9ca3af;">{{ $note['date'] }}</span>
+                                @endif
                             </div>
+                            @if($note['type'] === 'verse' && !empty($note['verse_text']))
+                            <div class="digest-verse-ref">{{ $note['verse_text'] }}</div>
+                            @endif
                             @if(strlen($note['comment']) > 120)
                             <p class="digest-snippet mb-0">
                                 <span class="snip-short">{{ Str::limit($note['comment'], 120) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.75rem; margin-left: 4px;">More</a></span>

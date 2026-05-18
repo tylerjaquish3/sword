@@ -14,6 +14,56 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.9.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.9</span>
+                <div>
+                    <div class="changelog-title">Digest Edits & Polish</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Edit a saved digest before sharing it — pre-share digests now have an Edit button on the history and detail views so you can tweak toggles, reflections, and notes without starting over
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Shared digest now shows the verse text beneath each verse commentary note, matching the private digest view
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Long prayers on the shared digest are now collapsible with More / Less toggles instead of being hard-truncated
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Commentary notes across the weekly, saved, and shared digests now sort chronologically (oldest first) and show the date the note was written
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Daily notifications now generate at 4 AM so reminders are waiting when you wake up
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Bible Read progress on the dashboard now counts each chapter once — re-reading the same chapter no longer inflates the total
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            "No prayers logged this week" notification now holds off until Wednesday, giving the week a chance to start
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Saving a verse edit on the Translations page no longer jumps the page to the top — scroll position is preserved while verses reload
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.8.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +72,6 @@
                     <div class="changelog-title">Book Studies, Digest Comments & Polish</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

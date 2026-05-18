@@ -106,6 +106,11 @@ class GenerateNotifications implements ShouldQueue
 
     private function checkPrayerReminder(User $user): void
     {
+        // Give the week a chance to start — only nudge from Wednesday onward.
+        if (now()->dayOfWeekIso < 3) {
+            return;
+        }
+
         $hasPrayerHistory = Prayer::withoutGlobalScopes()
             ->where('user_id', $user->id)
             ->exists();

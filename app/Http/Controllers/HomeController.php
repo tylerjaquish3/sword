@@ -38,10 +38,12 @@ class HomeController extends Controller
 
         // Bible reading progress
         $totalBibleChapters = $chapterCount;
-        $chaptersRead = UserRead::where('user_id', Auth::id())
-            ->select('book_id', 'chapter_number')
-            ->distinct()
-            ->count();
+        $chaptersRead = \DB::table(function ($q) {
+            $q->from('user_reads')
+              ->where('user_id', Auth::id())
+              ->select('book_id', 'chapter_number')
+              ->distinct();
+        }, 'sub')->count();
 
         // Verse highlights by color/type
         $highlightsByColor = UserVersePreference::where('user_id', Auth::id())

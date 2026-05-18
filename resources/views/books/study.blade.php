@@ -94,13 +94,6 @@
             </span>
         </div>
     </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('translations.index') }}?book={{ $book->id }}"
-           class="btn btn-sm"
-           style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
-            <i class="mdi mdi-book-open-variant"></i> Read
-        </a>
-    </div>
 </div>
 
 <div class="row g-4">

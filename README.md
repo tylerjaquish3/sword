@@ -37,6 +37,8 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - if you study the same book twice, it should be a blank slate?
 - verify notifications job works on prod
 
+https://www.navigators.org/resource/prayer-tools/
+
 
 ## Claude ideas
 

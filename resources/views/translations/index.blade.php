@@ -751,15 +751,20 @@ $(document).ready(function() {
         // Always use the main book/chapter selectors
         book_id = $('#book_select').val();
         chapter_id = $('#chapter_select').val();
-        
+
+        // Preserve content area height while loading so the page doesn't collapse and shift scroll position
+        const $chapterContent = $('#chapter'+side+'_content');
+        const prevHeight = $chapterContent.outerHeight();
+        if (prevHeight) $chapterContent.css('min-height', prevHeight + 'px');
+
         // Show loading spinner
-        $('#chapter'+side+'_content').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
-        
+        $chapterContent.html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+
         $.ajax({
             url: '/translations/verses?translation_id='+translation_id+'&book_id='+book_id+'&chapter_id='+chapter_id,
             type: 'GET',
             success: function(response) {
-                $('#chapter'+side+'_content').empty();
+                $chapterContent.empty();
                 const hlBg = { yellow: '#fef9c3', blue: '#dbeafe', green: '#dcfce7', red: '#fee2e2' };
                 let html = '<p>';
                 response.forEach(function(verse) {
@@ -783,8 +788,12 @@ $(document).ready(function() {
                     html += ' ';
                 });
                 html += '</p>';
-                $('#chapter'+side+'_content').html(html);
+                $chapterContent.html(html);
+                $chapterContent.css('min-height', '');
                 if (!side) updateChapterNavLabel();
+            },
+            error: function() {
+                $chapterContent.css('min-height', '');
             }
         });
     }

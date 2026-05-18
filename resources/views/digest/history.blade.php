@@ -83,6 +83,9 @@
                                     Copy Link
                                 </button>
                             @else
+                                <a href="{{ route('digest.edit', $digest) }}" class="btn btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2);">
+                                    Edit
+                                </a>
                                 <form method="POST" action="{{ route('digest.mark-shared', $digest) }}" class="d-inline">
                                     @csrf
                                     <button type="submit" class="btn btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2);">

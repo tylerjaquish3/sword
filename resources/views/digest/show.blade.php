@@ -77,6 +77,9 @@
                 <i class="mdi mdi-link-variant me-1"></i> Copy Link
             </button>
         @else
+            <a href="{{ route('digest.edit', $shared) }}" class="btn btn-sm" style="background: transparent; color: var(--sword-navy); border: 1px solid rgba(14,22,40,0.2); font-size: 0.8rem; font-weight: 600;">
+                <i class="mdi mdi-pencil-outline me-1"></i> Edit
+            </a>
             <form method="POST" action="{{ route('digest.mark-shared', $shared) }}" class="d-inline">
                 @csrf
                 <button type="submit" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.8rem; font-weight: 600;">
@@ -169,6 +172,9 @@
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="digest-badge" style="background: {{ $note['type'] === 'verse' ? 'rgba(201,168,76,0.1)' : 'rgba(14,22,40,0.06)' }}; color: {{ $note['type'] === 'verse' ? 'var(--sword-gold)' : '#6b7280' }};">{{ $note['type'] }}</span>
                         <span style="font-size: 0.78rem; font-weight: 600; color: var(--sword-navy);">{{ $note['ref'] }}</span>
+                        @if(!empty($note['date']))
+                            <span style="font-size: 0.72rem; color: #9ca3af;">{{ $note['date'] }}</span>
+                        @endif
                     </div>
                     @if($note['type'] === 'verse' && !empty($note['verse_text']))
                     <div class="digest-verse-ref">{{ $note['verse_text'] }}</div>
