@@ -648,35 +648,13 @@ $formatVerseRange = function($numbers) {
                         <div class="sword-modal-section-body">
                             <p class="mb-1" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af;">Your answer</p>
                             <p id="quiz-user-answer-display"
-                               style="font-size:0.9rem; line-height:1.6; color:#6b7280; font-style:italic; background:#f9f8f5; padding:10px 12px; border-radius:8px; border:1px solid #ede8df; margin-bottom:12px;"></p>
+                               style="font-size:0.9rem; line-height:1.8; color:#6b7280; background:#f9f8f5; padding:10px 12px; border-radius:8px; border:1px solid #ede8df; margin-bottom:12px;"></p>
                             <p class="mb-1" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#9ca3af;">Correct verse</p>
                             <p id="quiz-correct-answer-display"
                                style="font-size:0.9rem; line-height:1.6; color:#1a2545; font-style:italic; margin-bottom:0;"></p>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end mt-3">
-                        <button type="button" class="btn sword-modal-btn-save" id="quiz-next-btn">
-                            Next Verse <i class="mdi mdi-arrow-right ms-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Phase: summary --}}
-                <div id="quiz-phase-summary" class="quiz-phase p-4" style="display:none;">
-                    <div class="sword-modal-section">
-                        <div class="sword-modal-section-header">
-                            <span class="sword-modal-section-icon"><i class="mdi mdi-trophy-outline"></i></span>
-                            <span class="sword-modal-section-title">Session Complete</span>
-                        </div>
-                        <div class="sword-modal-section-body">
-                            <div class="text-center mb-4">
-                                <p class="mb-1" style="font-size:2.5rem; font-weight:700; color:var(--sword-navy);" id="quiz-summary-score"></p>
-                                <p class="text-muted mb-0" style="font-size:0.85rem;">verses correct this session</p>
-                            </div>
-                            <div id="quiz-summary-verse-list"></div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center gap-3 mt-4">
+                    <div class="d-flex justify-content-end gap-2 mt-3">
                         <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Done</button>
                         <button type="button" class="btn sword-modal-btn-save" id="quiz-restart-btn">
                             <i class="mdi mdi-restart me-1"></i>Quiz Again
@@ -1023,6 +1001,19 @@ $(document).ready(function() {
             allowClear: true,
             width: '100%',
         });
+
+        // On mobile, scroll modal so the Add Verses section sits at the top of the
+        // viewport before the dropdown opens. Firing on select2:opening (before the
+        // search input is focused) means the browser sees the input already in view
+        // when the keyboard appears and won't scroll back down to it.
+        $('#book_select').on('select2:opening', function() {
+            if (window.innerWidth < 576) {
+                const $section   = $(this).closest('.sword-modal-section');
+                const $modalBody = $section.closest('.modal-body');
+                const sectionTop = $section.offset().top - $modalBody.offset().top + $modalBody.scrollTop();
+                $modalBody.scrollTop(sectionTop);
+            }
+        });
     });
 
     // Verse text modal
@@ -1062,12 +1053,35 @@ $(document).ready(function() {
     // =========================================================
 
     let quiz = {
-        memoryId:       null,
-        verses:         [],
-        index:          0,
-        sessionResults: [],
-        attemptUrl:     '{{ route("quiz.attempt") }}',
+        memoryId:         null,
+        verses:           [],
+        passageText:      '',
+        passageReference: '',
+        attemptUrl:       '{{ route("quiz.attempt") }}',
     };
+
+    function buildPassageReference(verses) {
+        if (!verses || !verses.length) return '';
+        const groups = {};
+        verses.forEach(function(v) {
+            const key = v.book + ' ' + v.chapter;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(v.verse);
+        });
+        const parts = [];
+        Object.keys(groups).forEach(function(key) {
+            const nums = groups[key].slice().sort((a, b) => a - b);
+            const ranges = [];
+            let start = nums[0], end = nums[0];
+            for (let i = 1; i < nums.length; i++) {
+                if (nums[i] === end + 1) { end = nums[i]; }
+                else { ranges.push(start === end ? String(start) : start + '-' + end); start = end = nums[i]; }
+            }
+            ranges.push(start === end ? String(start) : start + '-' + end);
+            parts.push(key + ':' + ranges.join(', '));
+        });
+        return parts.join('; ');
+    }
 
     function quizCalcSimilarity(typed, actual) {
         const normalize = s => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 0);
@@ -1091,17 +1105,15 @@ $(document).ready(function() {
     }
 
     function quizShowPhase(phase) {
-        $('#quiz-phase-question, #quiz-phase-answer, #quiz-phase-summary').hide();
+        $('#quiz-phase-question, #quiz-phase-answer').hide();
         $('#quiz-phase-' + phase).show();
     }
 
     function quizRenderCurrentVerse() {
-        const v = quiz.verses[quiz.index];
-        const n = quiz.verses.length;
-        $('#quiz-progress-label').text('Verse ' + (quiz.index + 1) + ' of ' + n);
-        $('#quiz-reference').text(v.reference);
+        $('#quiz-progress-label').text('Full Passage');
+        $('#quiz-reference').text(quiz.passageReference);
         $('#quiz-answer-input').val('').trigger('focus');
-        $('#quizModalSubtitle').text((quiz.index + 1) + ' / ' + n + ' — ' + v.book);
+        $('#quizModalSubtitle').text(quiz.passageReference);
         quizShowPhase('question');
     }
 
@@ -1141,8 +1153,72 @@ $(document).ready(function() {
         return deferred.promise();
     }
 
-    function quizShowAnswer(typed, verseObj) {
-        const pct     = quizCalcSimilarity(typed, verseObj.text);
+    function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function buildAnswerDiff(typed, actual) {
+        const norm    = s => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 0);
+        const tNorm   = norm(typed);
+        const aNorm   = norm(actual);
+        const tOrig   = typed.split(/\s+/).filter(w => w.length > 0);
+        if (!tOrig.length) return [];
+
+        const m = tNorm.length, n = aNorm.length;
+        const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+        for (let i = 1; i <= m; i++) {
+            for (let j = 1; j <= n; j++) {
+                dp[i][j] = tNorm[i-1] === aNorm[j-1]
+                    ? dp[i-1][j-1] + 1
+                    : Math.max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+
+        const ops = [];
+        let i = m, j = n;
+        while (i > 0 || j > 0) {
+            if (i > 0 && j > 0 && tNorm[i-1] === aNorm[j-1]) {
+                ops.unshift({ type: 'match', word: tOrig[i-1] }); i--; j--;
+            } else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) {
+                ops.unshift({ type: 'missing' }); j--;
+            } else {
+                ops.unshift({ type: 'wrong', word: tOrig[i-1] }); i--;
+            }
+        }
+
+        // Collapse adjacent wrong+missing or missing+wrong into a single substitution
+        const merged = [];
+        for (let k = 0; k < ops.length; k++) {
+            if (ops[k].type === 'wrong' && k + 1 < ops.length && ops[k+1].type === 'missing') {
+                merged.push({ type: 'wrong', word: ops[k].word }); k++;
+            } else if (ops[k].type === 'missing' && k + 1 < ops.length && ops[k+1].type === 'wrong') {
+                merged.push({ type: 'wrong', word: ops[k+1].word }); k++;
+            } else {
+                merged.push(ops[k]);
+            }
+        }
+        return merged;
+    }
+
+    function renderAnswerDiff(typed, actual) {
+        if (!typed || !typed.trim()) return '<em style="color:#9ca3af;">(nothing typed)</em>';
+        const ops = buildAnswerDiff(typed, actual);
+        if (!ops.length) return '<em style="color:#9ca3af;">(nothing typed)</em>';
+        let html = '';
+        ops.forEach(function(op) {
+            if (op.type === 'match') {
+                html += escapeHtml(op.word) + ' ';
+            } else if (op.type === 'wrong') {
+                html += '<mark style="background:rgba(239,68,68,0.15);color:#dc2626;border-radius:3px;padding:1px 4px;font-style:normal;">' + escapeHtml(op.word) + '</mark> ';
+            } else {
+                html += '<span style="display:inline-block;min-width:2.8em;height:0.9em;background:rgba(239,68,68,0.1);border-bottom:2px solid rgba(239,68,68,0.45);border-radius:2px;margin:0 1px;vertical-align:text-bottom;"></span> ';
+            }
+        });
+        return html.trimEnd();
+    }
+
+    function quizShowAnswer(typed) {
+        const pct     = quizCalcSimilarity(typed, quiz.passageText);
         const correct = pct >= 80;
         const style   = quizScoreStyle(pct);
 
@@ -1155,53 +1231,22 @@ $(document).ready(function() {
         $('#quiz-score-verdict').css('color', style.color).text(style.verdict);
 
         // Answers
-        $('#quiz-answer-reference-label').text(verseObj.reference);
-        $('#quiz-user-answer-display').text(typed || '(nothing typed)');
-        $('#quiz-correct-answer-display').text(verseObj.text);
+        $('#quiz-answer-reference-label').text(quiz.passageReference);
+        $('#quiz-user-answer-display').html(renderAnswerDiff(typed, quiz.passageText));
+        $('#quiz-correct-answer-display').text(quiz.passageText);
 
-        // Record attempt — fire and forget; pill updates when response arrives
-        quiz.sessionResults.push({ verse: verseObj, correct: correct, score: pct });
-        quizRecordAttempt(verseObj, correct);
+        // Record attempt for every verse in the goal
+        quiz.verses.forEach(function(v) { quizRecordAttempt(v, correct); });
 
         quizShowPhase('answer');
     }
 
-    function quizAdvance() {
-        quiz.index++;
-        if (quiz.index < quiz.verses.length) {
-            quizRenderCurrentVerse();
-        } else {
-            quizShowSummary();
-        }
-    }
-
-    function quizShowSummary() {
-        const correctCount = quiz.sessionResults.filter(r => r.correct).length;
-        const total        = quiz.sessionResults.length;
-        $('#quiz-summary-score').text(correctCount + ' / ' + total);
-        let html = '';
-        quiz.sessionResults.forEach(function(r) {
-            const style    = quizScoreStyle(r.score);
-            const allTime  = (r.verse.mastery && r.verse.mastery.pct !== null)
-                ? ' <small class="text-muted">(' + r.verse.mastery.pct + '% all-time)</small>'
-                : '';
-            html += '<div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="font-size:0.85rem;">' +
-                    '<span>' + r.verse.reference + allTime + '</span>' +
-                    '<span class="badge ms-2" style="background:' + style.bg + '; color:' + style.color + '; border:1px solid ' + style.border + '; font-weight:600;">' + r.score + '%</span>' +
-                    '</div>';
-        });
-        $('#quiz-summary-verse-list').html(html || '<p class="text-muted">No verses attempted.</p>');
-        quizShowPhase('summary');
-        $('#quizModalSubtitle').text('Session complete — ' + correctCount + '/' + total + ' correct');
-    }
-
-    $(document).on('click', '.take-quiz-btn', function() {
+$(document).on('click', '.take-quiz-btn', function() {
         const btn = $(this);
-        quiz.memoryId       = btn.data('memory-id');
-        quiz.verses         = btn.data('quiz-verses');
-        quiz.index          = 0;
-        quiz.sessionResults = [];
-        quiz.verses.sort(() => Math.random() - 0.5);
+        quiz.memoryId         = btn.data('memory-id');
+        quiz.verses           = btn.data('quiz-verses');
+        quiz.passageText      = quiz.verses.map(v => v.text).join(' ');
+        quiz.passageReference = buildPassageReference(quiz.verses);
         $('#quizModalLabel').text(btn.data('memory-title'));
         quizRenderCurrentVerse();
         // Hide verse text on all active memory cards so nothing is visible through the overlay
@@ -1210,30 +1255,22 @@ $(document).ready(function() {
     });
 
     $('#quiz-reveal-btn').on('click', function() {
-        const v     = quiz.verses[quiz.index];
-        const typed = $('#quiz-answer-input').val().trim();
-        quizShowAnswer(typed, v);
+        quizShowAnswer($('#quiz-answer-input').val().trim());
     });
 
     $('#quiz-skip-btn').on('click', function() {
-        const v = quiz.verses[quiz.index];
-        quizShowAnswer('', v);
+        quizShowAnswer('');
     });
 
-    $('#quiz-next-btn').on('click', quizAdvance);
-
-    $('#quiz-restart-btn').on('click', function() {
-        quiz.index          = 0;
-        quiz.sessionResults = [];
-        quiz.verses.sort(() => Math.random() - 0.5);
+$('#quiz-restart-btn').on('click', function() {
         quizRenderCurrentVerse();
     });
 
     $('#quizModal').on('hidden.bs.modal', function() {
-        quiz.memoryId       = null;
-        quiz.verses         = [];
-        quiz.index          = 0;
-        quiz.sessionResults = [];
+        quiz.memoryId         = null;
+        quiz.verses           = [];
+        quiz.passageText      = '';
+        quiz.passageReference = '';
         quizShowPhase('question');
         $('#quiz-answer-input').val('');
         // Restore verse text on cards

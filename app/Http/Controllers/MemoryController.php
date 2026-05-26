@@ -119,7 +119,9 @@ class MemoryController extends Controller
         })
         ->where('translation_id', $translationId)
         ->orderBy('number')
-        ->get();
+        ->get()
+        ->unique('number')
+        ->values();
 
         return response()->json($verses);
     }

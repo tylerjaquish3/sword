@@ -39,6 +39,10 @@
                             <span class="changelog-tag tag-fix">Fix</span>
                             Missing icons in modal section headers across the Chapter Notes, New Topic, Edit Topic, and New Memory Goal modals
                         </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Scripture Quiz now presents the full passage at once instead of stepping through verse by verse — type the entire passage from memory, then review a word-level diff showing exactly which words were wrong or missing
+                        </li>
                     </ul>
                 </div>
             </div>
