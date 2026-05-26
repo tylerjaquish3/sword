@@ -14,6 +14,36 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.10.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.10</span>
+                <div>
+                    <div class="changelog-title">Reader & Modal Polish</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Quick next-chapter arrow added to the reader selector bar — jump forward without scrolling to the bottom nav
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Navigating to a different book with the Prev / Next buttons now correctly updates the Book dropdown
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Missing icons in modal section headers across the Chapter Notes, New Topic, Edit Topic, and New Memory Goal modals
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.9.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +52,6 @@
                     <div class="changelog-title">Digest Edits & Polish</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

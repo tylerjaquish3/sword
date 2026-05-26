@@ -185,7 +185,7 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text"></i></span>
                         <span class="sword-modal-section-title">Note <span class="sword-modal-required">required</span></span>
                     </div>
                     <div class="sword-modal-section-body p-0">
@@ -232,7 +232,7 @@
 
             <div class="sword-modal-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="sword-modal-icon"><i class="mdi mdi-tag-edit-outline"></i></div>
+                    <div class="sword-modal-icon"><i class="mdi mdi-tag-text-outline"></i></div>
                     <div>
                         <h5 class="modal-title mb-0">Edit Topic</h5>
                         <p class="sword-modal-subtitle mb-0">Update name, description, or keywords</p>
@@ -247,7 +247,7 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
                         <span class="sword-modal-section-title">Name <span class="sword-modal-required">required</span></span>
                     </div>
                     <div class="sword-modal-section-body">
@@ -258,7 +258,7 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text"></i></span>
                         <span class="sword-modal-section-title">Description <span class="sword-modal-optional">optional</span></span>
                     </div>
                     <div class="sword-modal-section-body p-0">

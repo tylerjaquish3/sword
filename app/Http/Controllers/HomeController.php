@@ -124,6 +124,7 @@ class HomeController extends Controller
                 ->whereBetween('read_at', [$weekStart, $weekEnd])
                 ->selectRaw('DATE(read_at) as date')
                 ->groupBy('date')
+                ->get()
                 ->count(),
             'chapters' => \DB::table(function ($q) use ($weekStart, $weekEnd) {
                 $q->from('user_reads')

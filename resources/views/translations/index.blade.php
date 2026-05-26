@@ -80,6 +80,13 @@
                         </select>
                         <i class="mdi mdi-chevron-down rsel-chevron"></i>
                     </div>
+
+                    <div class="rsel-divider"></div>
+
+                    {{-- Quick next-chapter button --}}
+                    <button type="button" id="btn-rsel-next" class="rsel-next-btn" title="Next chapter">
+                        <i class="mdi mdi-chevron-right"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -340,6 +347,31 @@
 .rsel-book .select2-container--default.select2-container--open .select2-selection--single {
     border: none !important;
     box-shadow: none !important;
+}
+
+/* ── Quick next-chapter button in selector bar ──────────────── */
+.rsel-next-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(201,168,76,0.85);
+    font-size: 1.5rem;
+    padding: 10px 14px 0;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    align-self: stretch;
+    flex-shrink: 0;
+}
+.rsel-next-btn:hover:not(:disabled) {
+    color: rgba(201,168,76,1);
+    background: rgba(201,168,76,0.08);
+}
+.rsel-next-btn:disabled {
+    color: rgba(201,168,76,0.2);
+    cursor: default;
 }
 
 /* ── Bottom gold accent line on active group ─────────────────── */
@@ -692,6 +724,7 @@ $(document).ready(function() {
 
         $('#btn-prev-chapter').prop('disabled', isFirstBook && isFirstChapter);
         $('#btn-next-chapter').prop('disabled', isLastBook  && isLastChapter);
+        $('#btn-rsel-next').prop('disabled',    isLastBook  && isLastChapter);
     }
 
     $('#btn-prev-chapter').on('click', function() {
@@ -706,7 +739,7 @@ $(document).ready(function() {
             // Cross book boundary — go to last chapter of previous book
             var $prevBook = $bookSelect.find('option:selected').prev();
             if (!$prevBook.length) return;
-            $bookSelect.val($prevBook.val());
+            $bookSelect.val($prevBook.val()).trigger('change.select2');
             loadBookInfo($prevBook.val());
             loadChapters($prevBook.val(), function() {
                 $chapterSelect.find('option:last-child').prop('selected', true);
@@ -731,7 +764,7 @@ $(document).ready(function() {
             // Cross book boundary — go to chapter 1 of next book
             var $nextBook = $bookSelect.find('option:selected').next();
             if (!$nextBook.length) return;
-            $bookSelect.val($nextBook.val());
+            $bookSelect.val($nextBook.val()).trigger('change.select2');
             loadBookInfo($nextBook.val());
             loadChapters($nextBook.val(), function() {
                 $chapterSelect.find('option:first-child').prop('selected', true);
@@ -742,6 +775,10 @@ $(document).ready(function() {
                 updateChapterNavLabel();
             });
         }
+    });
+
+    $('#btn-rsel-next').on('click', function() {
+        $('#btn-next-chapter').trigger('click');
     });
 
     function lookupVerses(side)
@@ -774,10 +811,10 @@ $(document).ready(function() {
                     }
                     let highlightStyle = '';
                     if (verse.highlight_color && hlBg[verse.highlight_color]) {
-                        highlightStyle = 'background-color:' + hlBg[verse.highlight_color] + ';padding:2px 4px;border-radius:3px;';
+                        highlightStyle = 'background-color:' + hlBg[verse.highlight_color] + ';padding:0px 4px 2px;border-radius:3px;';
                     }
                     if (verse.has_commentary) {
-                        highlightStyle += 'border-bottom:2px dotted #94a3b8;';
+                        highlightStyle += 'text-decoration:underline dotted #94a3b8;text-underline-offset:3px;';
                     }
                     html += '<span class="verse-clickable" data-verse-id="' + verse.id + '" style="cursor:pointer;' + highlightStyle + '">';
                     html += '<sup class="text-muted">' + verse.number + '</sup> ' + verse.text;

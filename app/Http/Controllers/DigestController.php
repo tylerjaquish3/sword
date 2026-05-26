@@ -57,6 +57,7 @@ class DigestController extends Controller
             ->whereBetween('read_at', [$weekStart, $weekEnd])
             ->selectRaw('DATE(read_at) as date')
             ->groupBy('date')
+            ->get()
             ->count();
 
         $yearAgoStart = now()->subYear()->startOfWeek();

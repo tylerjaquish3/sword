@@ -35,7 +35,6 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - prayers have an email button hidden, havent set that up yet
 - commentary page, is it needed?
 - if you study the same book twice, it should be a blank slate?
-- verify notifications job works on prod
 
 https://www.navigators.org/resource/prayer-tools/
 

@@ -312,7 +312,7 @@ $formatVerseRange = function($numbers) {
 
                     <div class="sword-modal-section mb-4">
                         <div class="sword-modal-section-header">
-                            <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
                             <span class="sword-modal-section-title">Details</span>
                         </div>
                         <div class="sword-modal-section-body">
@@ -447,7 +447,7 @@ $formatVerseRange = function($numbers) {
 
                     <div class="sword-modal-section mb-4">
                         <div class="sword-modal-section-header">
-                            <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                            <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
                             <span class="sword-modal-section-title">Details</span>
                         </div>
                         <div class="sword-modal-section-body">

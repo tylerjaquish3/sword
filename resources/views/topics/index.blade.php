@@ -180,7 +180,7 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-box-outline"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-subject"></i></span>
                         <span class="sword-modal-section-title">Name <span class="sword-modal-required">required</span></span>
                     </div>
                     <div class="sword-modal-section-body">
@@ -190,7 +190,7 @@
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-text-long"></i></span>
+                        <span class="sword-modal-section-icon"><i class="mdi mdi-text"></i></span>
                         <span class="sword-modal-section-title">Description <span class="sword-modal-optional">optional</span></span>
                     </div>
                     <div class="sword-modal-section-body p-0">
