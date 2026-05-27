@@ -14,6 +14,32 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.11.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.11</span>
+                <div>
+                    <div class="changelog-title">Multi-Verse Commentary & Landing Page</div>
+                    <div class="changelog-date">May 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Verse modal now supports range comments — use the + button to expand the selection to the next verse, and − to shrink it back; comments are saved against the full range
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Login page now includes a full landing page below the fold — highlights all major features with navy &amp; gold theme, ACTS prayer model breakdown, scripture showcase, and a create-account CTA
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.10.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +48,6 @@
                     <div class="changelog-title">Reader & Modal Polish</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

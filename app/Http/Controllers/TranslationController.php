@@ -52,12 +52,20 @@ class TranslationController extends Controller
             ->where('chapter_id', $chapter->id)
             ->get();
 
-        // Get verse numbers that have commentary for this chapter
-        $verseNumbersWithCommentary = VerseComment::where('chapter_id', $chapter->id)
+        // Get verse numbers that have commentary, expanding any range comments
+        $commentRanges = VerseComment::where('chapter_id', $chapter->id)
             ->whereNotNull('comment')
             ->where('comment', '!=', '')
-            ->pluck('verse_number')
-            ->toArray();
+            ->get(['verse_number', 'end_verse_number']);
+
+        $verseNumbersWithCommentary = [];
+        foreach ($commentRanges as $c) {
+            $end = $c->end_verse_number ?? $c->verse_number;
+            for ($v = $c->verse_number; $v <= $end; $v++) {
+                $verseNumbersWithCommentary[] = $v;
+            }
+        }
+        $verseNumbersWithCommentary = array_unique($verseNumbersWithCommentary);
 
         // Get user preferences (highlights, favorites, prefix) keyed by verse_number
         $prefs = UserVersePreference::where('user_id', Auth::id())
@@ -84,9 +92,15 @@ class TranslationController extends Controller
     {
         $verse->load('chapter.book');
 
-        // Get comments by chapter_id and verse_number (translation-independent)
+        // Get comments anchored to this verse OR whose range covers this verse
         $comments = VerseComment::where('chapter_id', $verse->chapter_id)
-            ->where('verse_number', $verse->number)
+            ->where(function ($q) use ($verse) {
+                $q->where('verse_number', $verse->number)
+                  ->orWhere(function ($q2) use ($verse) {
+                      $q2->where('verse_number', '<', $verse->number)
+                         ->where('end_verse_number', '>=', $verse->number);
+                  });
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -97,12 +111,27 @@ class TranslationController extends Controller
 
         $verse->prefix = $pref?->prefix;
 
+        // Return all verses in the same chapter/translation for range expansion
+        $chapterVerses = Verse::where('chapter_id', $verse->chapter_id)
+            ->where('translation_id', $verse->translation_id)
+            ->orderBy('number')
+            ->get(['id', 'number', 'text']);
+
+        $maxEndVerse = VerseComment::where('chapter_id', $verse->chapter_id)
+            ->where('verse_number', $verse->number)
+            ->whereNotNull('end_verse_number')
+            ->max('end_verse_number');
+
         return response()->json([
-            'verse'           => $verse,
-            'reference'       => $verse->chapter->book->name . ' ' . $verse->chapter->number . ':' . $verse->number,
-            'comments'        => $comments,
-            'highlight_color' => $pref?->highlight_color,
-            'is_favorite'     => (bool) ($pref?->is_favorite),
+            'verse'            => $verse,
+            'reference'        => $verse->chapter->book->name . ' ' . $verse->chapter->number . ':' . $verse->number,
+            'comments'         => $comments,
+            'highlight_color'  => $pref?->highlight_color,
+            'is_favorite'      => (bool) ($pref?->is_favorite),
+            'chapter_verses'   => $chapterVerses,
+            'book_name'        => $verse->chapter->book->name,
+            'chapter_number'   => $verse->chapter->number,
+            'end_verse_number' => $maxEndVerse,
         ]);
     }
 
@@ -159,11 +188,17 @@ class TranslationController extends Controller
 
         // Create a single comment (linked by chapter_id and verse_number, not verse_id)
         if ($request->commentary) {
+            $endVerseNumber = $request->end_verse_number ? (int) $request->end_verse_number : null;
+            if ($endVerseNumber && $endVerseNumber <= $verse->number) {
+                $endVerseNumber = null;
+            }
+
             VerseComment::create([
-                'chapter_id' => $verse->chapter_id,
-                'verse_number' => $verse->number,
-                'verse_id' => $verse->id,
-                'comment' => $request->commentary,
+                'chapter_id'      => $verse->chapter_id,
+                'verse_number'    => $verse->number,
+                'end_verse_number' => $endVerseNumber,
+                'verse_id'        => $verse->id,
+                'comment'         => $request->commentary,
             ]);
         }
 

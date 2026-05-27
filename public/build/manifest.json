@@ -1,4 +1,9 @@
 {
+  "resources/css/landing.css": {
+    "file": "css/landing.css",
+    "src": "resources/css/landing.css",
+    "isEntry": true
+  },
   "resources/css/sword.css": {
     "file": "css/sword.css",
     "src": "resources/css/sword.css",
@@ -113,7 +118,7 @@
     "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-RWndskX-.js",
+    "file": "assets/app-CgIRH5Jb.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

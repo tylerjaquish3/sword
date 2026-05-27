@@ -25,9 +25,21 @@
                         <span class="sword-modal-section-title">Verse Text</span>
                     </div>
                     <div class="sword-modal-section-body">
-                        <p id="modal_verse_text" class="mb-0 sword-modal-preview" style="font-style:italic;"></p>
+                        <div id="modal_verse_text" class="mb-2 sword-modal-preview" style="font-style:italic;"></div>
+                        <div class="d-flex gap-2 mt-1">
+                            <button type="button" id="verse_range_add" class="btn btn-sm btn-outline-secondary" title="Add next verse to range" style="font-size:0.75rem;padding:2px 8px;">
+                                <i class="mdi mdi-plus"></i>
+                            </button>
+                            <button type="button" id="verse_range_remove" class="btn btn-sm btn-outline-secondary d-none" title="Remove last verse from range" style="font-size:0.75rem;padding:2px 8px;">
+                                <i class="mdi mdi-minus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
+                <input type="hidden" id="modal_verse_number">
+                <input type="hidden" id="modal_end_verse_number">
+                <input type="hidden" id="modal_book_name">
+                <input type="hidden" id="modal_chapter_number">
 
                 <div class="sword-modal-section mb-4">
                     <div class="sword-modal-section-header">
@@ -104,6 +116,65 @@
 
 @push('js')
 <script>
+    let chapterVersesList = [];  // [{id, number, text}, ...]
+
+    function buildVerseReference(bookName, chapterNum, startNum, endNum) {
+        let ref = bookName + ' ' + chapterNum + ':' + startNum;
+        if (endNum && endNum > startNum) ref += '-' + endNum;
+        return ref;
+    }
+
+    function renderVerseTexts(startNum, endNum) {
+        let html = '';
+        chapterVersesList.forEach(function(v) {
+            if (v.number >= startNum && v.number <= (endNum || startNum)) {
+                html += '<sup style="font-size:0.7em;margin-right:2px;">' + v.number + '</sup>' + v.text + ' ';
+            }
+        });
+        $('#modal_verse_text').html(html);
+    }
+
+    function buildCommentsHtml(comments) {
+        if (!comments || comments.length === 0) {
+            return '<p class="text-muted mb-0">No comments yet.</p>';
+        }
+        let html = '';
+        comments.forEach(function(comment) {
+            let date = new Date(comment.created_at);
+            let formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+            let rangeLabel = '';
+            if (comment.end_verse_number && comment.end_verse_number > comment.verse_number) {
+                rangeLabel = '<span class="badge bg-secondary ms-2" style="font-size:0.65rem;font-weight:500;">vv. ' + comment.verse_number + '–' + comment.end_verse_number + '</span>';
+            }
+            html += '<div class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-start">';
+            html += '<div>';
+            html += '<small class="text-muted">' + formattedDate + '</small>' + rangeLabel;
+            html += '<p class="mb-0 mt-1">' + comment.comment + '</p>';
+            html += '</div>';
+            html += '<button type="button" class="btn btn-sm btn-outline-danger delete-verse-comment" data-comment-id="' + comment.id + '" title="Delete comment"><i class="mdi mdi-delete"></i></button>';
+            html += '</div>';
+        });
+        return html;
+    }
+
+    function updateVerseRangeUI() {
+        let startNum = parseInt($('#modal_verse_number').val());
+        let endNum   = parseInt($('#modal_end_verse_number').val());
+        let maxVerse = chapterVersesList.length > 0 ? chapterVersesList[chapterVersesList.length - 1].number : startNum;
+
+        renderVerseTexts(startNum, endNum);
+
+        let bookName     = $('#modal_book_name').val();
+        let chapterNum   = $('#modal_chapter_number').val();
+        $('#verseModalLabel').text(buildVerseReference(bookName, chapterNum, startNum, endNum));
+
+        $('#verse_range_add').toggleClass('d-none', endNum >= maxVerse);
+        $('#verse_range_remove').toggleClass('d-none', endNum <= startNum);
+    }
+
     const highlightBgColors = {
         yellow: '#fef9c3',
         blue:   '#dbeafe',
@@ -147,10 +218,17 @@
                 url: '/translations/verse/' + verseId,
                 type: 'GET',
                 success: function(response) {
+                    chapterVersesList = response.chapter_verses || [];
+                    let verseNum = response.verse.number;
+
                     $('#modal_verse_id').val(response.verse.id);
-                    $('#verseModalLabel').text(response.reference);
-                    $('#modal_verse_text').text(response.verse.text);
+                    $('#modal_verse_number').val(verseNum);
+                    $('#modal_end_verse_number').val(verseNum);
+                    $('#modal_book_name').val(response.book_name);
+                    $('#modal_chapter_number').val(response.chapter_number);
                     $('#modal_commentary').val('');
+
+                    updateVerseRangeUI();
 
                     // Parse the prefix to set checkbox and section title
                     let prefix = response.verse.prefix || '';
@@ -175,33 +253,31 @@
                     setFavoriteBtn(response.is_favorite || false);
 
                     // Build comments list
-                    let commentsHtml = '';
-                    if (response.comments && response.comments.length > 0) {
-                        response.comments.forEach(function(comment) {
-                            let date = new Date(comment.created_at);
-                            let formattedDate = date.toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                            commentsHtml += '<div class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-start">';
-                            commentsHtml += '<div>';
-                            commentsHtml += '<small class="text-muted">' + formattedDate + '</small>';
-                            commentsHtml += '<p class="mb-0 mt-1">' + comment.comment + '</p>';
-                            commentsHtml += '</div>';
-                            commentsHtml += '<button type="button" class="btn btn-sm btn-outline-danger delete-verse-comment" data-comment-id="' + comment.id + '" title="Delete comment"><i class="mdi mdi-delete"></i></button>';
-                            commentsHtml += '</div>';
-                        });
-                    } else {
-                        commentsHtml = '<p class="text-muted mb-0">No comments yet.</p>';
-                    }
-                    $('#modal_comments_list').html(commentsHtml);
+                    $('#modal_comments_list').html(buildCommentsHtml(response.comments));
 
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('verseModal')).show();
                 }
             });
+        });
+
+        // Verse range: add next verse
+        $('#verse_range_add').on('click', function() {
+            let endNum = parseInt($('#modal_end_verse_number').val());
+            let maxVerse = chapterVersesList.length > 0 ? chapterVersesList[chapterVersesList.length - 1].number : endNum;
+            if (endNum < maxVerse) {
+                $('#modal_end_verse_number').val(endNum + 1);
+                updateVerseRangeUI();
+            }
+        });
+
+        // Verse range: remove last verse
+        $('#verse_range_remove').on('click', function() {
+            let startNum = parseInt($('#modal_verse_number').val());
+            let endNum   = parseInt($('#modal_end_verse_number').val());
+            if (endNum > startNum) {
+                $('#modal_end_verse_number').val(endNum - 1);
+                updateVerseRangeUI();
+            }
         });
 
         // Highlight color toggle
@@ -245,10 +321,12 @@
 
         // Handle save button click
         $('#saveVerseBtn').click(function() {
-            let verseId = $('#modal_verse_id').val();
-            let lineBreak = $('#modal_line_break').is(':checked');
+            let verseId      = $('#modal_verse_id').val();
+            let lineBreak    = $('#modal_line_break').is(':checked');
             let sectionTitle = $('#modal_section_title').val().trim();
-            let commentary = $('#modal_commentary').val();
+            let commentary   = $('#modal_commentary').val();
+            let startNum     = parseInt($('#modal_verse_number').val());
+            let endNum       = parseInt($('#modal_end_verse_number').val());
 
             $.ajax({
                 url: '/translations/verse/' + verseId,
@@ -257,7 +335,8 @@
                     _token: '{{ csrf_token() }}',
                     line_break: lineBreak ? 1 : 0,
                     section_title: sectionTitle,
-                    commentary: commentary
+                    commentary: commentary,
+                    end_verse_number: endNum > startNum ? endNum : null
                 },
                 success: function(response) {
                     if (response.success) {
@@ -293,29 +372,7 @@
                         url: '/translations/verse/' + verseId,
                         type: 'GET',
                         success: function(response) {
-                            let commentsHtml = '';
-                            if (response.comments && response.comments.length > 0) {
-                                response.comments.forEach(function(comment) {
-                                    let date = new Date(comment.created_at);
-                                    let formattedDate = date.toLocaleDateString('en-US', {
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    });
-                                    commentsHtml += '<div class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-start">';
-                                    commentsHtml += '<div>';
-                                    commentsHtml += '<small class="text-muted">' + formattedDate + '</small>';
-                                    commentsHtml += '<p class="mb-0 mt-1">' + comment.comment + '</p>';
-                                    commentsHtml += '</div>';
-                                    commentsHtml += '<button type="button" class="btn btn-sm btn-outline-danger delete-verse-comment" data-comment-id="' + comment.id + '" title="Delete comment"><i class="mdi mdi-delete"></i></button>';
-                                    commentsHtml += '</div>';
-                                });
-                            } else {
-                                commentsHtml = '<p class="text-muted mb-0">No comments yet.</p>';
-                            }
-                            $('#modal_comments_list').html(commentsHtml);
+                            $('#modal_comments_list').html(buildCommentsHtml(response.comments));
                         }
                     });
                 },

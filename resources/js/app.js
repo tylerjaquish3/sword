@@ -35,9 +35,12 @@ if (document.readyState === 'loading') {
 }
 
 // CSRF header for all jQuery AJAX requests
-$.ajaxSetup({
-    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }
-});
+const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+if (csrfMeta) {
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': csrfMeta.getAttribute('content') }
+    });
+}
 
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'select2/dist/css/select2.min.css';
