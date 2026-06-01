@@ -67,7 +67,7 @@ class TranslationController extends Controller
         }
         $verseNumbersWithCommentary = array_unique($verseNumbersWithCommentary);
 
-        // Get user preferences (highlights, favorites, prefix) keyed by verse_number
+        // Get user preferences (highlights, favorites) keyed by verse_number
         $prefs = UserVersePreference::where('user_id', Auth::id())
             ->where('chapter_id', $chapter->id)
             ->get()
@@ -78,7 +78,6 @@ class TranslationController extends Controller
             $verse->has_commentary  = in_array($verse->number, $verseNumbersWithCommentary);
             $verse->highlight_color = $pref?->highlight_color;
             $verse->is_favorite     = (bool) ($pref?->is_favorite);
-            $verse->prefix          = $pref?->prefix;
             return $verse;
         });
 
@@ -108,8 +107,6 @@ class TranslationController extends Controller
             ->where('chapter_id', $verse->chapter_id)
             ->where('verse_number', $verse->number)
             ->first();
-
-        $verse->prefix = $pref?->prefix;
 
         // Return all verses in the same chapter/translation for range expansion
         $chapterVerses = Verse::where('chapter_id', $verse->chapter_id)
@@ -181,10 +178,10 @@ class TranslationController extends Controller
             $prefix .= '<p>';
         }
 
-        UserVersePreference::updateOrCreate(
-            ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $verse->number],
-            ['prefix' => $prefix ?: null]
-        );
+        // Update prefix on all translations of this verse (shared across users)
+        Verse::where('chapter_id', $verse->chapter_id)
+            ->where('number', $verse->number)
+            ->update(['prefix' => $prefix ?: null]);
 
         // Create a single comment (linked by chapter_id and verse_number, not verse_id)
         if ($request->commentary) {

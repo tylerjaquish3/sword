@@ -45,7 +45,14 @@
                                             {{ $comment->chapter->book->name ?? 'N/A' }} {{ $comment->chapter->number ?? '' }}
                                         </a>
                                     </td>
-                                    <td>{{ Str::limit($comment->comment, 80) }}</td>
+                                    <td>
+                                        @if(strlen($comment->comment) > 160)
+                                            <span class="snip-short">{{ Str::limit($comment->comment, 160) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">More</a></span>
+                                            <span class="snip-full" style="display:none">{{ $comment->comment }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">Less</a></span>
+                                        @else
+                                            {{ $comment->comment }}
+                                        @endif
+                                    </td>
                                     <td data-order="{{ $comment->created_at->format('Y-m-d H:i:s') }}">{{ $comment->created_at->format('M d, Y') }}</td>
                                     <td>
                                         <button type="button" class="btn btn-outline-primary open-chapter-modal" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;" 
@@ -94,7 +101,14 @@
                                             {{ $comment->chapter->book->name ?? 'N/A' }} {{ $comment->chapter->number ?? '' }}:{{ $comment->verse_number ?? '' }}
                                         </a>
                                     </td>
-                                    <td>{{ Str::limit($comment->comment, 60) }}</td>
+                                    <td>
+                                        @if(strlen($comment->comment) > 120)
+                                            <span class="snip-short">{{ Str::limit($comment->comment, 120) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">More</a></span>
+                                            <span class="snip-full" style="display:none">{{ $comment->comment }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">Less</a></span>
+                                        @else
+                                            {{ $comment->comment }}
+                                        @endif
+                                    </td>
                                     <td data-order="{{ $comment->created_at->format('Y-m-d H:i:s') }}">{{ $comment->created_at->format('M d, Y') }}</td>
                                     <td>
                                         <button type="button" class="btn btn-outline-primary open-verse-modal" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;" 
@@ -296,6 +310,14 @@
                     }
                 }
             });
+        });
+
+        // Snip toggle for More/Less in comment cells
+        $(document).on('click', '.snip-toggle', function(e) {
+            e.preventDefault();
+            var td = $(this).closest('td');
+            td.find('.snip-short').toggle();
+            td.find('.snip-full').toggle();
         });
 
         // Handle delete chapter comment

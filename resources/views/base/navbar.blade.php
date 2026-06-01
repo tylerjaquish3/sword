@@ -155,6 +155,13 @@
                         <i class="menu-arrow"></i>
                     </a>
                 </li>
+                <li class="nav-item {{ request()->routeIs('digest.*') ? 'active' : '' }}">
+                    <a href="{{ route('digest.history') }}" class="nav-link">
+                        <i class="mdi mdi-history menu-icon"></i>
+                        <span class="menu-title">Digest</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                </li>
                 <li class="nav-item {{ request()->routeIs('commentary.*') ? 'active' : '' }}">
                     <a href="{{ route('commentary.index') }}" class="nav-link">
                         <i class="mdi mdi-file-document-outline menu-icon"></i>
@@ -232,6 +239,15 @@
                 <span class="mob-nav-icon"><i class="mdi mdi-brain"></i></span>
                 <span class="mob-nav-label">Memory</span>
                 @if(request()->routeIs('memory.*'))
+                    <span class="mob-nav-pip"></span>
+                @endif
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('digest.*') ? 'mob-active' : '' }}">
+            <a href="{{ route('digest.history') }}">
+                <span class="mob-nav-icon"><i class="mdi mdi-history"></i></span>
+                <span class="mob-nav-label">Digest</span>
+                @if(request()->routeIs('digest.*'))
                     <span class="mob-nav-pip"></span>
                 @endif
             </a>
@@ -640,7 +656,8 @@ body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:n
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.22s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.25s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.28s; }
-body.mob-nav-open #mobNavDrawer .mob-drawer-footer   { opacity: 1; transform: none; transition-delay: 0.32s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-nav:not(.mob-drawer-nav-footer) li:nth-child(7) { opacity: 1; transform: none; transition-delay: 0.31s; }
+body.mob-nav-open #mobNavDrawer .mob-drawer-footer   { opacity: 1; transform: none; transition-delay: 0.35s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-footer .mob-drawer-section-label { opacity: 1; transform: none; transition-delay: 0.32s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.35s; }
 body.mob-nav-open #mobNavDrawer .mob-drawer-nav-footer li:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.38s; }

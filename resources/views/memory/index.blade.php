@@ -676,6 +676,25 @@ $(document).ready(function() {
     let selectedVerseIds = [];
     let versesData = {};
 
+    // Prefill create modal if arriving from a verse's Memory button
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const verseId = params.get('verse_id');
+        if (!verseId) return;
+        history.replaceState({}, '', '/memory');
+
+        $.get('/translations/verse/' + verseId, function(response) {
+            const verse = response.verse;
+            window._memoryPrefill = {
+                translationId: verse.translation_id,
+                bookId:        verse.chapter.book.id,
+                chapterNumber: verse.chapter.number,
+                verseId:       verse.id,
+            };
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('createMemoryModal')).show();
+        });
+    }());
+
     // Initialize DataTable for completed memories
     if ($('#completedTable').length && $('#completedTable tbody tr').length > 0) {
         $('#completedTable').DataTable({
@@ -1014,6 +1033,35 @@ $(document).ready(function() {
                 $modalBody.scrollTop(sectionTop);
             }
         });
+
+        // Apply verse prefill if arriving from verse modal Memory button
+        if (window._memoryPrefill) {
+            const pf = window._memoryPrefill;
+            window._memoryPrefill = null;
+
+            $('#translation_select').val(pf.translationId);
+
+            // Set book (select2 + triggers chapter population synchronously)
+            $('#book_select').val(pf.bookId).trigger('change');
+
+            setTimeout(function() {
+                // Set chapter (triggers async verse fetch)
+                $('#chapter_select').val(pf.chapterNumber).trigger('change');
+
+                // Poll until verse option appears, then select and add it
+                var tryAdd = function() {
+                    var $opt = $('#verse_select option[value="' + pf.verseId + '"]');
+                    if ($opt.length) {
+                        $opt.prop('selected', true);
+                        $('#verse_select').trigger('change');
+                        setTimeout(function() { $('#addVersesBtn').trigger('click'); }, 80);
+                    } else {
+                        setTimeout(tryAdd, 100);
+                    }
+                };
+                setTimeout(tryAdd, 300);
+            }, 80);
+        }
     });
 
     // Verse text modal

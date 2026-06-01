@@ -14,6 +14,48 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.12.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.12</span>
+                <div>
+                    <div class="changelog-title">Streak Notification Improvements</div>
+                    <div class="changelog-date">June 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Digest added to the sidebar and mobile navigation for quick access
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Memory button in the verse commentary modal — click to jump to the Memory page with that verse pre-loaded into the new goal form
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Long comments on the Commentary page now expand inline with a More / Less link instead of being hard-truncated
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Verse section formatting (line breaks, section titles) is now stored on the verse itself and shared across all users — formatting appears consistently everywhere the verse is read
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-fix">Fix</span>
+                            Streak notifications now only show the highest milestone reached — hitting 14 days no longer also fires the 7-day notification on the same day
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Added streak milestones for 60, 200, 300, and 365 days (one year)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.11.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +64,6 @@
                     <div class="changelog-title">Multi-Verse Commentary & Landing Page</div>
                     <div class="changelog-date">May 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

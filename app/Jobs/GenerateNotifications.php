@@ -66,19 +66,30 @@ class GenerateNotifications implements ShouldQueue
         }
 
         $milestones = [
-            7  => ['title' => '7-day reading streak!', 'message' => "You've read the Bible 7 days in a row. Keep it up!", 'icon' => 'mdi-fire', 'icon_color' => 'bg-warning'],
-            14 => ['title' => '2-week reading streak!', 'message' => "Fourteen days straight — your consistency is inspiring.", 'icon' => 'mdi-fire', 'icon_color' => 'bg-warning'],
-            30 => ['title' => '30-day reading streak!', 'message' => "A full month of daily reading. That's remarkable dedication.", 'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
-            100 => ['title' => '100-day reading streak!', 'message' => "100 consecutive days in the Word. Truly exceptional.", 'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
+            7   => ['title' => '7-day reading streak!',       'message' => "You've read the Bible 7 days in a row. Keep it up!",                          'icon' => 'mdi-fire',   'icon_color' => 'bg-warning'],
+            14  => ['title' => '2-week reading streak!',      'message' => "Fourteen days straight — your consistency is inspiring.",                     'icon' => 'mdi-fire',   'icon_color' => 'bg-warning'],
+            30  => ['title' => '30-day reading streak!',      'message' => "A full month of daily reading. That's remarkable dedication.",                'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
+            60  => ['title' => '60-day reading streak!',      'message' => "Two months of daily reading. Your commitment to the Word is extraordinary.",  'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
+            100 => ['title' => '100-day reading streak!',     'message' => "100 consecutive days in the Word. Truly exceptional.",                        'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
+            200 => ['title' => '200-day reading streak!',     'message' => "200 days without missing a single one. Your devotion is an inspiration.",     'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
+            300 => ['title' => '300-day reading streak!',     'message' => "300 consecutive days in Scripture. Almost a full year — keep going!",         'icon' => 'mdi-trophy', 'icon_color' => 'bg-success'],
+            365 => ['title' => 'One-year reading streak!',    'message' => "A full year of daily reading. What an incredible journey through God's Word.", 'icon' => 'mdi-crown',  'icon_color' => 'bg-success'],
         ];
 
+        // Only notify for the single highest milestone reached so that hitting 14 days
+        // doesn't also trigger the 7-day notification on the same run.
         $monthKey = now()->format('Y-m');
-
+        $highestMilestone = null;
         foreach ($milestones as $days => $meta) {
             if ($streak >= $days) {
-                $key = "reading_streak_{$days}_{$monthKey}";
-                $this->createIfNotExists($user->id, 'reading_streak', $key, $meta['title'], $meta['message'], $meta['icon'], $meta['icon_color'], route('translations.index'));
+                $highestMilestone = [$days, $meta];
             }
+        }
+
+        if ($highestMilestone !== null) {
+            [$days, $meta] = $highestMilestone;
+            $key = "reading_streak_{$days}_{$monthKey}";
+            $this->createIfNotExists($user->id, 'reading_streak', $key, $meta['title'], $meta['message'], $meta['icon'], $meta['icon_color'], route('translations.index'));
         }
     }
 
@@ -132,7 +143,7 @@ class GenerateNotifications implements ShouldQueue
                 $weekKey,
                 'No prayers logged this week',
                 "You haven't recorded any prayers this week. Take a moment to write down what's on your heart.",
-                'mdi-hands-pray',
+                'mdi-heart',
                 'bg-primary',
                 route('prayers.index')
             );

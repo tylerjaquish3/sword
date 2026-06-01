@@ -39,6 +39,7 @@
                 <input type="hidden" id="modal_verse_number">
                 <input type="hidden" id="modal_end_verse_number">
                 <input type="hidden" id="modal_book_name">
+                <input type="hidden" id="modal_book_id">
                 <input type="hidden" id="modal_chapter_number">
 
                 <div class="sword-modal-section mb-4">
@@ -59,9 +60,14 @@
                     <div class="sword-modal-section-header">
                         <span class="sword-modal-section-icon"><i class="mdi mdi-palette"></i></span>
                         <span class="sword-modal-section-title">Highlight</span>
-                        <button type="button" id="modal_favorite_btn" class="btn btn-sm ms-auto" style="font-size:0.78rem;">
-                            <i class="mdi mdi-star-outline me-1"></i><span id="modal_favorite_label">Favorite</span>
-                        </button>
+                        <div class="d-flex gap-2 ms-auto">
+                            <button type="button" id="verse_memory_btn" class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;" title="Add to Memory">
+                                <i class="mdi mdi-brain me-1"></i><span>Memory</span>
+                            </button>
+                            <button type="button" id="modal_favorite_btn" class="btn btn-sm" style="font-size:0.78rem;">
+                                <i class="mdi mdi-star-outline me-1"></i><span id="modal_favorite_label">Favorite</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="sword-modal-section-body">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -225,6 +231,7 @@
                     $('#modal_verse_number').val(verseNum);
                     $('#modal_end_verse_number').val(verseNum);
                     $('#modal_book_name').val(response.book_name);
+                    $('#modal_book_id').val(response.verse.chapter.book.id);
                     $('#modal_chapter_number').val(response.chapter_number);
                     $('#modal_commentary').val('');
 
@@ -293,6 +300,13 @@
                     if (typeof lookupVerses === 'function') { lookupVerses(''); lookupVerses(2); }
                 }
             });
+        });
+
+        // Memory button — close modal and navigate to /memory with verse prefilled
+        $(document).on('click', '#verse_memory_btn', function() {
+            const verseId = $('#modal_verse_id').val();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('verseModal')).hide();
+            window.location.href = '/memory?verse_id=' + verseId;
         });
 
         // Favorite toggle
