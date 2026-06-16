@@ -14,6 +14,52 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.13.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.13</span>
+                <div>
+                    <div class="changelog-title">Prayer Prompts &amp; Book Study</div>
+                    <div class="changelog-date">June 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Prayer prompts — set a default prompt or a different one for each day of the week, stored per user
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Today's prompt appears at the top of the New Prayer modal to guide your entry
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Manage Prompts button on the Prayers page opens a modal to edit all day-specific and default prompts in one place
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Book study sidebar now shows highlighted verse counts by category (Important, Prophecy, Promise, Command)
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Reading progress breakdown by translation — each version you've read shows chapters completed with a progress bar
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Study timeline shows when you started the study, last read date, and completion date
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Notifications page loads 10 at a time with a More link to incrementally fetch older notifications
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.12.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +68,6 @@
                     <div class="changelog-title">Streak Notification Improvements</div>
                     <div class="changelog-date">June 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

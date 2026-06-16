@@ -234,8 +234,8 @@ $formatVerseRange = function($numbers) {
                                         </span>
                                     @endforeach
                                 </td>
-                                <td>{{ $memory->start_date->format('M d, Y') }}</td>
-                                <td>{{ $memory->completed_at->format('M d, Y') }}</td>
+                                <td data-order="{{ $memory->start_date->format('Y-m-d') }}">{{ $memory->start_date->format('M d, Y') }}</td>
+                                <td data-order="{{ $memory->completed_at->format('Y-m-d') }}">{{ $memory->completed_at->format('M d, Y') }}</td>
                                 <td>
                                     <span class="badge bg-info">
                                         {{ round($memory->start_date->floatDiffInDays($memory->completed_at)) }} days

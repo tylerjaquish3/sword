@@ -18,6 +18,7 @@ use App\Http\Controllers\SharedDigestController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PrayerPromptController;
 use App\Http\Controllers\VerseFavoriteController;
 use App\Http\Controllers\VerseHighlightController;
 use App\Http\Controllers\BookStudyController;
@@ -88,6 +89,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('prayers/date', [PrayerController::class, 'destroyByDate'])->name('prayers.destroyByDate');
     Route::resource('prayers', PrayerController::class);
+    Route::post('/prayer-prompts/sync', [PrayerPromptController::class, 'sync'])->name('prayer-prompts.sync');
     Route::get('/topics/verse-search', [TopicController::class, 'verseSearch'])->name('topics.verse-search');
     Route::resource('topics', TopicController::class);
     Route::post('/topics/{topic}/notes', [TopicController::class, 'storeNote'])->name('topics.notes.store');

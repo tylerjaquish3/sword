@@ -244,6 +244,32 @@
                     </div>
                 </div>
 
+                @php
+                    $studyRecord = $activeStudy ?? $completedStudy;
+                @endphp
+                @if($studyRecord || $lastRead)
+                <div class="d-flex flex-wrap gap-3 mb-3" style="border-top: 1px solid rgba(14,22,40,0.06); padding-top: 0.65rem;">
+                    @if($studyRecord)
+                    <div>
+                        <div style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af;">Started</div>
+                        <div style="font-size: 0.76rem; color: var(--sword-navy); font-weight: 600;">{{ $studyRecord->created_at->format('M j, Y') }}</div>
+                    </div>
+                    @endif
+                    @if($lastRead)
+                    <div>
+                        <div style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af;">Last Read</div>
+                        <div style="font-size: 0.76rem; color: var(--sword-navy); font-weight: 600;">{{ \Carbon\Carbon::parse($lastRead)->format('M j, Y') }}</div>
+                    </div>
+                    @endif
+                    @if($completedStudy)
+                    <div>
+                        <div style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-gold);">Completed</div>
+                        <div style="font-size: 0.76rem; color: var(--sword-navy); font-weight: 600;">{{ $completedStudy->completed_at->format('M j, Y') }}</div>
+                    </div>
+                    @endif
+                </div>
+                @endif
+
                 @php $pct = $chapterCount > 0 ? round($chaptersRead / $chapterCount * 100) : 0; @endphp
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <span style="font-size: 0.75rem; color: #6b7280;">{{ $pct }}% complete</span>
@@ -253,6 +279,52 @@
                     <div class="progress-bar" role="progressbar"
                          style="width: {{ $pct }}%; background: var(--sword-gold);"></div>
                 </div>
+
+                @if($readsByTranslation->isNotEmpty())
+                <div class="mb-3" style="border-top: 1px solid rgba(14,22,40,0.06); padding-top: 0.75rem;">
+                    <p style="font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: #9ca3af;" class="mb-2">By Translation</p>
+                    @foreach($readsByTranslation as $row)
+                    @php $pct = $chapterCount > 0 ? round($row['count'] / $chapterCount * 100) : 0; @endphp
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: var(--sword-navy);">{{ $row['label'] }}</span>
+                            <span style="font-size: 0.7rem; color: #9ca3af;">{{ $row['count'] }}/{{ $chapterCount }}</span>
+                        </div>
+                        <div class="progress" style="height: 5px; background: rgba(14,22,40,0.07); border-radius: 3px;">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: {{ $pct }}%; background: var(--sword-gold); border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                @php
+                    $highlightTypes = [
+                        'yellow' => ['label' => 'Important', 'color' => '#fbbf24'],
+                        'blue'   => ['label' => 'Prophecy',  'color' => '#60a5fa'],
+                        'green'  => ['label' => 'Promise',   'color' => '#34d399'],
+                        'red'    => ['label' => 'Command',   'color' => '#f87171'],
+                    ];
+                    $totalHighlights = $highlightsByColor->sum();
+                @endphp
+                @if($totalHighlights > 0)
+                <div class="mb-3">
+                    <p style="font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: #9ca3af;" class="mb-2">Highlighted Verses</p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        @foreach($highlightTypes as $color => $meta)
+                        @php $cnt = $highlightsByColor->get($color, 0); @endphp
+                        @if($cnt > 0)
+                        <div class="d-flex align-items-center gap-1 px-2 py-1 rounded" style="background: rgba(14,22,40,0.04); border: 1px solid rgba(14,22,40,0.08);">
+                            <div style="width:9px;height:9px;border-radius:50%;background:{{ $meta['color'] }};flex-shrink:0;"></div>
+                            <span style="font-size:0.7rem;color:#6b7280;">{{ $meta['label'] }}</span>
+                            <span style="font-size:0.76rem;font-weight:600;color:var(--sword-navy);">{{ $cnt }}</span>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
+                </div>
+                @endif
 
                 <div class="d-grid gap-2">
                     <a href="{{ route('translations.index') }}?book={{ $book->id }}"

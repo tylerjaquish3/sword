@@ -25,7 +25,10 @@
             </button>
         </div>
     </div>
-    <div class="flex-shrink-0">
+    <div class="flex-shrink-0 d-flex gap-2">
+        <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#managePromptsModal" style="background: transparent; color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.4); font-weight: 600; font-size: 0.82rem;">
+            <i class="mdi mdi-pencil-outline"></i> Prompts
+        </button>
         <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#createPrayerModal" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
             <i class="mdi mdi-plus"></i> New Prayer
         </button>
@@ -54,6 +57,15 @@
             </div>
 
             <div class="modal-body sword-modal-body">
+
+                @if($todayPrompt)
+                <div class="mb-4 p-3 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25);">
+                    <div class="d-flex align-items-center gap-2 mb-1" style="color: var(--sword-gold); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">
+                        <i class="mdi mdi-lightbulb-outline"></i> Today's Prompt
+                    </div>
+                    <p class="mb-0" style="color: var(--sword-text-secondary); font-size: 0.92rem; line-height: 1.5;">{{ $todayPrompt->prompt }}</p>
+                </div>
+                @endif
 
                 <div class="mb-4">
                     <label for="prayer-date" class="sword-modal-label">
@@ -119,6 +131,63 @@
     </div>
 </div>
 
+<!-- Manage Prompts Modal -->
+<div class="modal fade" id="managePromptsModal" tabindex="-1" aria-labelledby="managePromptsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="modal-header sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-lightbulb-outline"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="managePromptsModalLabel">Prayer Prompts</h5>
+                        <p class="sword-modal-subtitle mb-0">Set a prompt to guide your prayer each day</p>
+                    </div>
+                </div>
+                <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+
+            <div class="modal-body sword-modal-body">
+
+                <p class="text-muted small mb-4">Set a <strong>Default</strong> prompt shown every day, or override it for specific days. Leave a field blank to skip that day.</p>
+
+                @php
+                    $days = ['default' => 'Default (every day)', 0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday'];
+                @endphp
+
+                @foreach($days as $key => $label)
+                <div class="mb-3">
+                    <label class="sword-modal-label">
+                        @if($key === 'default')
+                            <i class="mdi mdi-calendar-blank-outline me-1"></i>
+                        @else
+                            <i class="mdi mdi-calendar-today me-1"></i>
+                        @endif
+                        {{ $label }}
+                    </label>
+                    <textarea class="sword-modal-textarea prompt-textarea"
+                              data-day="{{ $key }}"
+                              rows="2"
+                              placeholder="{{ $key === 'default' ? 'e.g. What is God calling me to surrender today?' : 'Leave blank to use the default' }}"
+                    >{{ $allPrompts->get($key)?->prompt ?? '' }}</textarea>
+                </div>
+                @endforeach
+
+            </div>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn sword-modal-btn-save" id="btn-save-prompts">
+                    <i class="mdi mdi-content-save-outline me-1"></i> Save Prompts
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <!-- Send Prayer Modal -->
 <div class="modal fade" id="sendPrayerModal" tabindex="-1" aria-labelledby="sendPrayerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
@@ -176,6 +245,23 @@
 
 @push('js')
 <script>
+
+    // Save prayer prompts
+    $('#btn-save-prompts').on('click', function () {
+        var prompts = {};
+        $('.prompt-textarea').each(function () {
+            prompts[$(this).data('day')] = $(this).val();
+        });
+        $.ajax({
+            url: '/prayer-prompts/sync',
+            type: 'POST',
+            data: { _token: '{{ csrf_token() }}', prompts: prompts },
+            success: function () {
+                bootstrap.Modal.getInstance(document.getElementById('managePromptsModal')).hide();
+                window.location.reload();
+            }
+        });
+    });
 
     // Save new prayer entry
     $('#btn-save-prayer').on('click', function () {

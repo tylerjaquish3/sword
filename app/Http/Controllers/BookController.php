@@ -7,6 +7,7 @@ use App\Models\BookStudy;
 use App\Models\ChapterComment;
 use App\Models\UserBookMetadata;
 use App\Models\UserRead;
+use App\Models\UserVersePreference;
 use App\Models\Verse;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
@@ -118,7 +119,33 @@ class BookController extends Controller
             ->where('book_id', $book->id)
             ->active()->latest()->first();
 
-        return view('books.study', compact('book', 'chapterCount', 'chaptersRead', 'commentaryCount', 'wordCloud', 'bookNotes', 'activeStudy'));
+        $completedStudy = !$activeStudy ? BookStudy::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->completed()->latest('completed_at')->first() : null;
+
+        $lastRead = UserRead::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->latest('read_at')
+            ->value('read_at');
+
+        $highlightsByColor = UserVersePreference::where('user_id', Auth::id())
+            ->whereIn('chapter_id', $chapterIds)
+            ->whereNotNull('highlight_color')
+            ->selectRaw('highlight_color, count(*) as total')
+            ->groupBy('highlight_color')
+            ->pluck('total', 'highlight_color');
+
+        $readsByTranslation = UserRead::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->selectRaw('translation_id, count(distinct chapter_number) as total')
+            ->groupBy('translation_id')
+            ->with('translation')
+            ->get()
+            ->map(fn($r) => ['label' => $r->translation->name, 'count' => (int) $r->total])
+            ->sortByDesc('count')
+            ->values();
+
+        return view('books.study', compact('book', 'chapterCount', 'chaptersRead', 'commentaryCount', 'wordCloud', 'bookNotes', 'activeStudy', 'completedStudy', 'lastRead', 'highlightsByColor', 'readsByTranslation'));
     }
 
     public function updateStudy(Request $request, Book $book)

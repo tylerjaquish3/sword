@@ -25,6 +25,7 @@
 
 <div class="row">
     <div class="col-lg-8 col-12">
+        <div id="notifications-list">
         @forelse($notifications as $notif)
             <div class="card mb-2 {{ $notif->isUnread() ? 'border-start border-primary border-3' : '' }}" style="{{ $notif->isUnread() ? 'border-left: 3px solid #464dee !important;' : '' }}">
                 <div class="card-body py-3">
@@ -67,8 +68,16 @@
                 </div>
             </div>
         @endforelse
+        </div>
 
-        {{ $notifications->links() }}
+        @if($hasMore)
+        <div id="load-more-wrap" class="text-center mt-3">
+            <a href="#" id="load-more-btn" data-offset="10"
+               style="font-size: 0.82rem; color: var(--sword-gold); text-decoration: none; font-weight: 600;">
+                More <i class="mdi mdi-chevron-down"></i>
+            </a>
+        </div>
+        @endif
     </div>
 
     <div class="col-lg-4 col-12 mt-4 mt-lg-0">
@@ -88,3 +97,60 @@
 </div>
 
 @endsection
+
+@push('js')
+<script>
+(function () {
+    var btn = document.getElementById('load-more-btn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var offset = parseInt(btn.dataset.offset, 10);
+        btn.textContent = 'Loading…';
+
+        fetch('{{ route('notifications.index') }}?offset=' + offset, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var list = document.getElementById('notifications-list');
+            data.notifications.forEach(function (n) {
+                var card = document.createElement('div');
+                card.className = 'card mb-2';
+                card.innerHTML =
+                    '<div class="card-body py-3">' +
+                        '<div class="d-flex align-items-start gap-3">' +
+                            '<div class="preview-icon ' + n.icon_color + ' flex-shrink-0" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+                                '<i class="mdi ' + n.icon + ' text-white" style="font-size:1.1rem;"></i>' +
+                            '</div>' +
+                            '<div class="flex-grow-1">' +
+                                '<div class="d-flex align-items-center justify-content-between mb-1">' +
+                                    '<h6 class="mb-0">' + escHtml(n.title) + '</h6>' +
+                                    '<span class="text-muted small">' + escHtml(n.time) + '</span>' +
+                                '</div>' +
+                                '<p class="mb-0 text-muted small">' + escHtml(n.message) + '</p>' +
+                                (n.url ? '<a href="' + escHtml(n.url) + '" class="btn btn-link btn-sm p-0 text-muted mt-1">Go <i class="mdi mdi-arrow-right"></i></a>' : '') +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                list.appendChild(card);
+            });
+
+            if (data.hasMore) {
+                btn.dataset.offset = data.nextOffset;
+                btn.innerHTML = 'More <i class="mdi mdi-chevron-down"></i>';
+            } else {
+                document.getElementById('load-more-wrap').remove();
+            }
+        });
+    });
+
+    function escHtml(str) {
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(str || ''));
+        return d.innerHTML;
+    }
+}());
+</script>
+@endpush
