@@ -291,10 +291,17 @@
         $(document).on('click', '.highlight-btn', function() {
             const verseId = $('#modal_verse_id').val();
             const color   = $(this).data('color');
+            const startNum = parseInt($('#modal_verse_number').val());
+            const endNum   = parseInt($('#modal_end_verse_number').val());
             $.ajax({
                 url: '{{ route("verse-highlights.toggle") }}',
                 type: 'POST',
-                data: { _token: '{{ csrf_token() }}', verse_id: verseId, color: color },
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    verse_id: verseId,
+                    color: color,
+                    end_verse_number: endNum > startNum ? endNum : null
+                },
                 success: function(response) {
                     setHighlightButtons(response.color);
                     if (typeof lookupVerses === 'function') { lookupVerses(''); lookupVerses(2); }

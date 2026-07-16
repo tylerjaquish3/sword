@@ -8,13 +8,13 @@ class VerseLink extends Model
 {
     protected $guarded = [];
 
-    public function verseOne()
+    public function chapter()
     {
-        return $this->belongsTo(Verse::class, 'verse_id');
+        return $this->belongsTo(Chapter::class);
     }
 
-    public function verseTwo()
+    public function linkedChapter()
     {
-        return $this->belongsTo(Verse::class, 'linked_verse_id');
+        return $this->belongsTo(Chapter::class, 'linked_chapter_id');
     }
 }

@@ -173,7 +173,7 @@ class TranslationController extends Controller
         if ($request->line_break == '1' || $request->section_title) {
             $prefix = '</p>';
             if ($request->section_title) {
-                $prefix .= '<h5 class="mt-3 mb-2 fw-bold">' . e($request->section_title) . '</h5>';
+                $prefix .= '<h5 class="mt-3 mb-2 fw-bold">' . e($this->titleCaseWords($request->section_title)) . '</h5>';
             }
             $prefix .= '<p>';
         }
@@ -200,5 +200,81 @@ class TranslationController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Get all verses in a chapter for the bulk section/paragraph editor (admin only)
+     */
+    public function sectionEditorVerses(Request $request)
+    {
+        $chapter = Chapter::where('book_id', $request->book_id)
+            ->where('number', $request->chapter_number)
+            ->first();
+
+        if (!$chapter) {
+            return response()->json(['verses' => []]);
+        }
+
+        $verses = Verse::where('translation_id', $request->translation_id)
+            ->where('chapter_id', $chapter->id)
+            ->orderBy('number')
+            ->get(['number', 'text', 'prefix']);
+
+        $verses = $verses->map(function ($verse) {
+            $sectionTitle = '';
+            $lineBreak = (bool) $verse->prefix;
+
+            if ($verse->prefix && preg_match('/<h5[^>]*>(.*?)<\/h5>/s', $verse->prefix, $matches)) {
+                $sectionTitle = html_entity_decode(strip_tags($matches[1]));
+            }
+
+            return [
+                'number'        => $verse->number,
+                'text'          => $verse->text,
+                'section_title' => $sectionTitle,
+                'line_break'    => $lineBreak,
+            ];
+        });
+
+        return response()->json(['verses' => $verses]);
+    }
+
+    /**
+     * Bulk update section titles / paragraph breaks for every verse in a chapter (admin only)
+     */
+    public function updateSectionEditor(Request $request)
+    {
+        $chapter = Chapter::where('book_id', $request->book_id)
+            ->where('number', $request->chapter_number)
+            ->first();
+
+        if (!$chapter) {
+            return response()->json(['success' => false], 404);
+        }
+
+        foreach ($request->input('verses', []) as $row) {
+            $prefix = '';
+            if (!empty($row['line_break']) || !empty($row['section_title'])) {
+                $prefix = '</p>';
+                if (!empty($row['section_title'])) {
+                    $prefix .= '<h5 class="mt-3 mb-2 fw-bold">' . e($this->titleCaseWords($row['section_title'])) . '</h5>';
+                }
+                $prefix .= '<p>';
+            }
+
+            Verse::where('chapter_id', $chapter->id)
+                ->where('number', $row['number'] ?? null)
+                ->update(['prefix' => $prefix ?: null]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Capitalize the first letter of each word, leaving the rest of each word untouched
+     */
+    private function titleCaseWords(string $text): string
+    {
+        return preg_replace_callback('/\b\w/u', fn($match) => mb_strtoupper($match[0]), $text);
     }
 }

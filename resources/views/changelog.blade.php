@@ -14,6 +14,48 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.14.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.14</span>
+                <div>
+                    <div class="changelog-title">Cross References</div>
+                    <div class="changelog-date">July 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            New cross-reference button on the Read &amp; Compare page opens a side panel for linking a verse in the current chapter to a correlating verse anywhere in the Bible
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Select2 lookup to find the target verse by reference or keyword, with a live text preview before you link it
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Linked verses show a small † marker in the reading text, with a footnote list underneath the chapter linking straight to the correlating passage
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Cross references are shared across all users and stay attached to a verse regardless of which translation you're reading
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Verse highlighting now applies to a whole selected range at once instead of one verse at a time
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Admin-only section editor for bulk-editing section titles and paragraph breaks across an entire chapter
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.13.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +64,6 @@
                     <div class="changelog-title">Prayer Prompts &amp; Book Study</div>
                     <div class="changelog-date">June 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

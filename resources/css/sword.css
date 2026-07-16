@@ -175,6 +175,12 @@ div.dt-container .dt-paging .dt-paging-button:hover {
     --sword-gold-glow:   rgba(201, 168, 76, 0.12);
     --sword-ink:         rgba(220, 228, 248, 0.80);
     --sword-parchment:   #f6f3ee;
+
+    /* Cross-reference accent — aged-ink bronze, distinct from the gold favorite
+       star and the highlight palette so footnote marks read as their own thing. */
+    --sword-bronze:      #8a6a45;
+    --sword-bronze-dim:  rgba(138, 106, 69, 0.55);
+    --sword-bronze-glow: rgba(138, 106, 69, 0.12);
 }
 
 /* ── Page content area — warm parchment ───────────────────────── */

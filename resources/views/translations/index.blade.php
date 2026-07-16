@@ -20,11 +20,19 @@
                 <button type="button" id="btn-chapter-note" class="btn bg-white btn-icon me-2" title="Add chapter note">
                     +<i class="mdi mdi-note-text"></i>
                 </button>
+                @if(auth()->user()->is_admin)
+                <button type="button" id="btn-section-editor" class="btn bg-white btn-icon me-2" title="Edit section titles &amp; paragraphs">
+                    <i class="mdi mdi-format-section"></i>
+                </button>
+                @endif
                 <button type="button" id="btn-single-col" class="btn btn-primary btn-icon" title="Single column">
                     <i class="mdi mdi-rectangle-outline"></i>
                 </button>
                 <button type="button" id="btn-double-col" class="btn bg-white btn-icon ms-2" title="Compare columns">
                     <i class="mdi mdi-view-split-vertical"></i>
+                </button>
+                <button type="button" id="btn-cross-ref" class="btn bg-white btn-icon ms-2" title="Cross references">
+                    <i class="mdi mdi-link-variant"></i>
                 </button>
                 <button type="button" id="btn-read-aloud" class="btn bg-white btn-icon ms-2" title="Read aloud">
                     <i class="mdi mdi-volume-high"></i>
@@ -91,6 +99,14 @@
             </div>
             <div class="card-body">
                 <div id="chapter_content"></div>
+
+                <div class="xref-footnotes-section mb-3 d-none" id="xref_footnotes_section">
+                    <div class="reading-notes-header">
+                        <span class="notes-icon xref-footnote-glyph">&dagger;</span>
+                        <span class="notes-title">Cross References</span>
+                    </div>
+                    <div id="xref_footnotes_body" class="reading-notes-body xref-footnotes-body"></div>
+                </div>
 
                 <div class="reading-section-divider my-4"></div>
 
@@ -162,6 +178,46 @@
             </div>
         </div>
     </div>
+    <div id="xref-col" class="col-sm-6 grid-margin grid-margin-md-0 stretch-card d-none">
+        <div class="card xref-panel">
+            <div class="card-header p-0">
+                <div class="reader-selector-bar">
+                    <div class="rsel-group" style="flex:1;">
+                        <span class="rsel-label">From Verse</span>
+                        <select class="rsel-native" id="xref_source_verse"></select>
+                        <i class="mdi mdi-chevron-down rsel-chevron"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body xref-body">
+
+                <div class="xref-source-preview" id="xref_source_preview"></div>
+
+                <div class="xref-connector">
+                    <span class="xref-connector-glyph">&dagger;</span>
+                    <span class="xref-connector-label">correlates to</span>
+                </div>
+
+                <div class="xref-lookup">
+                    <label class="xref-label" for="xref_target_select">Find a verse</label>
+                    <select class="xref-target-select" id="xref_target_select" style="width:100%"></select>
+                </div>
+                <div class="xref-target-preview d-none" id="xref_target_preview"></div>
+
+                <button type="button" class="btn xref-add-btn" id="xref_add_btn" disabled>
+                    <i class="mdi mdi-link-variant me-1"></i>Add Cross Reference
+                </button>
+
+                <div class="xref-divider"></div>
+
+                <div class="xref-existing-header">Existing Cross References</div>
+                <div id="xref_existing_list" class="xref-existing-list">
+                    <p class="text-muted mb-0 xref-empty">No cross references for this verse yet.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 @include('commentary.modals.verse')
@@ -228,6 +284,51 @@
         </div>
     </div>
 </div>
+
+@if(auth()->user()->is_admin)
+<div class="modal fade" id="sectionEditorModal" tabindex="-1" aria-labelledby="sectionEditorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content sword-modal">
+
+            <div class="sword-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sword-modal-icon"><i class="mdi mdi-format-section"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="sectionEditorModalLabel">Section Titles &amp; Paragraphs</h5>
+                        <p class="sword-modal-subtitle mb-0" id="section-editor-subtitle"></p>
+                    </div>
+                </div>
+                <button type="button" class="sword-modal-close" id="section-editor-close" aria-label="Close">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+
+            <div class="modal-body sword-modal-body">
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle" id="section-editor-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width:200px;">Section Title</th>
+                                <th style="width:110px;" class="text-center">New Paragraph</th>
+                                <th>Verse Text</th>
+                            </tr>
+                        </thead>
+                        <tbody id="section-editor-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer sword-modal-footer">
+                <button type="button" class="btn sword-modal-btn-cancel" id="section-editor-cancel">Close</button>
+                <button type="button" class="btn sword-modal-btn-save" id="section-editor-save">
+                    <i class="mdi mdi-content-save-outline me-1"></i>Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@endif
 
 @endsection
 
@@ -384,6 +485,138 @@
     pointer-events: none;
 }
 .reader-selector-bar { position: relative; }
+
+/* ── Cross reference marker + footnotes ──────────────────────── */
+.xref-marker {
+    color: var(--sword-bronze);
+    font-size: 0.65rem;
+    font-weight: 700;
+    margin-left: 1px;
+    cursor: pointer;
+}
+.xref-footnotes-section {
+    border: 1px solid rgba(138,106,69,0.18);
+    border-radius: 8px;
+    background: rgba(138,106,69,0.04);
+    overflow: hidden;
+}
+.xref-footnote-glyph {
+    color: var(--sword-bronze) !important;
+    font-weight: 700;
+}
+.xref-footnotes-body { padding: 4px 18px 14px; }
+.xref-footnote-row {
+    font-size: 0.85rem;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(138,106,69,0.18);
+    transition: background 0.4s;
+}
+.xref-footnote-row:last-child { border-bottom: none; }
+.xref-footnote-row.xref-footnote-flash { background: rgba(138,106,69,0.14); }
+.xref-footnote-glyph-inline { color: var(--sword-bronze); font-weight: 700; margin-right: 4px; }
+.xref-footnote-verse { color: #6b7280; font-weight: 600; margin-right: 4px; }
+.xref-footnote-link { color: var(--sword-bronze); font-weight: 600; text-decoration: none; }
+.xref-footnote-link:hover { text-decoration: underline; }
+.xref-footnote-preview { color: #9ca3af; }
+
+/* ── Cross reference side panel ──────────────────────────────── */
+.xref-panel .card-body.xref-body { padding: 18px; }
+.xref-source-preview {
+    font-style: italic;
+    color: #374151;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f0ebe2;
+}
+.xref-connector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0;
+    color: var(--sword-bronze-dim);
+}
+.xref-connector-glyph {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--sword-bronze);
+}
+.xref-connector-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+.xref-connector::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(138,106,69,0.2);
+}
+.xref-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+.xref-target-preview {
+    font-style: italic;
+    color: #374151;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: var(--sword-bronze-glow);
+    border-radius: 6px;
+}
+.xref-add-btn {
+    width: 100%;
+    margin-top: 14px;
+    background: var(--sword-bronze);
+    border-color: var(--sword-bronze);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+.xref-add-btn:hover:not(:disabled) { background: #75593a; border-color: #75593a; color: #fff; }
+.xref-add-btn:disabled { opacity: 0.4; }
+.xref-divider {
+    height: 1px;
+    background: #f0ebe2;
+    margin: 20px 0 14px;
+}
+.xref-existing-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 8px;
+}
+.xref-existing-list { max-height: 260px; overflow-y: auto; }
+.xref-existing-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f6f3ee;
+}
+.xref-existing-row:last-child { border-bottom: none; }
+.xref-existing-ref { font-weight: 600; font-size: 0.85rem; color: var(--sword-bronze); }
+.xref-existing-preview { font-size: 0.8rem; color: #9ca3af; margin-top: 2px; }
+.xref-delete-btn {
+    color: #b91c1c;
+    background: transparent;
+    border: none;
+    padding: 2px 4px;
+    flex-shrink: 0;
+}
+.xref-delete-btn:hover { color: #7f1d1d; }
+.xref-empty { font-size: 0.85rem; }
 </style>
 @endpush
 
@@ -394,6 +627,12 @@
 const defaultTranslationId = {{ $defaultTranslationId ?? 'null' }};
 
 var ttsActive = false;
+
+// ── Cross reference state ──────────────────────────────────────────
+var currentChapterDbId = null;   // chapters.id for the chapter currently shown on the main pane
+var currentChapterXrefs = [];    // footnote rows for the current chapter, from GET /verse-links
+var xrefVerseTextByNumber = {};  // verse number -> text, for the "From Verse" preview
+var xrefSelectedTarget = null;   // {id: "chapterId:verseNumber", text, preview} picked in the select2 lookup
 
 function stopSpeech() {
     if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -464,23 +703,135 @@ $(document).ready(function() {
         $('#chapter_comment_link').trigger('click');
     });
 
+    // The right-hand column shows one of: nothing, the compare translation, or the
+    // cross-reference panel. Compare and cross-ref are mutually exclusive — picking
+    // one while the other is open swaps the content instead of adding a third column.
+    function setRightColumnMode(mode) { // 'none' | 'compare' | 'xref'
+        $('#compare-col').toggleClass('d-none', mode !== 'compare');
+        $('#xref-col').toggleClass('d-none', mode !== 'xref');
+        $('#reading-col')
+            .toggleClass('col-12', mode === 'none')
+            .toggleClass('col-sm-6', mode !== 'none');
+
+        $('#btn-single-col').toggleClass('btn-primary', mode === 'none').toggleClass('bg-white', mode !== 'none');
+        $('#btn-double-col').toggleClass('btn-primary', mode === 'compare').toggleClass('bg-white', mode !== 'compare');
+        $('#btn-cross-ref').toggleClass('btn-primary', mode === 'xref').toggleClass('bg-white', mode !== 'xref');
+
+        if (mode === 'compare') lookupVerses(2);
+        if (mode === 'xref') renderXrefExistingList();
+    }
+
     $('#btn-single-col').on('click', function() {
-        $('#compare-col').addClass('d-none');
-        $('#reading-col').removeClass('col-sm-6 col-md-6').addClass('col-12');
-        $('#btn-single-col').addClass('btn-primary').removeClass('bg-white');
-        $('#btn-double-col').addClass('bg-white').removeClass('btn-primary');
+        setRightColumnMode('none');
     });
 
     $('#btn-double-col').on('click', function() {
-        $('#compare-col').removeClass('d-none');
-        // Side-by-side on sm+, stacked on xs
-        $('#reading-col').removeClass('col-12').addClass('col-sm-6');
-        $('#compare-col').addClass('col-sm-6').removeClass('col-12');
-        $('#btn-double-col').addClass('btn-primary').removeClass('bg-white');
-        $('#btn-single-col').addClass('bg-white').removeClass('btn-primary');
-        lookupVerses(2);
+        setRightColumnMode($('#compare-col').hasClass('d-none') ? 'compare' : 'none');
     });
 
+    $('#btn-cross-ref').on('click', function() {
+        setRightColumnMode($('#xref-col').hasClass('d-none') ? 'xref' : 'none');
+    });
+
+    // ── Cross reference panel ──────────────────────────────────────
+    function formatXrefResult(item) {
+        if (item.loading || !item.preview) return item.text;
+        return $('<div>')
+            .append($('<div>').addClass('fw-semibold').text(item.text))
+            .append($('<div>').css({ 'font-size': '0.78rem', color: '#9ca3af' }).text(item.preview));
+    }
+
+    $('#xref_target_select').select2({
+        placeholder: 'Search by reference or keyword…',
+        allowClear: true,
+        minimumInputLength: 2,
+        dropdownParent: $('#xref-col'),
+        templateResult: formatXrefResult,
+        ajax: {
+            url: '{{ route("verse-links.search") }}',
+            dataType: 'json',
+            delay: 300,
+            data: function(params) { return { q: params.term }; },
+            processResults: function(data) {
+                return { results: data.map(function(v) { return { id: v.id, text: v.text, preview: v.preview }; }) };
+            }
+        }
+    });
+
+    $('#xref_target_select').on('select2:select', function(e) {
+        xrefSelectedTarget = e.params.data;
+        $('#xref_target_preview').text(xrefSelectedTarget.preview || '').removeClass('d-none');
+        updateXrefAddButtonState();
+    });
+
+    $('#xref_target_select').on('select2:clear', function() {
+        xrefSelectedTarget = null;
+        $('#xref_target_preview').addClass('d-none').empty();
+        updateXrefAddButtonState();
+    });
+
+    $(document).on('change', '#xref_source_verse', function() {
+        updateXrefSourcePreview();
+        renderXrefExistingList();
+        updateXrefAddButtonState();
+    });
+
+    $('#xref_add_btn').on('click', function() {
+        if (!xrefSelectedTarget || !currentChapterDbId) return;
+        const sourceNum = $('#xref_source_verse').val();
+        const parts = xrefSelectedTarget.id.split(':');
+        const $btn = $(this).prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("verse-links.store") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                chapter_id: currentChapterDbId,
+                verse_number: sourceNum,
+                linked_chapter_id: parts[0],
+                linked_verse_number: parts[1],
+            },
+            success: function() {
+                $('#xref_target_select').val(null).trigger('change');
+                $('#xref_target_preview').addClass('d-none').empty();
+                xrefSelectedTarget = null;
+                loadChapterXrefs();
+            },
+            error: function() {
+                $btn.prop('disabled', false);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', text: 'Error adding cross reference' });
+                } else {
+                    alert('Error adding cross reference');
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.xref-delete-btn', function() {
+        const linkId = $(this).data('link-id');
+        $.ajax({
+            url: '/verse-links/' + linkId,
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function() { loadChapterXrefs(); }
+        });
+    });
+
+    $(document).on('click', '.xref-marker', function() {
+        const num = $(this).data('verse-number');
+        const $target = $('#xref_footnotes_body .xref-footnote-row[data-verse-number="' + num + '"]').first();
+        if (!$target.length) return;
+        $target.get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $target.addClass('xref-footnote-flash');
+        setTimeout(function() { $target.removeClass('xref-footnote-flash'); }, 1200);
+    });
+
+    $(document).on('click', '.xref-footnote-link', function(e) {
+        e.preventDefault();
+        navigateToReference($(this).data('book-id'), $(this).data('chapter-number'));
+    });
 
     // Read query parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -781,6 +1132,124 @@ $(document).ready(function() {
         $('#btn-next-chapter').trigger('click');
     });
 
+    function updateXrefAddButtonState() {
+        const sourceNum = $('#xref_source_verse').val();
+        let disabled = true;
+        if (xrefSelectedTarget && sourceNum && currentChapterDbId) {
+            disabled = xrefSelectedTarget.id === (currentChapterDbId + ':' + sourceNum);
+        }
+        $('#xref_add_btn').prop('disabled', disabled);
+    }
+
+    function updateXrefSourceOptions(verses) {
+        const current = $('#xref_source_verse').val();
+        const $sel = $('#xref_source_verse').empty();
+        xrefVerseTextByNumber = {};
+        verses.forEach(function(v) {
+            xrefVerseTextByNumber[v.number] = v.text;
+            $sel.append('<option value="' + v.number + '">' + v.number + '</option>');
+        });
+        if (current && xrefVerseTextByNumber[current]) {
+            $sel.val(current);
+        }
+        updateXrefSourcePreview();
+        updateXrefAddButtonState();
+    }
+
+    function updateXrefSourcePreview() {
+        const num = $('#xref_source_verse').val();
+        const text = xrefVerseTextByNumber[num] || '';
+        const $preview = $('#xref_source_preview').empty();
+        $preview.append($('<sup>').addClass('text-muted me-1').text(num));
+        $preview.append(document.createTextNode(text));
+    }
+
+    function loadChapterXrefs() {
+        if (!currentChapterDbId) return;
+        $.get('{{ route("verse-links.index") }}', {
+            chapter_id: currentChapterDbId,
+            translation_id: $('#translation_select').val(),
+        }, function(links) {
+            currentChapterXrefs = links || [];
+            renderXrefMarkers();
+            renderXrefFootnotes();
+            renderXrefExistingList();
+        });
+    }
+
+    function renderXrefMarkers() {
+        $('#chapter_content .xref-marker').remove();
+        const seen = {};
+        currentChapterXrefs.forEach(function(l) {
+            if (seen[l.verse_number]) return;
+            seen[l.verse_number] = true;
+            $('#chapter_content .verse-clickable[data-verse-number="' + l.verse_number + '"]').first()
+                .after('<sup class="xref-marker" data-verse-number="' + l.verse_number + '" title="Cross references">&dagger;</sup>');
+        });
+    }
+
+    function renderXrefFootnotes() {
+        const $section = $('#xref_footnotes_section');
+        const $body = $('#xref_footnotes_body').empty();
+        if (!currentChapterXrefs.length) { $section.addClass('d-none'); return; }
+
+        const sorted = currentChapterXrefs.slice().sort(function(a, b) { return a.verse_number - b.verse_number; });
+        sorted.forEach(function(l) {
+            const $row = $('<div>').addClass('xref-footnote-row').attr('data-verse-number', l.verse_number);
+            $row.append($('<span>').addClass('xref-footnote-glyph-inline').html('&dagger;'));
+            $row.append($('<span>').addClass('xref-footnote-verse').text('v.' + l.verse_number));
+            $row.append(document.createTextNode(' → '));
+            $row.append(
+                $('<a>').addClass('xref-footnote-link').attr('href', '#')
+                    .data('book-id', l.linked_book_id).data('chapter-number', l.linked_chapter_number)
+                    .text(l.linked_reference || 'Unknown reference')
+            );
+            if (l.linked_preview) {
+                $row.append($('<span>').addClass('xref-footnote-preview').text(' — ' + l.linked_preview));
+            }
+            $body.append($row);
+        });
+        $section.removeClass('d-none');
+    }
+
+    function renderXrefExistingList() {
+        const verseNum = parseInt($('#xref_source_verse').val());
+        const $list = $('#xref_existing_list').empty();
+        const matches = currentChapterXrefs.filter(function(l) { return l.verse_number === verseNum; });
+
+        if (!matches.length) {
+            $list.html('<p class="text-muted mb-0 xref-empty">No cross references for this verse yet.</p>');
+            return;
+        }
+
+        matches.forEach(function(l) {
+            const $row = $('<div>').addClass('xref-existing-row');
+            const $info = $('<div>');
+            $info.append($('<div>').addClass('xref-existing-ref').text(l.linked_reference || 'Unknown reference'));
+            if (l.linked_preview) {
+                $info.append($('<div>').addClass('xref-existing-preview').text(l.linked_preview));
+            }
+            const $del = $('<button type="button">').addClass('xref-delete-btn').attr('title', 'Remove cross reference')
+                .data('link-id', l.id).html('<i class="mdi mdi-delete-outline"></i>');
+            $row.append($info).append($del);
+            $list.append($row);
+        });
+    }
+
+    function navigateToReference(bookId, chapterNumber) {
+        if (!bookId) return;
+        $('#book_select').val(bookId).trigger('change.select2');
+        loadBookInfo(bookId);
+        loadChapters(bookId, function() {
+            $('#chapter_select').val(chapterNumber);
+            lookupVerses('');
+            lookupVerses(2);
+            loadChapterComments();
+            loadReadStatus();
+            updateChapterNavLabel();
+        });
+    }
+
     function lookupVerses(side)
     {
         if (!side) stopSpeech();
@@ -816,7 +1285,7 @@ $(document).ready(function() {
                     if (verse.has_commentary) {
                         highlightStyle += 'text-decoration:underline dotted #94a3b8;text-underline-offset:3px;';
                     }
-                    html += '<span class="verse-clickable" data-verse-id="' + verse.id + '" style="cursor:pointer;' + highlightStyle + '">';
+                    html += '<span class="verse-clickable" data-verse-id="' + verse.id + '" data-verse-number="' + verse.number + '" style="cursor:pointer;' + highlightStyle + '">';
                     html += '<sup class="text-muted">' + verse.number + '</sup> ' + verse.text;
                     html += '</span>';
                     if (verse.is_favorite) {
@@ -827,12 +1296,126 @@ $(document).ready(function() {
                 html += '</p>';
                 $chapterContent.html(html);
                 $chapterContent.css('min-height', '');
-                if (!side) updateChapterNavLabel();
+                if (!side) {
+                    updateChapterNavLabel();
+                    currentChapterDbId = response.length ? response[0].chapter_id : null;
+                    updateXrefSourceOptions(response);
+                    loadChapterXrefs();
+                }
             },
             error: function() {
                 $chapterContent.css('min-height', '');
             }
         });
     }
+
+    // ── Section Titles & Paragraphs bulk editor (admin only) ──────
+    let sectionEditorDirty = false;
+
+    function confirmDiscardSectionEditorChanges() {
+        if (!sectionEditorDirty) return true;
+        return confirm('You have unsaved changes in the section editor. Discard them?');
+    }
+
+    function loadSectionEditorTable() {
+        const bookId = $('#book_select').val();
+        const chapterNumber = $('#chapter_select').val();
+        const translationId = $('#translation_select').val();
+        if (!bookId || !chapterNumber) return;
+
+        $('#section-editor-subtitle').text($('#book_select option:selected').text() + ' ' + chapterNumber);
+        $('#section-editor-tbody').html('<tr><td colspan="3" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+
+        $.ajax({
+            url: '/translations/section-editor',
+            type: 'GET',
+            data: { book_id: bookId, chapter_number: chapterNumber, translation_id: translationId },
+            success: function(response) {
+                const $tbody = $('#section-editor-tbody').empty();
+                (response.verses || []).forEach(function(verse) {
+                    const $row = $('<tr>').attr('data-verse-number', verse.number);
+
+                    const $titleInput = $('<input type="text" class="form-control form-control-sm section-title-input">')
+                        .val(verse.section_title || '')
+                        .attr('placeholder', 'e.g., The Beatitudes');
+                    $row.append($('<td>').append($titleInput));
+
+                    const $checkboxCell = $('<td class="text-center">');
+                    const $checkbox = $('<input type="checkbox" class="form-check-input line-break-input">')
+                        .prop('checked', !!verse.line_break);
+                    $checkboxCell.append($checkbox);
+                    $row.append($checkboxCell);
+
+                    const $textCell = $('<td>');
+                    $textCell.append($('<sup class="text-muted me-1">').text(verse.number));
+                    $textCell.append(document.createTextNode(verse.text));
+                    $row.append($textCell);
+
+                    $tbody.append($row);
+                });
+                sectionEditorDirty = false;
+            }
+        });
+    }
+
+    $('#btn-section-editor').on('click', function() {
+        loadSectionEditorTable();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('sectionEditorModal')).show();
+    });
+
+    $(document).on('input', '#section-editor-tbody .section-title-input', function() {
+        sectionEditorDirty = true;
+    });
+    $(document).on('change', '#section-editor-tbody .line-break-input', function() {
+        sectionEditorDirty = true;
+    });
+
+    $('#section-editor-close, #section-editor-cancel').on('click', function() {
+        if (!confirmDiscardSectionEditorChanges()) return;
+        sectionEditorDirty = false;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('sectionEditorModal')).hide();
+    });
+
+    $('#section-editor-save').on('click', function() {
+        const bookId = $('#book_select').val();
+        const chapterNumber = $('#chapter_select').val();
+        const rows = [];
+        $('#section-editor-tbody tr').each(function() {
+            rows.push({
+                number: $(this).data('verse-number'),
+                section_title: $(this).find('.section-title-input').val().trim(),
+                line_break: $(this).find('.line-break-input').is(':checked') ? 1 : 0,
+            });
+        });
+
+        const $btn = $(this).prop('disabled', true);
+        $.ajax({
+            url: '/translations/section-editor',
+            type: 'PUT',
+            data: {
+                _token: '{{ csrf_token() }}',
+                book_id: bookId,
+                chapter_number: chapterNumber,
+                verses: rows,
+            },
+            success: function() {
+                sectionEditorDirty = false;
+                $btn.prop('disabled', false);
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('sectionEditorModal')).hide();
+                if (typeof lookupVerses === 'function') {
+                    lookupVerses('');
+                    lookupVerses(2);
+                }
+            },
+            error: function() {
+                $btn.prop('disabled', false);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', text: 'Error saving changes' });
+                } else {
+                    alert('Error saving changes');
+                }
+            }
+        });
+    });
 </script>
 @endpush

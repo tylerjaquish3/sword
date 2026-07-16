@@ -21,6 +21,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PrayerPromptController;
 use App\Http\Controllers\VerseFavoriteController;
 use App\Http\Controllers\VerseHighlightController;
+use App\Http\Controllers\VerseLinkController;
 use App\Http\Controllers\BookStudyController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
@@ -131,11 +132,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/verse-favorites/toggle', [VerseFavoriteController::class, 'toggle'])->name('verse-favorites.toggle');
     Route::post('/verse-highlights/toggle', [VerseHighlightController::class, 'toggle'])->name('verse-highlights.toggle');
 
+    Route::group(['prefix' => 'verse-links'], function () {
+        Route::get('/search', [VerseLinkController::class, 'search'])->name('verse-links.search');
+        Route::get('/', [VerseLinkController::class, 'index'])->name('verse-links.index');
+        Route::post('/', [VerseLinkController::class, 'store'])->name('verse-links.store');
+        Route::delete('/{verseLink}', [VerseLinkController::class, 'destroy'])->name('verse-links.destroy');
+    });
+
     Route::group(['prefix' => 'translations'], function () {
         Route::get('/verses', [TranslationController::class, 'verses']);
         Route::get('/verse/{verse}', [TranslationController::class, 'getVerse']);
         Route::get('/verse-by-location', [TranslationController::class, 'getVerseByLocation']);
         Route::put('/verse/{verse}', [TranslationController::class, 'updateVerse']);
+
+        Route::middleware('admin')->group(function () {
+            Route::get('/section-editor', [TranslationController::class, 'sectionEditorVerses'])->name('translations.section-editor.index');
+            Route::put('/section-editor', [TranslationController::class, 'updateSectionEditor'])->name('translations.section-editor.update');
+        });
     });
     Route::resource('translations', TranslationController::class);
 

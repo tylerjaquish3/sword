@@ -12,8 +12,9 @@ class VerseHighlightController extends Controller
     public function toggle(Request $request)
     {
         $request->validate([
-            'verse_id' => 'required|exists:verses,id',
-            'color'    => 'required|in:yellow,blue,green,red',
+            'verse_id'         => 'required|exists:verses,id',
+            'color'            => 'required|in:yellow,blue,green,red',
+            'end_verse_number' => 'nullable|integer',
         ]);
 
         $verse = Verse::find($request->verse_id);
@@ -23,17 +24,21 @@ class VerseHighlightController extends Controller
             ->where('verse_number', $verse->number)
             ->first();
 
-        // Same color → remove highlight (toggle off)
-        if ($pref && $pref->highlight_color === $request->color) {
-            $pref->update(['highlight_color' => null]);
-            return response()->json(['color' => null]);
+        $endVerseNumber = $request->end_verse_number ? (int) $request->end_verse_number : null;
+        if (! $endVerseNumber || $endVerseNumber < $verse->number) {
+            $endVerseNumber = $verse->number;
         }
 
-        UserVersePreference::updateOrCreate(
-            ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $verse->number],
-            ['highlight_color' => $request->color]
-        );
+        // Same color as the range's starting verse → remove highlight from the whole range (toggle off)
+        $newColor = ($pref && $pref->highlight_color === $request->color) ? null : $request->color;
 
-        return response()->json(['color' => $request->color]);
+        for ($number = $verse->number; $number <= $endVerseNumber; $number++) {
+            UserVersePreference::updateOrCreate(
+                ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $number],
+                ['highlight_color' => $newColor]
+            );
+        }
+
+        return response()->json(['color' => $newColor]);
     }
 }
