@@ -25,6 +25,7 @@ class HomeController extends Controller
         
         // Dashboard metrics
         $prayerCount = Prayer::distinct('date')->count('date');
+        $totalPrayerCount = Prayer::count();
         $topicCount = Topic::where('user_id', Auth::id())->count();
         $chapterCommentCount = ChapterComment::count();
         $verseCommentCount = VerseComment::count();
@@ -126,16 +127,11 @@ class HomeController extends Controller
                 ->groupBy('date')
                 ->get()
                 ->count(),
-            'chapters' => \DB::table(function ($q) use ($weekStart, $weekEnd) {
-                $q->from('user_reads')
-                  ->where('user_id', Auth::id())
-                  ->whereBetween('read_at', [$weekStart, $weekEnd])
-                  ->select('book_id', 'chapter_number')
-                  ->distinct();
-            }, 'sub')->count(),
-            'prayers' => Prayer::whereBetween('created_at', [$weekStart, $weekEnd])
-                ->distinct('date')
-                ->count('date'),
+            'chapters' => \DB::table('user_reads')
+                ->where('user_id', Auth::id())
+                ->whereBetween('read_at', [$weekStart, $weekEnd])
+                ->count(),
+            'prayers' => Prayer::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
             'notes' => ChapterComment::whereBetween('created_at', [$weekStart, $weekEnd])->count()
                 + VerseComment::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
         ];
@@ -161,6 +157,7 @@ class HomeController extends Controller
         return view('home.index', compact(
             'books',
             'prayerCount',
+            'totalPrayerCount',
             'topicCount',
             'commentaryCount',
             'chapterCommentCount',

@@ -298,8 +298,12 @@
                 @endif
                 <div class="mt-3 pt-3" style="border-top: 1px solid rgba(14,22,40,0.08);">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span style="color: #9ca3af; font-size: 0.9rem;">Total Prayers</span>
+                        <span style="color: #9ca3af; font-size: 0.9rem;">Prayer Days</span>
                         <span class="font-weight-bold" style="color: var(--sword-navy);">{{ $prayerCount }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span style="color: #9ca3af; font-size: 0.9rem;">Total Prayers</span>
+                        <span class="font-weight-bold" style="color: var(--sword-navy);">{{ $totalPrayerCount }}</span>
                     </div>
                 </div>
             </div>
