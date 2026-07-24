@@ -6,16 +6,25 @@ use App\Models\ChapterComment;
 use App\Models\VerseComment;
 use App\Models\Book;
 use App\Models\Chapter;
+use App\Models\UserVersePreference;
 use App\Models\Verse;
+use Illuminate\Support\Facades\Auth;
 
 class CommentaryController extends Controller
 {
+    const HIGHLIGHT_TYPES = [
+        'yellow' => 'Important',
+        'blue'   => 'Prophecy',
+        'green'  => 'Promise',
+        'red'    => 'Command',
+    ];
+
     public function index()
     {
         $chapterComments = ChapterComment::with(['chapter.book'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         // Get verse comments with chapter relationship, grouped by chapter_id and verse_number
         $verseComments = VerseComment::with(['chapter.book'])
             ->whereNotNull('chapter_id')
@@ -26,7 +35,33 @@ class CommentaryController extends Controller
                 return $item->chapter_id . '-' . $item->verse_number . '-' . $item->comment;
             });
 
-        return view('commentary.index', compact('chapterComments', 'verseComments'));
+        // Get highlighted verses with their book/chapter reference and text
+        $highlightedVerses = UserVersePreference::with(['chapter.book'])
+            ->where('user_id', Auth::id())
+            ->whereNotNull('highlight_color')
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->map(function ($pref) {
+                $verse = Verse::where('chapter_id', $pref->chapter_id)
+                    ->where('number', $pref->verse_number)
+                    ->first();
+
+                return (object) [
+                    'chapter_id'      => $pref->chapter_id,
+                    'book_id'         => $pref->chapter->book_id ?? '',
+                    'verse_number'    => $pref->verse_number,
+                    'highlight_color' => $pref->highlight_color,
+                    'type_label'      => self::HIGHLIGHT_TYPES[$pref->highlight_color] ?? 'Other',
+                    'book_name'       => $pref->chapter->book->name ?? 'N/A',
+                    'chapter_number'  => $pref->chapter->number ?? '',
+                    'text'            => $verse->text ?? '',
+                    'updated_at'      => $pref->updated_at,
+                ];
+            });
+
+        $highlightTypes = self::HIGHLIGHT_TYPES;
+
+        return view('commentary.index', compact('chapterComments', 'verseComments', 'highlightedVerses', 'highlightTypes'));
     }
 
     public function create()

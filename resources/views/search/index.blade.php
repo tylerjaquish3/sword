@@ -12,8 +12,8 @@
 
 <div class="row mb-4">
     <div class="col-12">
-        <form method="GET" action="{{ route('search.index') }}" class="d-flex gap-2">
-            <div class="input-group">
+        <form method="GET" action="{{ route('search.index') }}" class="d-flex flex-column flex-md-row gap-2">
+            <div class="input-group flex-grow-1">
                 <span class="input-group-text" style="background: var(--sword-navy); border-color: var(--sword-navy);">
                     <i class="mdi mdi-magnify" style="color: var(--sword-gold);"></i>
                 </span>
@@ -29,6 +29,22 @@
                 <button class="btn btn-lg" type="submit" style="background: var(--sword-navy); color: var(--sword-gold); border-color: var(--sword-navy); font-weight: 600;">
                     Search
                 </button>
+            </div>
+            <div class="d-flex align-items-center flex-shrink-0 gap-2 mt-2 mt-md-0 ms-md-3">
+                <input
+                    class="form-check-input mt-0"
+                    type="checkbox"
+                    role="switch"
+                    id="whole_word"
+                    name="whole_word"
+                    value="1"
+                    {{ $wholeWord ? 'checked' : '' }}
+                    onchange="this.form.submit()"
+                    style="cursor: pointer; margin-left: 0;"
+                >
+                <label class="text-nowrap mb-0" for="whole_word" style="cursor: pointer; color: var(--sword-navy); font-size: 0.9rem;">
+                    Whole word only
+                </label>
             </div>
         </form>
     </div>

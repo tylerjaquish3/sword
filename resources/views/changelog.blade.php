@@ -14,6 +14,32 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.15.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.15</span>
+                <div>
+                    <div class="changelog-title">Whole Word Search & Highlighted Verses</div>
+                    <div class="changelog-date">July 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            "Whole word only" toggle on the search results page — switch it on to match "tent" without matching "attention", or leave it off to match "command" within "commandment"
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Commentary page now lists all of your highlighted verses at the bottom, with filter buttons for Important, Prophecy, Promise, and Command
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.14.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +48,6 @@
                     <div class="changelog-title">Cross References</div>
                     <div class="changelog-date">July 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

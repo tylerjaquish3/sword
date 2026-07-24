@@ -275,6 +275,6 @@ class TranslationController extends Controller
      */
     private function titleCaseWords(string $text): string
     {
-        return preg_replace_callback('/\b\w/u', fn($match) => mb_strtoupper($match[0]), $text);
+        return preg_replace_callback('/(?<!\w[\'’])\b\w/u', fn($match) => mb_strtoupper($match[0]), $text);
     }
 }

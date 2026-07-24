@@ -7,7 +7,7 @@
 <div class="d-flex align-items-center justify-content-between mb-4 mb-xl-0">
     <div>
         <h3 class="text-dark font-weight-bold mb-2">Commentary</h3>
-        <p class="page-subtitle mb-0">{{ count($chapterComments) }} chapter &middot; {{ count($verseComments) }} verse</p>
+        <p class="page-subtitle mb-0">{{ count($chapterComments) }} chapter &middot; {{ count($verseComments) }} verse &middot; {{ count($highlightedVerses) }} highlighted</p>
     </div>
     <div class="flex-shrink-0">
         <a href="{{ route('commentary.create') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); font-weight: 600; font-size: 0.82rem;">
@@ -127,6 +127,84 @@
     </div>
 </div>
 
+@php
+    $highlightSwatches = [
+        'yellow' => '#fbbf24',
+        'blue'   => '#60a5fa',
+        'green'  => '#34d399',
+        'red'    => '#f87171',
+    ];
+@endphp
+
+<!-- Highlighted Verses Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="sword-section-header mb-0">
+                    <span class="section-icon"><i class="mdi mdi-marker"></i></span>
+                    <span class="section-title">Highlighted Verses</span>
+                </div>
+                <div class="btn-group highlight-filter-group" role="group">
+                    <button type="button" class="btn btn-sm highlight-filter-btn active" data-filter="">All</button>
+                    @foreach ($highlightTypes as $color => $label)
+                        <button type="button" class="btn btn-sm highlight-filter-btn" data-filter="{{ $label }}">
+                            <span class="highlight-dot" style="background: {{ $highlightSwatches[$color] }};"></span>
+                            {{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="datatable-highlighted-verses" class="table table-bordered table-hover table-compact">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Verse</th>
+                                <th>Type</th>
+                                <th>Highlighted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($highlightedVerses as $verse)
+                                <tr>
+                                    <td>
+                                        <a class="sword-link" href="{{ route('translations.index', ['book' => $verse->book_id, 'chapter' => $verse->chapter_number]) }}">
+                                            {{ $verse->book_name }} {{ $verse->chapter_number }}:{{ $verse->verse_number }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @if(strlen($verse->text) > 140)
+                                            <span class="snip-short">{{ Str::limit($verse->text, 140) }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">More</a></span>
+                                            <span class="snip-full" style="display:none">{{ $verse->text }}<a href="#" class="snip-toggle" style="color: var(--sword-gold); font-size: 0.72rem; margin-left: 4px;">Less</a></span>
+                                        @else
+                                            {{ $verse->text }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="highlight-dot" style="background: {{ $highlightSwatches[$verse->highlight_color] ?? '#9ca3af' }};"></span>
+                                        {{ $verse->type_label }}
+                                    </td>
+                                    <td data-order="{{ $verse->updated_at?->format('Y-m-d H:i:s') }}">{{ $verse->updated_at?->format('M d, Y') }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-primary open-verse-modal" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;"
+                                            data-chapter-id="{{ $verse->chapter_id }}"
+                                            data-verse-number="{{ $verse->verse_number }}">
+                                            <i class="mdi mdi-pencil"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Include Modals -->
 @include('commentary.modals.verse')
 @include('commentary.modals.chapter')
@@ -150,6 +228,26 @@
     font-weight: 700 !important;
     border-color: #1e2d44 !important;
 }
+.highlight-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.highlight-filter-btn {
+    background: rgba(14,22,40,0.04);
+    border: 1px solid rgba(14,22,40,0.12);
+    color: #4b5563;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.highlight-filter-btn.active {
+    background: var(--sword-navy);
+    color: var(--sword-gold);
+    border-color: var(--sword-navy);
+}
 </style>
 @endpush
 
@@ -167,6 +265,20 @@
             "pageLength": 10,
             "lengthChange": false,
             "info": false
+        });
+        var highlightedVersesTable = $('#datatable-highlighted-verses').DataTable({
+            "order": [[3, "desc"]],
+            "pageLength": 10,
+            "lengthChange": false,
+            "info": false
+        });
+
+        // Filter highlighted verses by type
+        $('.highlight-filter-btn').on('click', function() {
+            $('.highlight-filter-btn').removeClass('active');
+            $(this).addClass('active');
+            var filter = $(this).data('filter') || '';
+            highlightedVersesTable.column(2).search(filter ? '\\b' + $.fn.dataTable.util.escapeRegex(filter) + '\\b' : '', true, false).draw();
         });
 
         // Open verse modal when clicking Edit button
