@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountabilityCheckIn;
 use App\Models\ChapterComment;
 use App\Models\Memory;
 use App\Models\Prayer;
@@ -105,7 +106,11 @@ class DigestController extends Controller
             ->orderByDesc('week_start')
             ->get();
 
-        return view('digest.history', compact('digests'));
+        $checkIns = AccountabilityCheckIn::where('user_id', Auth::id())
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('digest.history', compact('digests', 'checkIns'));
     }
 
     public function show(SharedDigest $shared)

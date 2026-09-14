@@ -306,6 +306,166 @@ html { scroll-behavior: smooth; }
     margin-top: 0.7rem;
 }
 
+/* Weekly Digest spotlight */
+.sw-digest { background: #fff; padding: 5rem 1.5rem; }
+.sw-digest-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 3.5rem;
+    align-items: center;
+}
+@media (max-width: 900px) {
+    .sw-digest-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+
+.sw-digest-list {
+    list-style: none;
+    padding: 0;
+    margin: 2.25rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+}
+.sw-digest-list li {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+}
+.sw-digest-list-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: rgba(201,168,76,0.12);
+    color: var(--sword-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.sw-digest-list-title {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 1.02rem;
+    font-weight: 500;
+    color: var(--sword-navy);
+    margin-bottom: 0.2rem;
+}
+.sw-digest-list-desc {
+    font-size: 0.85rem;
+    color: #718096;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 400px;
+}
+
+.sw-digest-visual { display: flex; justify-content: center; }
+.sw-digest-card {
+    width: 100%;
+    max-width: 380px;
+    background: linear-gradient(160deg, var(--sword-navy) 0%, #1a2545 100%);
+    border-radius: 16px;
+    padding: 1.75rem 1.6rem;
+    box-shadow: 0 24px 60px rgba(14,22,40,0.25), 0 0 0 1px rgba(201,168,76,0.15);
+    position: relative;
+    overflow: hidden;
+}
+.sw-digest-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+.sw-digest-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.4rem;
+    position: relative;
+    z-index: 1;
+}
+.sw-digest-card-wordmark {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #fff;
+}
+.sw-digest-card-range {
+    font-size: 0.68rem;
+    color: rgba(220,228,248,0.45);
+}
+.sw-digest-card-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+.sw-digest-stat { text-align: center; }
+.sw-digest-stat-val {
+    display: block;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--sword-gold);
+    line-height: 1;
+}
+.sw-digest-stat-label {
+    display: block;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(220,228,248,0.4);
+    margin-top: 0.3rem;
+}
+.sw-digest-card-tags {
+    border-left: 2px solid rgba(201,168,76,0.35);
+    padding-left: 0.85rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+.sw-digest-card-tags-label {
+    display: block;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.55);
+    margin-bottom: 0.55rem;
+}
+.sw-digest-card-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.sw-digest-tag {
+    font-size: 0.68rem;
+    color: rgba(220,228,248,0.75);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 20px;
+    padding: 3px 10px;
+}
+.sw-digest-card-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: rgba(201,168,76,0.75);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 7px;
+    padding: 0.5rem 0.7rem;
+    position: relative;
+    z-index: 1;
+}
+
 /* ACTS section */
 .sw-acts { background: var(--sword-navy); padding: 5rem 1.5rem; }
 .sw-acts .sw-h2 { color: #fff; }

@@ -163,6 +163,84 @@
         </div>
     </section>
 
+    {{-- Weekly Digest spotlight --}}
+    <section class="sw-digest">
+        <div class="sw-container">
+            <div class="sw-digest-grid">
+
+                <div class="sw-digest-copy">
+                    <div class="sw-eyebrow">Weekly Digest</div>
+                    <h2 class="sw-h2">Your week, quietly kept.</h2>
+                    <p class="sw-lead">Each week, Sword rolls up what you read, prayed, and wrote into one page. Keep it, or send a partner a link with no account required.</p>
+
+                    <ul class="sw-digest-list">
+                        <li>
+                            <div class="sw-digest-list-icon"><i class="mdi mdi-book-open-page-variant"></i></div>
+                            <div>
+                                <div class="sw-digest-list-title">Compiled automatically</div>
+                                <p class="sw-digest-list-desc">Chapters read, prayers written, notes and memory verses — pulled together the moment you open it.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="sw-digest-list-icon"><i class="mdi mdi-spa"></i></div>
+                            <div>
+                                <div class="sw-digest-list-title">Room for real reflection</div>
+                                <p class="sw-digest-list-desc">Flag which fruits of the Spirit need prayer this week, and name the idols that crept in — right alongside your reading and prayers.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="sw-digest-list-icon"><i class="mdi mdi-link-variant"></i></div>
+                            <div>
+                                <div class="sw-digest-list-title">Share it, no account needed</div>
+                                <p class="sw-digest-list-desc">Send a partner a link — they can view it and leave encouragement without ever signing up.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sw-digest-visual">
+                    <div class="sw-digest-card">
+                        <div class="sw-digest-card-head">
+                            <div class="sw-digest-card-wordmark">Week in Review</div>
+                            <div class="sw-digest-card-range">Apr 6 – Apr 12</div>
+                        </div>
+                        <div class="sw-digest-card-stats">
+                            <div class="sw-digest-stat">
+                                <span class="sw-digest-stat-val">5</span>
+                                <span class="sw-digest-stat-label">Days Studied</span>
+                            </div>
+                            <div class="sw-digest-stat">
+                                <span class="sw-digest-stat-val">12</span>
+                                <span class="sw-digest-stat-label">Chapters</span>
+                            </div>
+                            <div class="sw-digest-stat">
+                                <span class="sw-digest-stat-val">6</span>
+                                <span class="sw-digest-stat-label">Prayers</span>
+                            </div>
+                            <div class="sw-digest-stat">
+                                <span class="sw-digest-stat-val">9</span>
+                                <span class="sw-digest-stat-label">Notes</span>
+                            </div>
+                        </div>
+                        <div class="sw-digest-card-tags">
+                            <span class="sw-digest-card-tags-label">Also inside</span>
+                            <div class="sw-digest-card-tags-list">
+                                <span class="sw-digest-tag">Commentary</span>
+                                <span class="sw-digest-tag">Memory Practice</span>
+                                <span class="sw-digest-tag">Fruits Needing Prayer</span>
+                                <span class="sw-digest-tag">Idols to Surrender</span>
+                            </div>
+                        </div>
+                        <div class="sw-digest-card-link">
+                            <i class="mdi mdi-link-variant"></i> sword.app/shared/digest/••••••
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     {{-- ACTS Prayer Section --}}
     <section class="sw-acts">
         <div class="sw-container">
@@ -200,7 +278,7 @@
         <div class="sw-container">
             <div class="sw-eyebrow">Scripture Reading</div>
             <h2 class="sw-h2">Every word, every translation.</h2>
-            <p class="sw-lead">Sword stores the full text of every translation you add — always right where you left it, instantly navigable by book and chapter.</p>
+            <p class="sw-lead">Sword stores the full text of five translations — always right where you left it, instantly navigable by book and chapter.</p>
 
             <div class="sw-scripture-card">
                 <p class="sw-scripture-verse" id="sw-verse-text">

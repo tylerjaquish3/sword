@@ -15,6 +15,8 @@ use App\Http\Controllers\CommentaryController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\DigestController;
 use App\Http\Controllers\SharedDigestController;
+use App\Http\Controllers\AccountabilityController;
+use App\Http\Controllers\AccountabilityCheckInController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NotificationController;
@@ -43,6 +45,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Public shared digest (no auth required)
 Route::get('/shared/digest/{uuid}', [SharedDigestController::class, 'show'])->name('digest.shared.show');
 Route::post('/shared/digest/{uuid}/comments', [SharedDigestController::class, 'storeComment'])->name('digest.shared.comment');
+
+// Public accountability check-in (no auth required — anyone can create and share one)
+Route::get('/accountability/create', [AccountabilityCheckInController::class, 'create'])->name('accountability.create');
+Route::post('/accountability', [AccountabilityCheckInController::class, 'store'])->name('accountability.store');
+Route::get('/accountability/share/{uuid}/link', [AccountabilityCheckInController::class, 'link'])->name('accountability.share.link');
+Route::get('/shared/accountability/{uuid}', [AccountabilityCheckInController::class, 'show'])->name('accountability.shared.show');
+Route::post('/shared/accountability/{uuid}/comments', [AccountabilityCheckInController::class, 'storeComment'])->name('accountability.shared.comment');
 
 
 // All application routes require authentication
@@ -114,6 +123,13 @@ Route::middleware('auth')->group(function () {
     // Legacy alias so old /digest/share links still work
     Route::get('/digest/share', [SharedDigestController::class, 'create'])->name('digest.share.create');
     Route::post('/digest/share', [SharedDigestController::class, 'store'])->name('digest.share.store');
+
+    // Accountability routes (owner-only; creation itself is public, see above)
+    Route::post('/accountability/{checkIn}/share', [AccountabilityController::class, 'markShared'])->name('accountability.mark-shared');
+    Route::get('/accountability/{checkIn}/edit', [AccountabilityCheckInController::class, 'edit'])->name('accountability.edit');
+    Route::put('/accountability/{checkIn}', [AccountabilityCheckInController::class, 'update'])->name('accountability.update');
+    Route::delete('/accountability/{checkIn}', [AccountabilityController::class, 'destroy'])->name('accountability.destroy');
+    Route::get('/accountability/{checkIn}', [AccountabilityController::class, 'show'])->name('accountability.show');
 
     // Memory routes
     Route::resource('memory', MemoryController::class)->except(['create', 'show', 'edit']);

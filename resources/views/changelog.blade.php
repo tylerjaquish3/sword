@@ -14,6 +14,36 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.16.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.16</span>
+                <div>
+                    <div class="changelog-title">Accountability Check-Ins</div>
+                    <div class="changelog-date">September 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            New Accountability tab on the All Digests page — check in on time in the Word, prayer, fellowship, and touch with your Corner Man, then rate your overall week and share a praise and a prayer request
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            No account needed to fill out a check-in — anyone can complete one and generate a share link; sign in to keep a private history of past check-ins
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Shared check-in links support comments from your Corner Man, with a notification when they respond
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.15.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +52,6 @@
                     <div class="changelog-title">Whole Word Search & Highlighted Verses</div>
                     <div class="changelog-date">July 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

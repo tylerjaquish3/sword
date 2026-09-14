@@ -36,6 +36,8 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - commentary page, is it needed?
 - if you study the same book twice, it should be a blank slate?
 - upgrade php and laravel
+- login page, add screenshots of page with highlights, underlines, etc. and what they mean
+- page for sorting/searching highlighted verses
 
 https://www.navigators.org/resource/prayer-tools/
 

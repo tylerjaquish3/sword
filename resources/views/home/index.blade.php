@@ -321,25 +321,25 @@
                     <div class="d-flex gap-4">
                         <div class="text-center">
                             <div class="font-weight-bold" style="color: var(--sword-navy); font-size: 1.1rem;">
-                                <i class="mdi mdi-fire" style="color: var(--sword-gold);"></i> {{ $currentStreak }}
+                                <i class="mdi mdi-fire" style="color: var(--sword-gold);"></i> {{ $currentStreak }} {{ Str::plural('day', $currentStreak) }}
                             </div>
                             <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Current Streak</div>
                         </div>
                         <div class="text-center">
                             <div class="font-weight-bold" style="color: var(--sword-navy); font-size: 1.1rem;">
-                                <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i> {{ $longestStreak }}
+                                <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i> {{ $longestStreak }} {{ Str::plural('day', $longestStreak) }}
                             </div>
                             <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Best Streak</div>
                         </div>
                         <div class="text-center">
                             <div class="font-weight-bold" style="color: var(--sword-navy); font-size: 1.1rem;">
                                 @if($todayReadCount > 0)
-                                    <i class="mdi mdi-check-circle" style="color: var(--sword-gold);"></i> {{ $todayReadCount }}
+                                    <i class="mdi mdi-check-circle" style="color: var(--sword-gold);"></i> {{ $todayReadCount }} {{ Str::plural('chapter', $todayReadCount) }}
                                 @else
-                                    <i class="mdi mdi-circle-outline" style="color: #9ca3af;"></i> 0
+                                    <i class="mdi mdi-circle-outline" style="color: #9ca3af;"></i> 0 chapters
                                 @endif
                             </div>
-                            <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Today</div>
+                            <div style="color: #9ca3af; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;">Chapters Today</div>
                         </div>
                     </div>
                 </div>
