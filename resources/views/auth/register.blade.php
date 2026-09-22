@@ -41,6 +41,22 @@
     </div>
 
     <div class="form-group mb-3">
+        <label for="referred_by" class="form-label">Who referred you to this app?</label>
+        <input
+            id="referred_by"
+            type="text"
+            name="referred_by"
+            value="{{ old('referred_by') }}"
+            class="form-control form-control-lg @error('referred_by') is-invalid @enderror"
+            placeholder="A friend's name, a church, a website, etc."
+            required
+        >
+        @error('referred_by')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="form-group mb-3">
         <label for="password" class="form-label">Password</label>
         <input
             id="password"

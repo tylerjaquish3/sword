@@ -24,11 +24,12 @@ class User extends Authenticatable
         'default_translation_id',
         'is_admin',
         'is_active',
+        'referred_by',
     ];
 
     public function defaultTranslation()
     {
-        return $this->belongsTo(\App\Models\Translation::class, 'default_translation_id');
+        return $this->belongsTo(Translation::class, 'default_translation_id');
     }
 
     /**

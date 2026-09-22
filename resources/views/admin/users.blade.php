@@ -35,6 +35,7 @@
                         <tr>
                             <th class="ps-4 py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Name</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Email</th>
+                            <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Referred By</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Joined</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Status</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Role</th>
@@ -51,6 +52,7 @@
                                 @endif
                             </td>
                             <td class="py-3 align-middle text-muted">{{ $user->email }}</td>
+                            <td class="py-3 align-middle text-muted" style="font-size: 0.85rem;">{{ $user->referred_by ?: '—' }}</td>
                             <td class="py-3 align-middle text-muted" style="font-size: 0.85rem;">{{ $user->created_at->format('M j, Y') }}</td>
                             <td class="py-3 align-middle">
                                 @if($user->is_active)
@@ -102,7 +104,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">No users found.</td>
+                            <td colspan="7" class="text-center py-5 text-muted">No users found.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -124,6 +126,9 @@
                         <span class="badge ms-1" style="background: rgba(70,77,238,0.12); color: #464dee; font-size: 0.65rem;">you</span>
                     @endif
                     <div class="text-muted mt-1" style="font-size: 0.83rem;">{{ $user->email }}</div>
+                    @if($user->referred_by)
+                        <div class="text-muted" style="font-size: 0.78rem;">Referred by: {{ $user->referred_by }}</div>
+                    @endif
                     <div class="text-muted" style="font-size: 0.78rem;">Joined {{ $user->created_at->format('M j, Y') }}</div>
                 </div>
                 <div class="d-flex flex-column align-items-end gap-1">

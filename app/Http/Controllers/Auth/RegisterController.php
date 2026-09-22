@@ -21,12 +21,13 @@ class RegisterController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'referred_by' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'g-recaptcha-response' => ['required'],
         ]);
 
         $recaptcha = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => env('RECAPTCHA_SECRET_KEY'),
+            'secret' => env('RECAPTCHA_SECRET_KEY'),
             'response' => $request->input('g-recaptcha-response'),
             'remoteip' => $request->ip(),
         ])->json();
@@ -38,6 +39,7 @@ class RegisterController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'referred_by' => $request->referred_by,
             'password' => Hash::make($request->password),
             'is_active' => false,
             'is_admin' => false,
@@ -45,12 +47,13 @@ class RegisterController extends Controller
 
         $adminEmail = env('ADMIN_EMAIL');
         if ($adminEmail) {
-            $name      = $user->name;
-            $email     = $user->email;
+            $name = $user->name;
+            $email = $user->email;
+            $referredBy = $user->referred_by;
             $createdAt = now()->toDateTimeString();
-            dispatch(function () use ($adminEmail, $name, $email, $createdAt) {
+            dispatch(function () use ($adminEmail, $name, $email, $referredBy, $createdAt) {
                 Mail::raw(
-                    "New user registered and is pending activation:\n\nName: {$name}\nEmail: {$email}\nRegistered: {$createdAt}",
+                    "New user registered and is pending activation:\n\nName: {$name}\nEmail: {$email}\nReferred by: {$referredBy}\nRegistered: {$createdAt}",
                     fn ($msg) => $msg->to($adminEmail)->subject('Sword – New Pending User')
                 );
             })->afterResponse();
