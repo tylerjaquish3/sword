@@ -171,6 +171,7 @@ Route::middleware('auth')->group(function () {
     // Admin routes
     Route::middleware('admin')->group(function () {
         Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+        Route::get('/admin/users/{user}', [AdminController::class, 'show'])->name('admin.users.show');
         Route::post('/admin/users/{user}/activate', [AdminController::class, 'activate'])->name('admin.users.activate');
         Route::post('/admin/users/{user}/deactivate', [AdminController::class, 'deactivate'])->name('admin.users.deactivate');
         Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');

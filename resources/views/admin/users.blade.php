@@ -46,7 +46,7 @@
                         @forelse($users as $user)
                         <tr>
                             <td class="ps-4 py-3 align-middle">
-                                <span class="fw-semibold" style="color: var(--sword-navy);">{{ $user->name }}</span>
+                                <a href="{{ route('admin.users.show', $user) }}" class="fw-semibold text-decoration-none" style="color: var(--sword-navy);">{{ $user->name }}</a>
                                 @if($user->id === auth()->id())
                                     <span class="badge ms-1" style="background: rgba(70,77,238,0.12); color: #464dee; font-size: 0.65rem;">you</span>
                                 @endif
@@ -121,7 +121,7 @@
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between mb-2">
                 <div>
-                    <span class="fw-semibold" style="color: var(--sword-navy); font-size: 1rem;">{{ $user->name }}</span>
+                    <a href="{{ route('admin.users.show', $user) }}" class="fw-semibold text-decoration-none" style="color: var(--sword-navy); font-size: 1rem;">{{ $user->name }}</a>
                     @if($user->id === auth()->id())
                         <span class="badge ms-1" style="background: rgba(70,77,238,0.12); color: #464dee; font-size: 0.65rem;">you</span>
                     @endif
