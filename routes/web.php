@@ -28,6 +28,15 @@ use App\Http\Controllers\BookStudyController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 
+// Mail preview (local development only)
+if (app()->environment('local')) {
+    Route::get('/mail-preview/account-activated', function () {
+        $user = \App\Models\User::first() ?? new \App\Models\User(['name' => 'Jane Doe', 'email' => 'jane@example.com']);
+
+        return new \App\Mail\AccountActivated($user);
+    });
+}
+
 // Auth routes (guest only)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

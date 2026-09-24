@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccountActivated;
 use App\Models\ChapterComment;
 use App\Models\Memory;
 use App\Models\Prayer;
@@ -12,6 +13,7 @@ use App\Models\UserLogin;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -98,6 +100,10 @@ class AdminController extends Controller
     public function activate(User $user)
     {
         $user->update(['is_active' => true]);
+
+        dispatch(function () use ($user) {
+            Mail::to($user->email)->send(new AccountActivated($user));
+        })->afterResponse();
 
         return back()->with('status', "Account for {$user->name} has been activated.");
     }
