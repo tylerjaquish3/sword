@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\BookStudy;
+use App\Models\Chapter;
+use App\Models\ProverbsGroup;
+use App\Models\ProverbsVerseGroup;
 use App\Models\Topic;
 use App\Models\TopicNote;
+use App\Models\Translation;
 use App\Models\UserRead;
 use App\Models\Verse;
 use Carbon\Carbon;
@@ -35,7 +39,30 @@ class TopicController extends Controller
             ->groupBy('book_id')
             ->pluck('read_count', 'book_id');
 
-        return view('topics.index', compact('topics', 'activeStudies', 'completedStudies', 'allBooks', 'chaptersReadByBook'));
+        $proverbsGroups = collect();
+        $proverbsUnassignedCount = 0;
+
+        if (Auth::user()->is_admin) {
+            $proverbsGroups = ProverbsGroup::where('user_id', Auth::id())
+                ->withCount('verseAssignments')
+                ->orderBy('created_at')
+                ->get();
+
+            $proverbsBook = Book::where('name', 'Proverbs')->first();
+            if ($proverbsBook) {
+                $translationId = Auth::user()->default_translation_id;
+                $proverbsChapterIds = Chapter::where('book_id', $proverbsBook->id)->pluck('id');
+                $totalProverbsVerses = Verse::where('translation_id', $translationId)
+                    ->whereIn('chapter_id', $proverbsChapterIds)
+                    ->count();
+                $assignedProverbsVerses = ProverbsVerseGroup::where('user_id', Auth::id())
+                    ->whereIn('chapter_id', $proverbsChapterIds)
+                    ->count();
+                $proverbsUnassignedCount = max(0, $totalProverbsVerses - $assignedProverbsVerses);
+            }
+        }
+
+        return view('topics.index', compact('topics', 'activeStudies', 'completedStudies', 'allBooks', 'chaptersReadByBook', 'proverbsGroups', 'proverbsUnassignedCount'));
     }
 
     public function create()

@@ -28,6 +28,15 @@
             <span class="ms-1 badge" style="background: rgba(14,22,40,0.08); color: var(--sword-navy); font-size: 0.68rem;">{{ $activeStudies->count() }}</span>
         </button>
     </li>
+    @if(auth()->user()->is_admin)
+    <li class="nav-item" role="presentation">
+        <button class="nav-link px-4 py-2" id="tab-proverbs" data-bs-toggle="tab" data-bs-target="#pane-proverbs" type="button" role="tab"
+            style="border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; border-radius: 0; font-size: 0.88rem; color: #6b7280; background: transparent; font-weight: 600;">
+            <i class="mdi mdi-shape-outline me-1"></i> Proverbs
+            <span class="ms-1 badge" style="background: rgba(14,22,40,0.08); color: var(--sword-navy); font-size: 0.68rem;">{{ $proverbsGroups->count() }}</span>
+        </button>
+    </li>
+    @endif
 </ul>
 
 <div class="tab-content">
@@ -155,6 +164,36 @@
         @endif
 
     </div>
+
+    @if(auth()->user()->is_admin)
+    <div class="tab-pane fade pt-3" id="pane-proverbs" role="tabpanel">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <p class="mb-0" style="font-size: 0.85rem; color: #9ca3af;">
+                {{ $proverbsGroups->count() }} {{ Str::plural('group', $proverbsGroups->count()) }}, {{ $proverbsUnassignedCount }} unassigned
+            </p>
+            <a href="{{ route('proverbs-groups.index') }}" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); font-weight: 600; font-size: 0.82rem;">
+                <i class="mdi mdi-pencil"></i> Manage Groups
+            </a>
+        </div>
+
+        @if($proverbsGroups->isNotEmpty())
+        <div class="row g-2">
+            @foreach($proverbsGroups as $group)
+            <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                <a href="{{ route('proverbs-groups.read', $group) }}" class="card h-100 text-decoration-none" style="border-top: 2px solid var(--sword-gold);">
+                    <div class="card-body">
+                        <div class="fw-600" style="color: var(--sword-navy);">{{ $group->name }}</div>
+                        <div style="font-size: 0.8rem; color: #9ca3af;">{{ $group->verse_assignments_count }} {{ Str::plural('verse', $group->verse_assignments_count) }}</div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+        @else
+        <p class="text-muted">No groups yet. Click "Manage Groups" to create one.</p>
+        @endif
+    </div>
+    @endif
 
 </div>
 
