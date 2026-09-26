@@ -2,14 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
+use App\Models\Chapter;
 use App\Models\ProverbsGroup;
 use App\Models\ProverbsVerseGroup;
+use App\Models\Translation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ProverbsGroupController extends Controller
 {
+    public function index()
+    {
+        $book = Book::where('name', 'Proverbs')->first();
+        $translationId = Auth::user()->default_translation_id ?? Translation::first()?->id;
+
+        $chapters = collect();
+        if ($book) {
+            $chapters = Chapter::where('book_id', $book->id)
+                ->orderBy('number')
+                ->with(['verses' => fn ($q) => $q->where('translation_id', $translationId)->orderBy('number')])
+                ->get();
+        }
+
+        $groups = ProverbsGroup::where('user_id', Auth::id())
+            ->withCount('verseAssignments')
+            ->orderBy('created_at')
+            ->get();
+
+        $assignments = ProverbsVerseGroup::where('user_id', Auth::id())
+            ->get()
+            ->mapWithKeys(fn ($row) => [$row->chapter_id.'-'.$row->verse_number => $row->proverbs_group_id]);
+
+        return view('proverbs-groups.index', compact('chapters', 'groups', 'assignments'));
+    }
+
     public function store(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255']);
