@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProverbsGroup;
+use App\Models\ProverbsVerseGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProverbsGroupController extends Controller
 {
@@ -38,5 +40,50 @@ class ProverbsGroupController extends Controller
         $proverbsGroup->delete();
 
         return redirect()->route('proverbs-groups.index')->with('status', 'Group deleted.');
+    }
+
+    public function assign(Request $request)
+    {
+        $data = $request->validate([
+            'assignments' => 'required|array',
+            'assignments.*' => 'array',
+            'assignments.*.*' => 'nullable|string',
+        ]);
+
+        $ownedGroupIds = ProverbsGroup::where('user_id', Auth::id())->pluck('id')->all();
+
+        foreach ($data['assignments'] as $verses) {
+            foreach ($verses as $value) {
+                if ($value !== 'unassigned' && $value !== null && $value !== '' && !in_array((int) $value, $ownedGroupIds, true)) {
+                    abort(422, 'Unknown group.');
+                }
+            }
+        }
+
+        DB::transaction(function () use ($data) {
+            foreach ($data['assignments'] as $chapterId => $verses) {
+                foreach ($verses as $verseNumber => $value) {
+                    if ($value === 'unassigned' || $value === null || $value === '') {
+                        ProverbsVerseGroup::where('user_id', Auth::id())
+                            ->where('chapter_id', $chapterId)
+                            ->where('verse_number', $verseNumber)
+                            ->delete();
+
+                        continue;
+                    }
+
+                    ProverbsVerseGroup::updateOrCreate(
+                        [
+                            'user_id' => Auth::id(),
+                            'chapter_id' => $chapterId,
+                            'verse_number' => $verseNumber,
+                        ],
+                        ['proverbs_group_id' => (int) $value]
+                    );
+                }
+            }
+        });
+
+        return redirect()->route('proverbs-groups.index')->with('status', 'Assignments saved.');
     }
 }
