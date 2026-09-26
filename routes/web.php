@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\PrayerController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProverbsGroupController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\CommentaryController;
 use App\Http\Controllers\SearchController;
@@ -176,6 +177,17 @@ Route::middleware('auth')->group(function () {
         });
     });
     Route::resource('translations', TranslationController::class);
+
+    // Proverbs verse groups (admin-only for now)
+    Route::middleware('admin')->group(function () {
+        Route::get('/proverbs-groups', [ProverbsGroupController::class, 'index'])->name('proverbs-groups.index');
+        Route::post('/proverbs-groups', [ProverbsGroupController::class, 'store'])->name('proverbs-groups.store');
+        Route::put('/proverbs-groups/{proverbsGroup}', [ProverbsGroupController::class, 'update'])->name('proverbs-groups.update');
+        Route::delete('/proverbs-groups/{proverbsGroup}', [ProverbsGroupController::class, 'destroy'])->name('proverbs-groups.destroy');
+        Route::post('/proverbs-groups/assign', [ProverbsGroupController::class, 'assign'])->name('proverbs-groups.assign');
+        Route::get('/proverbs-groups/unassigned/read', [ProverbsGroupController::class, 'readUnassigned'])->name('proverbs-groups.read-unassigned');
+        Route::get('/proverbs-groups/{proverbsGroup}/read', [ProverbsGroupController::class, 'read'])->name('proverbs-groups.read');
+    });
 
     // Admin routes
     Route::middleware('admin')->group(function () {
