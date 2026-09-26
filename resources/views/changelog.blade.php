@@ -14,6 +14,28 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.18.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.18</span>
+                <div>
+                    <div class="changelog-title">Proverbs Verse Groups</div>
+                    <div class="changelog-date">September 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Admins can now recategorize Proverbs verses into custom topical groups from a new "Proverbs" tab on the Study page, then read Proverbs group-by-group instead of chapter-by-chapter
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.17.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +44,6 @@
                     <div class="changelog-title">Duplicate Verse Fix</div>
                     <div class="changelog-date">September 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">
