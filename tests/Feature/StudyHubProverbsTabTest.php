@@ -46,4 +46,28 @@ class StudyHubProverbsTabTest extends TestCase
         $response->assertSee('Wisdom');
         $response->assertSee(route('proverbs-groups.index'));
     }
+
+    public function test_unassigned_count_falls_back_to_a_translation_when_admin_has_no_default(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true, 'default_translation_id' => null]);
+
+        // A base migration seeds translation rows (and, in some environments,
+        // bulk verse data tied to their ids) before this test runs. Clear
+        // them out so `Translation::first()` deterministically resolves to
+        // the single translation this test creates below, with no risk of
+        // colliding with pre-seeded verse rows under the old translation ids.
+        Translation::query()->delete();
+
+        $book = Book::create(['name' => 'Proverbs', 'abbr' => 'Prov', 'new_testament' => 0]);
+        $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
+        $translation = Translation::create(['name' => 'KJV']);
+
+        Verse::create(['chapter_id' => $chapter->id, 'translation_id' => $translation->id, 'number' => 1, 'reference' => 'Proverbs 1:1', 'text' => 'Verse text']);
+        Verse::create(['chapter_id' => $chapter->id, 'translation_id' => $translation->id, 'number' => 2, 'reference' => 'Proverbs 1:2', 'text' => 'Verse text two']);
+
+        $response = $this->actingAs($admin)->get(route('topics.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('2 unassigned');
+    }
 }

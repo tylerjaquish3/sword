@@ -50,7 +50,7 @@ class TopicController extends Controller
 
             $proverbsBook = Book::where('name', 'Proverbs')->first();
             if ($proverbsBook) {
-                $translationId = Auth::user()->default_translation_id;
+                $translationId = Auth::user()->default_translation_id ?? Translation::first()?->id;
                 $proverbsChapterIds = Chapter::where('book_id', $proverbsBook->id)->pluck('id');
                 $totalProverbsVerses = Verse::where('translation_id', $translationId)
                     ->whereIn('chapter_id', $proverbsChapterIds)

@@ -99,4 +99,28 @@ class ProverbsGroupReadTest extends TestCase
         $this->actingAs($admin)->get(route('proverbs-groups.read', $group))
             ->assertForbidden();
     }
+
+    public function test_selected_translation_is_preserved_in_prev_and_next_navigation_links(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        [$chapterOne, $chapterTwo, $verses] = $this->seedProverbs($admin);
+        $niv = Translation::create(['name' => 'NIV']);
+        Verse::create(['chapter_id' => $chapterOne->id, 'translation_id' => $niv->id, 'number' => 1, 'reference' => 'Proverbs 1:1', 'text' => 'NIV verse one one']);
+        Verse::create(['chapter_id' => $chapterOne->id, 'translation_id' => $niv->id, 'number' => 2, 'reference' => 'Proverbs 1:2', 'text' => 'NIV verse one two']);
+        Verse::create(['chapter_id' => $chapterTwo->id, 'translation_id' => $niv->id, 'number' => 1, 'reference' => 'Proverbs 2:1', 'text' => 'NIV verse two one']);
+
+        $groupOne = ProverbsGroup::create(['user_id' => $admin->id, 'name' => 'First']);
+        $groupTwo = ProverbsGroup::create(['user_id' => $admin->id, 'name' => 'Second']);
+        ProverbsVerseGroup::create(['user_id' => $admin->id, 'proverbs_group_id' => $groupOne->id, 'chapter_id' => $chapterOne->id, 'verse_number' => 1]);
+        ProverbsVerseGroup::create(['user_id' => $admin->id, 'proverbs_group_id' => $groupTwo->id, 'chapter_id' => $chapterOne->id, 'verse_number' => 2]);
+
+        // groupTwo sits between groupOne and the unassigned stop, so both the
+        // prev and next nav links are rendered — proving translation_id is
+        // carried through in both directions, not just one.
+        $response = $this->actingAs($admin)->get(route('proverbs-groups.read', $groupTwo).'?translation_id='.$niv->id);
+
+        $response->assertStatus(200);
+        $occurrences = substr_count($response->getContent(), 'translation_id='.$niv->id);
+        $this->assertGreaterThanOrEqual(2, $occurrences, 'Expected translation_id to appear in both the prev and next nav links.');
+    }
 }

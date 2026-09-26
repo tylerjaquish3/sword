@@ -126,7 +126,7 @@ class ProverbsGroupController extends Controller
             ->where('proverbs_group_id', $proverbsGroup->id)
             ->get();
 
-        [$prevUrl, $nextUrl] = $this->buildNav($proverbsGroup->id);
+        [$prevUrl, $nextUrl] = $this->buildNav($proverbsGroup->id, $translationId);
 
         return view('proverbs-groups.read', [
             'title' => $proverbsGroup->name,
@@ -161,7 +161,7 @@ class ProverbsGroupController extends Controller
             ])
             ->values();
 
-        [$prevUrl, $nextUrl] = $this->buildNav(null);
+        [$prevUrl, $nextUrl] = $this->buildNav(null, $translationId);
 
         return view('proverbs-groups.read', [
             'title' => 'Unassigned',
@@ -191,13 +191,13 @@ class ProverbsGroupController extends Controller
             ->values();
     }
 
-    private function buildNav(?int $currentGroupId): array
+    private function buildNav(?int $currentGroupId, int $translationId): array
     {
         $groups = ProverbsGroup::where('user_id', Auth::id())->orderBy('created_at')->orderBy('id')->get();
 
         $stops = $groups
-            ->map(fn ($g) => ['id' => $g->id, 'url' => route('proverbs-groups.read', $g)])
-            ->push(['id' => null, 'url' => route('proverbs-groups.read-unassigned')])
+            ->map(fn ($g) => ['id' => $g->id, 'url' => route('proverbs-groups.read', [$g, 'translation_id' => $translationId])])
+            ->push(['id' => null, 'url' => route('proverbs-groups.read-unassigned', ['translation_id' => $translationId])])
             ->values();
 
         $currentIndex = $stops->search(fn ($stop) => $stop['id'] === $currentGroupId);
