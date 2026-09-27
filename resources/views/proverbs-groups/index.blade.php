@@ -50,7 +50,7 @@
     @endforeach
 </div>
 
-<form method="POST" action="{{ route('proverbs-groups.assign') }}">
+<form method="POST" action="{{ route('proverbs-groups.assign') }}" id="proverbs-assign-form">
     @csrf
 
     @foreach($chapters as $chapter)
@@ -76,9 +76,11 @@
         @endforeach
     @endforeach
 
-    <div class="position-sticky bottom-0 bg-white py-3 border-top mt-4 d-flex justify-content-end" style="z-index: 10;">
-        <button type="submit" class="btn" style="background: var(--sword-navy); color: var(--sword-gold); font-weight: 600;">Save Assignments</button>
-    </div>
+    <div style="height: 76px;"></div>
 </form>
+
+<div class="position-fixed bottom-0 start-0 end-0 bg-white border-top py-3 px-4 d-flex justify-content-end" style="z-index: 1030; box-shadow: 0 -2px 10px rgba(0,0,0,0.08);">
+    <button type="submit" form="proverbs-assign-form" class="btn" style="background: var(--sword-navy); color: var(--sword-gold); font-weight: 600;">Save Assignments</button>
+</div>
 
 @endsection
