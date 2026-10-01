@@ -28,6 +28,7 @@ use App\Http\Controllers\VerseLinkController;
 use App\Http\Controllers\BookStudyController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\OfflineBundleController;
+use App\Http\Controllers\OfflineReaderController;
 use Illuminate\Support\Facades\Route;
 
 // Mail preview (local development only)
@@ -43,6 +44,13 @@ if (app()->environment('local')) {
 Route::get('/manifest.json', function () {
     return response(file_get_contents(public_path('manifest.json')), 200, [
         'Content-Type' => 'application/manifest+json',
+    ]);
+});
+
+// Service worker
+Route::get('/sw.js', function () {
+    return response(file_get_contents(public_path('sw.js')), 200, [
+        'Content-Type' => 'application/javascript',
     ]);
 });
 
@@ -80,6 +88,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
     Route::get('/changelog', fn() => view('changelog'))->name('changelog');
+    Route::get('/offline-reader', [OfflineReaderController::class, 'index'])->name('offline-reader.index');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');

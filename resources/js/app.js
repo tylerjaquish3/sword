@@ -19,6 +19,13 @@ window.moment = moment;
 
 Chart.register(ChartDataLabels);
 
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+    });
+}
+
 // Initialise select2 immediately — module scripts run after DOM is parsed but before
 // DOMContentLoaded fires, so elements exist and this runs before any jQuery ready callbacks.
 function initSelect2() {
