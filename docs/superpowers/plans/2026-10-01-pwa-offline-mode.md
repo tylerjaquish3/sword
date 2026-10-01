@@ -1561,7 +1561,20 @@ self.addEventListener('fetch', (event) => {
 });
 ```
 
-- [ ] **Step 5: Register the service worker**
+- [ ] **Step 5: Add a route to serve `/sw.js`**
+
+Laravel's PHPUnit feature-test HTTP kernel does not serve static files from `public/` at all — only a real webserver (Valet/Nginx/Apache) or `php artisan serve`'s built-in router does that outside of tests. Task 9 hit this same gap for `/manifest.json` and fixed it with an explicit route; do the same here, in `routes/web.php`, placed alongside the `/manifest.json` route (outside the `auth` middleware group — no auth required to fetch or register the service worker):
+
+```php
+// Service worker
+Route::get('/sw.js', function () {
+    return response(file_get_contents(public_path('sw.js')), 200, [
+        'Content-Type' => 'application/javascript',
+    ]);
+});
+```
+
+- [ ] **Step 6: Register the service worker**
 
 In `resources/js/app.js`, add near the top (after the existing imports, before the DOM-ready logic):
 
@@ -1573,16 +1586,16 @@ if ('serviceWorker' in navigator) {
 }
 ```
 
-- [ ] **Step 6: Run test to verify it passes**
+- [ ] **Step 7: Run test to verify it passes**
 
 Run: `php artisan test --filter=ServiceWorkerTest`
 Expected: PASS (2 tests)
 
-- [ ] **Step 7: Manual verification**
+- [ ] **Step 8: Manual verification**
 
 Run `npm run build` (or `npm run dev`), open the app in Chrome, open DevTools → Application → Service Workers, confirm `sw.js` is registered and activated, and confirm Chrome's install icon appears in the address bar.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add public/sw.js app/Http/Controllers/OfflineReaderController.php \
