@@ -240,6 +240,31 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0"><i class="mdi mdi-cloud-off-outline me-2"></i>Offline Mode</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <input class="form-check-input m-0" type="checkbox" id="offline_enabled"
+                           {{ auth()->user()->offline_enabled ? 'checked' : '' }}>
+                    <label class="fw-semibold mb-0" for="offline_enabled" style="cursor: pointer;">
+                        Enable offline access
+                    </label>
+                </div>
+                <div class="form-text">
+                    Downloads Bible text (all translations) plus your comments, prayers,
+                    and highlights for offline reading. New comments, prayers, highlights,
+                    and digests created while offline will sync once you're back online.
+                </div>
+                <div id="offline-mode-status" class="small mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('commentary.modals.verse')
 
 @push('js')
@@ -294,6 +319,74 @@ $(document).ready(function () {
 
     applyFilter(7);
     @endif
+
+    // Warms all four offline pages immediately (bypassing app.js's lighter throttle, since
+    // this is an explicit user action and should never wait) — see
+    // resources/js/offline/warm-cache.js, shared with app.js's own page-load warming.
+    function warmOfflineReaderCache() {
+        if (window.swordOffline && window.swordOffline.warmCache) {
+            window.swordOffline.warmCache.warmOfflinePages();
+        }
+    }
+
+    $('#offline_enabled').on('change', function () {
+        var enabled = $(this).is(':checked');
+        var checkbox = $(this);
+
+        function applyChange() {
+            $.ajax({
+                url: '{{ route("profile.offline-mode") }}',
+                type: 'PATCH',
+                data: { _token: '{{ csrf_token() }}', offline_enabled: enabled ? 1 : 0 },
+                success: function () {
+                    if (enabled && window.swordOffline) {
+                        // The initial download can take 15-20+ seconds (all Bible
+                        // translations plus your comments/prayers/highlights) — say so
+                        // plainly, since the toggle itself saves instantly but the actual
+                        // offline data isn't ready until this finishes. Stay on this page
+                        // until it says "ready" to be sure the first sync completes;
+                        // navigating away before then will also eventually finish it on a
+                        // later page load, but this is the fastest, most reliable way.
+                        $('#offline-mode-status').text('Offline Mode enabled — downloading Bible text and your data now (usually 15-20 seconds, stay on this page until it says "ready")…');
+                        window.swordOffline.bundleSync.sync()
+                            .then(function () {
+                                $('#offline-mode-status').text('Offline Mode is ready — you can now read and add content with no connection.');
+                                warmOfflineReaderCache();
+                            })
+                            .catch(function (err) {
+                                console.error('Offline bundle sync failed', err);
+                                $('#offline-mode-status').text('Offline Mode is on, but the initial download failed — it will retry automatically the next time you load a page while online.');
+                            });
+                    }
+                    if (!enabled && window.swordOffline) {
+                        $('#offline-mode-status').text('Offline Mode disabled.');
+                        window.swordOffline.db.clearAll();
+                    }
+                },
+                error: function () {
+                    $('#offline-mode-status').text('Could not save — please try again.');
+                    checkbox.prop('checked', !enabled);
+                }
+            });
+        }
+
+        if (!enabled && window.swordOffline && window.swordOffline.db) {
+            window.swordOffline.db.getAll('outbox').then(function (items) {
+                if (items.length > 0) {
+                    var ok = confirm(items.length + ' item(s) haven\'t synced yet. Turning off Offline Mode will discard them. Continue?');
+                    if (ok) {
+                        applyChange();
+                    } else {
+                        checkbox.prop('checked', true);
+                    }
+                } else {
+                    applyChange();
+                }
+            });
+        } else {
+            applyChange();
+        }
+    });
 });
 </script>
 @endpush

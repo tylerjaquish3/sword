@@ -85,4 +85,14 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Default translation saved.');
     }
+
+    public function updateOfflineMode(Request $request)
+    {
+        $request->validate(['offline_enabled' => 'required|boolean']);
+
+        $user = Auth::user();
+        $user->update(['offline_enabled' => $request->boolean('offline_enabled')]);
+
+        return response()->json(['offline_enabled' => $user->offline_enabled]);
+    }
 }

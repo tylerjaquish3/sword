@@ -27,6 +27,8 @@ use App\Http\Controllers\VerseHighlightController;
 use App\Http\Controllers\VerseLinkController;
 use App\Http\Controllers\BookStudyController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\OfflineBundleController;
+use App\Http\Controllers\OfflineReaderController;
 use Illuminate\Support\Facades\Route;
 
 // Mail preview (local development only)
@@ -37,6 +39,20 @@ if (app()->environment('local')) {
         return new \App\Mail\AccountActivated($user);
     });
 }
+
+// PWA manifest
+Route::get('/manifest.json', function () {
+    return response(file_get_contents(public_path('manifest.json')), 200, [
+        'Content-Type' => 'application/manifest+json',
+    ]);
+});
+
+// Service worker
+Route::get('/sw.js', function () {
+    return response(file_get_contents(public_path('sw.js')), 200, [
+        'Content-Type' => 'application/javascript',
+    ]);
+});
 
 // Auth routes (guest only)
 Route::middleware('guest')->group(function () {
@@ -72,9 +88,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
     Route::get('/changelog', fn() => view('changelog'))->name('changelog');
+    Route::get('/offline-reader', [OfflineReaderController::class, 'index'])->name('offline-reader.index');
+    Route::get('/offline-reader/prayers', [OfflineReaderController::class, 'prayers'])->name('offline-reader.prayers');
+    Route::get('/offline-reader/digest', [OfflineReaderController::class, 'digest'])->name('offline-reader.digest');
+    Route::get('/offline-reader/unavailable', [OfflineReaderController::class, 'unavailable'])->name('offline-reader.unavailable');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
+    Route::patch('/profile/offline-mode', [ProfileController::class, 'updateOfflineMode'])->name('profile.offline-mode');
+
+    // Offline API routes
+    Route::get('/api/offline/bundle', [OfflineBundleController::class, 'show'])->name('offline.bundle');
 
     // Book routes
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');

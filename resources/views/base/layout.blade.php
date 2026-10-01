@@ -5,6 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
+	<link rel="manifest" href="/manifest.json">
+	<meta name="theme-color" content="#0e1628">
 	<title>@yield('title', 'Home') | Sword</title>
 
 	<link rel="shortcut icon" href="/images/logo.png" />
@@ -76,7 +78,7 @@
     </style>
 
 </head>
-<body>
+<body data-offline-enabled="{{ auth()->check() && auth()->user()->offline_enabled ? 'true' : 'false' }}" data-user-id="{{ auth()->id() }}">
     <div class="container-scroller">
 		
         @include('base.navbar')

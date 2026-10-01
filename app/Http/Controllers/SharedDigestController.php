@@ -30,6 +30,8 @@ class SharedDigestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'week_start' => 'nullable|date',
+            'client_uuid' => 'nullable|uuid',
             'show_chapters' => 'nullable|boolean',
             'show_prayers' => 'nullable|boolean',
             'show_commentary' => 'nullable|boolean',
@@ -47,7 +49,8 @@ class SharedDigestController extends Controller
             'sermon_notes' => 'nullable|string|max:5000',
         ]);
 
-        [$weekStart, $weekEnd, $data] = $this->fetchWeeklyData();
+        $forWeekOf = $request->filled('week_start') ? \Carbon\Carbon::parse($request->input('week_start')) : null;
+        [$weekStart, $weekEnd, $data] = $this->fetchWeeklyData($forWeekOf);
 
         $snapshot = $this->buildSnapshot($data);
 
@@ -62,8 +65,9 @@ class SharedDigestController extends Controller
         }
 
         $isSharing = $request->input('submit_action') === 'share';
+        $clientUuid = $request->input('client_uuid');
 
-        $shared = SharedDigest::create([
+        $attributes = [
             'uuid' => Str::uuid()->toString(),
             'user_id' => Auth::id(),
             'sharer_name' => Auth::user()->name,
@@ -83,7 +87,11 @@ class SharedDigestController extends Controller
             'idols_description' => $request->input('idols_description'),
             'additional_content' => $request->input('additional_content'),
             'sermon_notes' => $request->input('sermon_notes'),
-        ]);
+        ];
+
+        $shared = $clientUuid
+            ? SharedDigest::firstOrCreate(['user_id' => Auth::id(), 'client_uuid' => $clientUuid], $attributes + ['client_uuid' => $clientUuid])
+            : SharedDigest::create($attributes);
 
         if ($isSharing) {
             return redirect()->route('digest.share.link', $shared->uuid);

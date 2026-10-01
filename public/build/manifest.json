@@ -1,4 +1,12 @@
 {
+  "_empty-state-Cgc_LYLQ.js": {
+    "file": "assets/empty-state-Cgc_LYLQ.js",
+    "name": "empty-state"
+  },
+  "_sync-manager-DugwGLO8.js": {
+    "file": "assets/sync-manager-DugwGLO8.js",
+    "name": "sync-manager"
+  },
   "resources/css/landing.css": {
     "file": "css/landing.css",
     "src": "resources/css/landing.css",
@@ -118,10 +126,13 @@
     "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-CgIRH5Jb.js",
+    "file": "assets/app-ClVVEfAF.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js"
+    ],
     "css": [
       "css/app.css"
     ],
@@ -153,6 +164,36 @@
       "assets/SourceSansPro-Regular-BZboCXhv.woff2",
       "assets/SourceSansPro-Regular-CSsrcCmc.woff",
       "assets/SourceSansPro-Regular-C9OP-xpW.ttf"
+    ]
+  },
+  "resources/js/offline/digest.js": {
+    "file": "assets/digest-BztX2r2f.js",
+    "name": "digest",
+    "src": "resources/js/offline/digest.js",
+    "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js",
+      "_empty-state-Cgc_LYLQ.js"
+    ]
+  },
+  "resources/js/offline/prayers.js": {
+    "file": "assets/prayers-BkNE1VrX.js",
+    "name": "prayers",
+    "src": "resources/js/offline/prayers.js",
+    "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js",
+      "_empty-state-Cgc_LYLQ.js"
+    ]
+  },
+  "resources/js/offline/read.js": {
+    "file": "assets/read-CZBrCsEd.js",
+    "name": "read",
+    "src": "resources/js/offline/read.js",
+    "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js",
+      "_empty-state-Cgc_LYLQ.js"
     ]
   }
 }
