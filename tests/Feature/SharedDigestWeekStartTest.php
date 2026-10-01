@@ -42,7 +42,7 @@ class SharedDigestWeekStartTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post(route('digest.complete.store'), [
+        $response = $this->actingAs($user)->json('POST', route('digest.complete.store'), [
             'submit_action' => 'save',
             'week_start' => 'not-a-date',
         ]);

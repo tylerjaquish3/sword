@@ -12,9 +12,7 @@ use App\Models\UserRead;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class SharedDigestController extends Controller
 {
@@ -31,7 +29,7 @@ class SharedDigestController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'week_start' => 'nullable|date',
             'client_uuid' => 'nullable|uuid',
             'show_chapters' => 'nullable|boolean',
@@ -50,10 +48,6 @@ class SharedDigestController extends Controller
             'additional_content' => 'nullable|string|max:5000',
             'sermon_notes' => 'nullable|string|max:5000',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
 
         $forWeekOf = $request->filled('week_start') ? \Carbon\Carbon::parse($request->input('week_start')) : null;
         [$weekStart, $weekEnd, $data] = $this->fetchWeeklyData($forWeekOf);
