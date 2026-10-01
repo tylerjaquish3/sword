@@ -32,19 +32,35 @@ class PrayerController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+        $clientUuid = $data['client_uuid'] ?? null;
+        unset($data['client_uuid']);
 
-        foreach ($data as $key => $value) {
-            if ($key === '_token' || $key == 'date' || $value === null) {
-                continue;
+        $typeFields = array_filter(
+            $data,
+            fn ($value, $key) => $key !== '_token' && $key !== 'date' && $value !== null,
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        // Dedupe only makes sense for a single-prayer request (the Offline Reader always
+        // sends exactly one type field at a time). A multi-type request falls back to
+        // plain creates so a stray client_uuid can never cause a type to be silently dropped.
+        $useDedupe = $clientUuid && count($typeFields) === 1;
+
+        foreach ($typeFields as $key => $value) {
+            $prayerTypeId = str_replace('type', '', $key);
+
+            if ($useDedupe) {
+                Prayer::firstOrCreate(
+                    ['client_uuid' => $clientUuid],
+                    ['date' => $data['date'], 'content' => $value, 'prayer_type_id' => $prayerTypeId]
+                );
+            } else {
+                Prayer::create([
+                    'date'           => $data['date'],
+                    'content'        => $value,
+                    'prayer_type_id' => $prayerTypeId,
+                ]);
             }
-
-            $key = str_replace('type', '', $key);
-
-            Prayer::create([
-                'date'           => $data['date'],
-                'content'        => $value,
-                'prayer_type_id' => $key,
-            ]);
         }
 
         if ($request->wantsJson() || $request->ajax()) {
