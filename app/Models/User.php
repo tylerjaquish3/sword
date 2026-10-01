@@ -24,6 +24,7 @@ class User extends Authenticatable
         'default_translation_id',
         'is_admin',
         'is_active',
+        'offline_enabled',
         'referred_by',
     ];
 
@@ -52,5 +53,6 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_admin' => 'boolean',
         'is_active' => 'boolean',
+        'offline_enabled' => 'boolean',
     ];
 }
