@@ -6,6 +6,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/js/app.js',
+                'resources/js/offline/offline-reader.js',
                 'resources/css/sword.css',
                 'resources/css/landing.css'
             ],
