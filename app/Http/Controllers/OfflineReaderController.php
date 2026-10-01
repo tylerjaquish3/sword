@@ -8,4 +8,19 @@ class OfflineReaderController extends Controller
     {
         return view('offline-reader.index');
     }
+
+    public function prayers()
+    {
+        return view('offline-reader.prayers');
+    }
+
+    public function digest()
+    {
+        return view('offline-reader.digest');
+    }
+
+    public function unavailable()
+    {
+        return view('offline-reader.unavailable');
+    }
 }

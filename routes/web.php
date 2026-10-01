@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home.index');
     Route::get('/changelog', fn() => view('changelog'))->name('changelog');
     Route::get('/offline-reader', [OfflineReaderController::class, 'index'])->name('offline-reader.index');
+    Route::get('/offline-reader/prayers', [OfflineReaderController::class, 'prayers'])->name('offline-reader.prayers');
+    Route::get('/offline-reader/digest', [OfflineReaderController::class, 'digest'])->name('offline-reader.digest');
+    Route::get('/offline-reader/unavailable', [OfflineReaderController::class, 'unavailable'])->name('offline-reader.unavailable');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');

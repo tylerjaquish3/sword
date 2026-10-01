@@ -1,34 +1,16 @@
-// resources/js/offline/offline-reader.js — entry point for the Offline Reader page only.
+// resources/js/offline/read.js — entry point for the Offline Reader's Read page
+// (/offline-reader): Bible text, verse/chapter comments, and highlights.
 import db from './db.js';
 import syncManager from './sync-manager.js';
 
-// Format a Date as YYYY-MM-DD using LOCAL date components, not UTC.
-function toLocalDateString(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Format a Date as MM/DD/YYYY using LOCAL date components — matches the online prayer
-// form's PHP `Carbon::now()->format('m/d/Y')`, since prayers.date is stored verbatim and
-// grouped/ordered as a string elsewhere (PrayerController, HomeController).
-function toOnlineDateFormat(date) {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-}
-
 async function init() {
-    const [translations, chapters, verses, highlights, verseComments, prayers, prayerTypes] = await Promise.all([
+    const [translations, chapters, verses, highlights, verseComments, chapterComments] = await Promise.all([
         db.getAll('translations'),
         db.getAll('chapters'),
         db.getAll('verses'),
         db.getAll('highlights'),
         db.getAll('verseComments'),
-        db.getAll('prayers'),
-        db.getAll('prayerTypes'),
+        db.getAll('chapterComments'),
     ]);
 
     if (translations.length === 0 || verses.length === 0) {
@@ -50,8 +32,7 @@ async function init() {
     });
 
     const chapterCommentsById = new Map(); // chapter_id -> array of comment records, same grouping reasoning
-    const allChapterComments = await db.getAll('chapterComments');
-    allChapterComments.forEach((c) => {
+    chapterComments.forEach((c) => {
         if (!chapterCommentsById.has(c.chapter_id)) chapterCommentsById.set(c.chapter_id, []);
         chapterCommentsById.get(c.chapter_id).push(c);
     });
@@ -116,7 +97,7 @@ async function init() {
                 row.style.borderLeft = color ? `4px solid ${color}` : '4px solid transparent';
                 row.dataset.chapterId = v.chapter_id;
                 row.dataset.verseNumber = v.number;
-                row.dataset.verseId = v.id; // the currently-selected translation's verse id — see Task 14
+                row.dataset.verseId = v.id;
                 row.innerHTML = `<strong>${v.number}</strong> ${v.text}` +
                     comments.map((c) => `<div class="text-muted small">${c.comment}</div>`).join('');
                 list.appendChild(row);
@@ -209,41 +190,6 @@ async function init() {
         renderChapterComments(chapterId);
     });
 
-    const prayerTypeById = new Map(prayerTypes.map((pt) => [pt.id, pt.name]));
-    const prayerTypeSelect = document.getElementById('or-prayer-type');
-    prayerTypes.forEach((pt) => {
-        const option = document.createElement('option');
-        option.value = pt.id;
-        option.textContent = pt.name;
-        prayerTypeSelect.appendChild(option);
-    });
-
-    function renderPrayers() {
-        const list = document.getElementById('or-prayer-list');
-        list.innerHTML = prayers
-            .slice()
-            .sort((a, b) => (a.date < b.date ? 1 : -1))
-            .map((p) => `<div class="small mb-2"><strong>${p.date}</strong> — ${prayerTypeById.get(p.prayer_type_id) || 'Prayer'}: ${p.content}</div>`)
-            .join('') || '<div class="small text-muted">No prayers yet.</div>';
-    }
-    renderPrayers();
-
-    document.getElementById('or-save-prayer').addEventListener('click', async () => {
-        const content = document.getElementById('or-prayer-content').value.trim();
-        if (!content) return;
-        const typeId = Number(prayerTypeSelect.value);
-        const date = toOnlineDateFormat(new Date());
-
-        await syncManager.queue('prayer', { date, [`type${typeId}`]: content });
-
-        const localRecord = { id: `local-${crypto.randomUUID()}`, date, content, prayer_type_id: typeId };
-        prayers.push(localRecord);
-        await db.putAll('prayers', [localRecord]);
-        document.getElementById('or-prayer-content').value = '';
-        document.getElementById('or-sync-status').textContent = 'Prayer queued — will sync once you\'re back online.';
-        renderPrayers();
-    });
-
     bookSelect.addEventListener('change', () => {
         renderChapterOptions(bookSelect.value);
         renderVerses();
@@ -254,40 +200,5 @@ async function init() {
     renderChapterOptions(bookSelect.value);
     renderVerses();
 }
-
-function currentWeekStartISO() {
-    const now = new Date();
-    const day = now.getDay(); // 0 (Sun) .. 6 (Sat)
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diffToMonday);
-    return toLocalDateString(monday);
-}
-
-async function submitDigest(submitAction) {
-    const fruits = Array.from(document.querySelectorAll('#or-digest-fruits input:checked')).map((el) => el.value);
-    const idols = Array.from(document.querySelectorAll('#or-digest-idols input:checked')).map((el) => el.value);
-
-    const payload = {
-        week_start: currentWeekStartISO(),
-        submit_action: submitAction,
-        show_chapters: document.getElementById('or-digest-show-chapters').checked,
-        show_prayers: document.getElementById('or-digest-show-prayers').checked,
-        fruits_needing_prayer: fruits,
-        fruits_description: document.getElementById('or-digest-fruits-description').value,
-        idols: idols,
-        idols_other: document.getElementById('or-digest-idols-other').value,
-        idols_description: document.getElementById('or-digest-idols-description').value,
-        impactful_scripture: document.getElementById('or-digest-impactful-scripture').value,
-        additional_content: document.getElementById('or-digest-additional-content').value,
-        sermon_notes: document.getElementById('or-digest-sermon-notes').value,
-    };
-
-    await syncManager.queue('digest', payload);
-    document.getElementById('or-sync-status').textContent = 'Digest reflection queued — your weekly summary will be attached once this syncs.';
-}
-
-document.getElementById('or-save-digest-draft').addEventListener('click', () => submitDigest('save'));
-document.getElementById('or-save-digest-share').addEventListener('click', () => submitDigest('share'));
 
 document.addEventListener('DOMContentLoaded', init);

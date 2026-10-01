@@ -162,10 +162,28 @@
       "assets/SourceSansPro-Regular-C9OP-xpW.ttf"
     ]
   },
-  "resources/js/offline/offline-reader.js": {
-    "file": "assets/offline-reader-Sz9a7ErP.js",
-    "name": "offline-reader",
-    "src": "resources/js/offline/offline-reader.js",
+  "resources/js/offline/digest.js": {
+    "file": "assets/digest-C7qYmvJP.js",
+    "name": "digest",
+    "src": "resources/js/offline/digest.js",
+    "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js"
+    ]
+  },
+  "resources/js/offline/prayers.js": {
+    "file": "assets/prayers-C_PcpzKu.js",
+    "name": "prayers",
+    "src": "resources/js/offline/prayers.js",
+    "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js"
+    ]
+  },
+  "resources/js/offline/read.js": {
+    "file": "assets/read-2k7okNe1.js",
+    "name": "read",
+    "src": "resources/js/offline/read.js",
     "isEntry": true,
     "imports": [
       "_sync-manager-DugwGLO8.js"
