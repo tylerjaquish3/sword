@@ -55,21 +55,21 @@ self.addEventListener('fetch', (event) => {
         return; // Only the asset types above and page navigations are handled — API/data requests pass through untouched.
     }
 
-    // Network-first for navigations: whenever a page load succeeds while online, refresh
-    // the cached copy (so the Offline Reader cache always reflects the current,
-    // authenticated version of the page, not a stale or unauthenticated one). Never cache
-    // a redirected response (e.g. an auth redirect to /login) as the offline fallback.
+    // Network-first for navigations. Only the Offline Reader itself is cached (refreshed
+    // every time it's visited successfully while online, so it never goes stale, and never
+    // cached as a redirected/unauthenticated response). Any other page's navigation — never
+    // caching arbitrary authenticated pages, which would otherwise serve a stale, partially
+    // non-functional copy of whatever page you last visited instead of the one coherent
+    // offline destination. A failed navigation always falls back to the Offline Reader.
     event.respondWith(
         fetch(event.request)
             .then((response) => {
-                if (response.ok && !response.redirected) {
+                if (response.ok && !response.redirected && url.pathname === '/offline-reader') {
                     const clone = response.clone();
                     caches.open(SHELL_CACHE).then((cache) => cache.put(event.request, clone));
                 }
                 return response;
             })
-            .catch(() =>
-                caches.match(event.request).then((cached) => cached || caches.match('/offline-reader'))
-            )
+            .catch(() => caches.match('/offline-reader'))
     );
 });
