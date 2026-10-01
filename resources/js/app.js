@@ -11,11 +11,13 @@ import moment from 'moment';
 import offlineDb from './offline/db.js';
 import bundleSync from './offline/bundle-sync.js';
 import syncManager from './offline/sync-manager.js';
+import warmCache from './offline/warm-cache.js';
 
 window.swordOffline = window.swordOffline || {};
 window.swordOffline.db = offlineDb;
 window.swordOffline.bundleSync = bundleSync;
 window.swordOffline.syncManager = syncManager;
+window.swordOffline.warmCache = warmCache;
 
 const BUNDLE_SYNC_THROTTLE_MS = 60 * 60 * 1000; // 1 hour
 
@@ -51,6 +53,36 @@ function drainOutboxIfOnline() {
     }
 }
 
+const OFFLINE_WARM_THROTTLE_MS = 10 * 60 * 1000; // 10 minutes — warming is cheap (small
+// pages, cache-first assets after the first time), so this is much lighter than the
+// hour-long bundle-sync throttle. Keeping it decoupled from that throttle means a service
+// worker update that changes the offline page structure (like splitting one page into
+// several) self-heals on the user's very next online page load, not whenever the much
+// longer bundle-resync window happens to allow it.
+function shouldWarmOfflinePages() {
+    try {
+        const last = localStorage.getItem('sword_last_offline_warm');
+        return !last || (Date.now() - parseInt(last, 10)) > OFFLINE_WARM_THROTTLE_MS;
+    } catch (e) {
+        return true;
+    }
+}
+
+function markOfflinePagesWarmed() {
+    try {
+        localStorage.setItem('sword_last_offline_warm', String(Date.now()));
+    } catch (e) {
+        // ignore
+    }
+}
+
+function warmOfflinePagesIfDue() {
+    if (document.body.dataset.offlineEnabled === 'true' && navigator.onLine && shouldWarmOfflinePages()) {
+        warmCache.warmOfflinePages();
+        markOfflinePagesWarmed();
+    }
+}
+
 // Guard against one device carrying offline content across different logged-in accounts:
 // if this browser's IndexedDB/outbox belong to a different user than the one now logged
 // in, clear them first. This must complete before any sync/drain below touches IndexedDB,
@@ -68,6 +100,7 @@ function drainOutboxIfOnline() {
         offlineDb.clearAll().then(() => {
             try { localStorage.setItem('sword_offline_user_id', currentUserId); } catch (e) {}
             autoSyncBundleIfDue();
+            warmOfflinePagesIfDue();
             drainOutboxIfOnline();
         });
     } else {
@@ -75,6 +108,7 @@ function drainOutboxIfOnline() {
             try { localStorage.setItem('sword_offline_user_id', currentUserId); } catch (e) {}
         }
         autoSyncBundleIfDue();
+        warmOfflinePagesIfDue();
         drainOutboxIfOnline();
     }
 })();

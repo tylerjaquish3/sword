@@ -320,30 +320,13 @@ $(document).ready(function () {
     applyFilter(7);
     @endif
 
-    // Loads each offline page in a hidden iframe so the service worker caches it and the
-    // JS/CSS it needs — a real navigation, not a bare fetch, so sub-resource requests (each
-    // page's build assets) go through the same runtime-caching the service worker already
-    // does for any normal page visit. Without this, nothing would warm the offline fallback
-    // until the user happened to visit each page manually.
+    // Warms all four offline pages immediately (bypassing app.js's lighter throttle, since
+    // this is an explicit user action and should never wait) — see
+    // resources/js/offline/warm-cache.js, shared with app.js's own page-load warming.
     function warmOfflineReaderCache() {
-        if (!('serviceWorker' in navigator)) {
-            return;
+        if (window.swordOffline && window.swordOffline.warmCache) {
+            window.swordOffline.warmCache.warmOfflinePages();
         }
-        var urls = [
-            '{{ route("offline-reader.index") }}',
-            '{{ route("offline-reader.prayers") }}',
-            '{{ route("offline-reader.digest") }}',
-            '{{ route("offline-reader.unavailable") }}',
-        ];
-        urls.forEach(function (url) {
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = url;
-            iframe.onload = function () {
-                setTimeout(function () { iframe.remove(); }, 1000);
-            };
-            document.body.appendChild(iframe);
-        });
     }
 
     $('#offline_enabled').on('change', function () {
