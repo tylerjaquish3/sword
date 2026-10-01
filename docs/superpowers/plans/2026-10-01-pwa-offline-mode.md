@@ -367,14 +367,15 @@ class CommentaryClientUuidTest extends TestCase
 
     private function makeVerse(): Verse
     {
-        $book = Book::create(['name' => 'John', 'testament' => 'New', 'sort_order' => 43]);
+        $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
         $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
-        $translation = Translation::create(['name' => 'KJV', 'abbreviation' => 'KJV']);
+        $translation = Translation::create(['name' => 'KJV']);
 
         return Verse::create([
             'chapter_id' => $chapter->id,
             'translation_id' => $translation->id,
             'number' => 1,
+            'reference' => 'John 1:1',
             'text' => 'In the beginning was the Word.',
         ]);
     }
@@ -949,7 +950,7 @@ class VerseHighlightOfflineTest extends TestCase
 
     private function makeChapter(): Chapter
     {
-        $book = Book::create(['name' => 'John', 'testament' => 'New', 'sort_order' => 43]);
+        $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
 
         return Chapter::create(['book_id' => $book->id, 'number' => 1]);
     }
@@ -1028,10 +1029,10 @@ class VerseHighlightOfflineTest extends TestCase
     public function test_existing_verse_id_toggle_behavior_is_unchanged(): void
     {
         $user = User::factory()->create();
-        $book = Book::create(['name' => 'John', 'testament' => 'New', 'sort_order' => 43]);
+        $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
         $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
-        $translation = Translation::create(['name' => 'KJV', 'abbreviation' => 'KJV']);
-        $verse = Verse::create(['chapter_id' => $chapter->id, 'translation_id' => $translation->id, 'number' => 1, 'text' => 'Text']);
+        $translation = Translation::create(['name' => 'KJV']);
+        $verse = Verse::create(['chapter_id' => $chapter->id, 'translation_id' => $translation->id, 'number' => 1, 'reference' => 'John 1:1', 'text' => 'Text']);
 
         $first = $this->actingAs($user)->postJson(route('verse-highlights.toggle'), [
             'verse_id' => $verse->id,
@@ -1173,10 +1174,10 @@ class OfflineBundleControllerTest extends TestCase
     public function test_bundle_includes_all_translations_and_verse_text(): void
     {
         $user = User::factory()->create();
-        $book = Book::create(['name' => 'John', 'testament' => 'New', 'sort_order' => 43]);
+        $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
         $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
-        $translation = Translation::create(['name' => 'KJV', 'abbreviation' => 'KJV']);
-        Verse::create(['chapter_id' => $chapter->id, 'translation_id' => $translation->id, 'number' => 1, 'text' => 'In the beginning.']);
+        $translation = Translation::create(['name' => 'KJV']);
+        Verse::create(['chapter_id' => $chapter->id, 'translation_id' => $translation->id, 'number' => 1, 'reference' => 'John 1:1', 'text' => 'In the beginning.']);
 
         $response = $this->actingAs($user)->getJson(route('offline.bundle'));
 
@@ -1190,7 +1191,7 @@ class OfflineBundleControllerTest extends TestCase
     {
         $me = User::factory()->create();
         $other = User::factory()->create();
-        $book = Book::create(['name' => 'John', 'testament' => 'New', 'sort_order' => 43]);
+        $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
         $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
 
         $this->actingAs($me)->postJson(route('commentary.store'), [
@@ -1259,7 +1260,7 @@ class OfflineBundleController extends Controller
         $userId = Auth::id();
 
         return response()->json([
-            'translations' => Translation::all(['id', 'name', 'abbreviation']),
+            'translations' => Translation::all(['id', 'name']),
             'verses' => Verse::select('id', 'chapter_id', 'translation_id', 'number', 'text')->get(),
             'chapters' => Chapter::with('book:id,name,sort_order')->get(['id', 'book_id', 'number']),
             'verseComments' => VerseComment::withoutGlobalScopes()
@@ -1712,9 +1713,9 @@ export default { open, putAll, getAll, deleteRecord, clearStore, clearAll, STORE
 With `npm run dev` running and the app open in Chrome, in the DevTools console:
 
 ```javascript
-await window.swordOffline.db.putAll('translations', [{ id: 1, name: 'KJV', abbreviation: 'KJV' }]);
+await window.swordOffline.db.putAll('translations', [{ id: 1, name: 'KJV' }]);
 await window.swordOffline.db.getAll('translations');
-// Expect: [{ id: 1, name: 'KJV', abbreviation: 'KJV' }]
+// Expect: [{ id: 1, name: 'KJV' }]
 ```
 
 Confirm the `sword-offline` database and its object stores appear under DevTools → Application → IndexedDB.
