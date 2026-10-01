@@ -17,18 +17,71 @@ window.swordOffline.db = offlineDb;
 window.swordOffline.bundleSync = bundleSync;
 window.swordOffline.syncManager = syncManager;
 
-// If Offline Mode is already on, keep the bundle fresh on every load while online.
-if (document.body.dataset.offlineEnabled === 'true' && navigator.onLine) {
-    bundleSync.sync().catch((err) => console.error('Offline bundle sync failed', err));
+const BUNDLE_SYNC_THROTTLE_MS = 60 * 60 * 1000; // 1 hour
+
+function shouldAutoSyncBundle() {
+    try {
+        const last = localStorage.getItem('sword_last_bundle_sync');
+        return !last || (Date.now() - parseInt(last, 10)) > BUNDLE_SYNC_THROTTLE_MS;
+    } catch (e) {
+        return true;
+    }
 }
+
+function markBundleSynced() {
+    try {
+        localStorage.setItem('sword_last_bundle_sync', String(Date.now()));
+    } catch (e) {
+        // ignore
+    }
+}
+
+// If Offline Mode is already on, keep the bundle fresh while online, throttled to once an
+// hour so normal multi-page navigation doesn't re-download/rewrite the whole ~19MB bundle
+// (and the ~155k-row IndexedDB rewrite) on every click, and doesn't race the outbox drain.
+function autoSyncBundleIfDue() {
+    if (document.body.dataset.offlineEnabled === 'true' && navigator.onLine && shouldAutoSyncBundle()) {
+        bundleSync.sync().then(markBundleSynced).catch((err) => console.error('Offline bundle sync failed', err));
+    }
+}
+
+function drainOutboxIfOnline() {
+    if (navigator.onLine) {
+        syncManager.drain().catch((err) => console.error('Outbox drain failed', err));
+    }
+}
+
+// Guard against one device carrying offline content across different logged-in accounts:
+// if this browser's IndexedDB/outbox belong to a different user than the one now logged
+// in, clear them first. This must complete before any sync/drain below touches IndexedDB,
+// since those should never read or write stale cross-account data.
+(function guardAgainstAccountSwitch() {
+    const currentUserId = document.body.dataset.userId;
+    let storedUserId = null;
+    try {
+        storedUserId = localStorage.getItem('sword_offline_user_id');
+    } catch (e) {
+        // localStorage unavailable (private mode, etc.) — nothing to guard against.
+    }
+
+    if (currentUserId && storedUserId && storedUserId !== currentUserId) {
+        offlineDb.clearAll().then(() => {
+            try { localStorage.setItem('sword_offline_user_id', currentUserId); } catch (e) {}
+            autoSyncBundleIfDue();
+            drainOutboxIfOnline();
+        });
+    } else {
+        if (currentUserId) {
+            try { localStorage.setItem('sword_offline_user_id', currentUserId); } catch (e) {}
+        }
+        autoSyncBundleIfDue();
+        drainOutboxIfOnline();
+    }
+})();
 
 window.addEventListener('online', () => {
     syncManager.drain().catch((err) => console.error('Outbox drain failed', err));
 });
-
-if (navigator.onLine) {
-    syncManager.drain().catch((err) => console.error('Outbox drain failed', err));
-}
 
 // Make libraries globally available for inline Blade scripts.
 // window.$ override ensures dev-mode module jQuery and prod-mode vendor jQuery are the same instance.

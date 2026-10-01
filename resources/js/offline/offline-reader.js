@@ -10,6 +10,16 @@ function toLocalDateString(date) {
     return `${year}-${month}-${day}`;
 }
 
+// Format a Date as MM/DD/YYYY using LOCAL date components — matches the online prayer
+// form's PHP `Carbon::now()->format('m/d/Y')`, since prayers.date is stored verbatim and
+// grouped/ordered as a string elsewhere (PrayerController, HomeController).
+function toOnlineDateFormat(date) {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+}
+
 async function init() {
     const [translations, chapters, verses, highlights, verseComments, prayers, prayerTypes] = await Promise.all([
         db.getAll('translations'),
@@ -222,7 +232,7 @@ async function init() {
         const content = document.getElementById('or-prayer-content').value.trim();
         if (!content) return;
         const typeId = Number(prayerTypeSelect.value);
-        const date = toLocalDateString(new Date());
+        const date = toOnlineDateFormat(new Date());
 
         await syncManager.queue('prayer', { date, [`type${typeId}`]: content });
 

@@ -14,6 +14,28 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.19.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.19</span>
+                <div>
+                    <div class="changelog-title">Install Sword & Offline Mode</div>
+                    <div class="changelog-date">October 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Sword can now be installed as an app from Chrome ("Install App"), and a new opt-in Offline Mode (enable it from your Profile page) lets you keep reading Bible text, comments, prayers, and highlights with no connection — new comments, prayers, highlights, and digest reflections created while offline sync automatically once you're back online
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.18.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +44,6 @@
                     <div class="changelog-title">Proverbs Verse Groups</div>
                     <div class="changelog-date">September 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

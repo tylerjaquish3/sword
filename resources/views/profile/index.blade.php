@@ -257,8 +257,7 @@
                 <div class="form-text">
                     Downloads Bible text (all translations) plus your comments, prayers,
                     and highlights for offline reading. New comments, prayers, highlights,
-                    accountability check-ins, and digests created while offline will sync
-                    once you're back online.
+                    and digests created while offline will sync once you're back online.
                 </div>
                 <div id="offline-mode-status" class="small mt-2"></div>
             </div>
@@ -323,20 +322,41 @@ $(document).ready(function () {
 
     $('#offline_enabled').on('change', function () {
         var enabled = $(this).is(':checked');
-        $.ajax({
-            url: '{{ route("profile.offline-mode") }}',
-            type: 'PATCH',
-            data: { _token: '{{ csrf_token() }}', offline_enabled: enabled },
-            success: function () {
-                $('#offline-mode-status').text(enabled ? 'Offline Mode enabled.' : 'Offline Mode disabled.');
-                if (enabled && window.swordOffline) {
-                    window.swordOffline.bundleSync.sync();
+        var checkbox = $(this);
+
+        function applyChange() {
+            $.ajax({
+                url: '{{ route("profile.offline-mode") }}',
+                type: 'PATCH',
+                data: { _token: '{{ csrf_token() }}', offline_enabled: enabled },
+                success: function () {
+                    $('#offline-mode-status').text(enabled ? 'Offline Mode enabled.' : 'Offline Mode disabled.');
+                    if (enabled && window.swordOffline) {
+                        window.swordOffline.bundleSync.sync();
+                    }
+                    if (!enabled && window.swordOffline) {
+                        window.swordOffline.db.clearAll();
+                    }
                 }
-                if (!enabled && window.swordOffline) {
-                    window.swordOffline.db.clearAll();
+            });
+        }
+
+        if (!enabled && window.swordOffline && window.swordOffline.db) {
+            window.swordOffline.db.getAll('outbox').then(function (items) {
+                if (items.length > 0) {
+                    var ok = confirm(items.length + ' item(s) haven\'t synced yet. Turning off Offline Mode will discard them. Continue?');
+                    if (ok) {
+                        applyChange();
+                    } else {
+                        checkbox.prop('checked', true);
+                    }
+                } else {
+                    applyChange();
                 }
-            }
-        });
+            });
+        } else {
+            applyChange();
+        }
     });
 });
 </script>
