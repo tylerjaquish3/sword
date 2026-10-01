@@ -10,14 +10,24 @@ import moment from 'moment';
 
 import offlineDb from './offline/db.js';
 import bundleSync from './offline/bundle-sync.js';
+import syncManager from './offline/sync-manager.js';
 
 window.swordOffline = window.swordOffline || {};
 window.swordOffline.db = offlineDb;
 window.swordOffline.bundleSync = bundleSync;
+window.swordOffline.syncManager = syncManager;
 
 // If Offline Mode is already on, keep the bundle fresh on every load while online.
 if (document.body.dataset.offlineEnabled === 'true' && navigator.onLine) {
     bundleSync.sync().catch((err) => console.error('Offline bundle sync failed', err));
+}
+
+window.addEventListener('online', () => {
+    syncManager.drain().catch((err) => console.error('Outbox drain failed', err));
+});
+
+if (navigator.onLine) {
+    syncManager.drain().catch((err) => console.error('Outbox drain failed', err));
 }
 
 // Make libraries globally available for inline Blade scripts.
