@@ -1,13 +1,16 @@
 // resources/js/offline/offline-reader.js — entry point for the Offline Reader page only.
 import db from './db.js';
+import syncManager from './sync-manager.js';
 
 async function init() {
-    const [translations, chapters, verses, highlights, verseComments] = await Promise.all([
+    const [translations, chapters, verses, highlights, verseComments, prayers, prayerTypes] = await Promise.all([
         db.getAll('translations'),
         db.getAll('chapters'),
         db.getAll('verses'),
         db.getAll('highlights'),
         db.getAll('verseComments'),
+        db.getAll('prayers'),
+        db.getAll('prayerTypes'),
     ]);
 
     if (translations.length === 0 || verses.length === 0) {
@@ -34,6 +37,12 @@ async function init() {
         if (!chapterCommentsById.has(c.chapter_id)) chapterCommentsById.set(c.chapter_id, []);
         chapterCommentsById.get(c.chapter_id).push(c);
     });
+
+    let activeVerseKey = null;
+
+    function currentHighlightColor(chapterId, verseNumber) {
+        return highlightByKey.get(`${chapterId}:${verseNumber}`) || null;
+    }
 
     const translationSelect = document.getElementById('or-translation');
     translations.forEach((t) => {
@@ -105,6 +114,115 @@ async function init() {
             .map((c) => `<div class="small text-muted mb-1">${c.comment}</div>`)
             .join('') || '<div class="small text-muted">No chapter notes yet.</div>';
     }
+
+    document.getElementById('or-verse-list').addEventListener('click', (event) => {
+        const row = event.target.closest('.or-verse');
+        if (!row) return;
+
+        activeVerseKey = {
+            chapterId: Number(row.dataset.chapterId),
+            verseNumber: Number(row.dataset.verseNumber),
+            verseId: Number(row.dataset.verseId),
+        };
+        document.getElementById('or-panel-reference').textContent = `Verse ${activeVerseKey.verseNumber}`;
+        document.getElementById('or-comment-input').value = '';
+        new window.bootstrap.Modal(document.getElementById('or-verse-panel')).show();
+    });
+
+    document.querySelectorAll('.or-color-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+            if (!activeVerseKey) return;
+            const clickedColor = btn.dataset.color;
+            const key = `${activeVerseKey.chapterId}:${activeVerseKey.verseNumber}`;
+            const current = currentHighlightColor(activeVerseKey.chapterId, activeVerseKey.verseNumber);
+            const newColor = current === clickedColor ? null : clickedColor;
+
+            highlightByKey.set(key, newColor);
+            await db.putAll('highlights', [{ chapter_id: activeVerseKey.chapterId, verse_number: activeVerseKey.verseNumber, highlight_color: newColor }]);
+            await syncManager.queue('highlight', {
+                chapter_id: activeVerseKey.chapterId,
+                verse_number: activeVerseKey.verseNumber,
+                color: newColor,
+                explicit: true,
+            });
+            renderVerses();
+        });
+    });
+
+    document.getElementById('or-save-comment').addEventListener('click', async () => {
+        if (!activeVerseKey) return;
+        const comment = document.getElementById('or-comment-input').value.trim();
+        if (!comment) return;
+
+        const key = `${activeVerseKey.chapterId}:${activeVerseKey.verseNumber}`;
+        const queued = await syncManager.queue('verse_comment', {
+            verse_id: activeVerseKey.verseId,
+            comment,
+        });
+
+        // Add to the in-memory + IndexedDB comment list immediately (optimistic), using the
+        // outbox item's uuid as a local id since the server hasn't assigned a real one yet.
+        const localRecord = { id: `local-${queued.uuid}`, chapter_id: activeVerseKey.chapterId, verse_number: activeVerseKey.verseNumber, comment };
+        if (!commentsByVerseKey.has(key)) commentsByVerseKey.set(key, []);
+        commentsByVerseKey.get(key).push(localRecord);
+        await db.putAll('verseComments', [localRecord]);
+
+        renderVerses();
+        window.bootstrap.Modal.getInstance(document.getElementById('or-verse-panel')).hide();
+    });
+
+    document.getElementById('or-save-chapter-comment').addEventListener('click', async () => {
+        const chapterId = Number(chapterSelect.value);
+        const comment = document.getElementById('or-chapter-comment-input').value.trim();
+        if (!comment) return;
+
+        const queued = await syncManager.queue('chapter_comment', {
+            type: 'chapter',
+            chapter_id: chapterId,
+            comment,
+        });
+
+        const localRecord = { id: `local-${queued.uuid}`, chapter_id: chapterId, comment };
+        if (!chapterCommentsById.has(chapterId)) chapterCommentsById.set(chapterId, []);
+        chapterCommentsById.get(chapterId).push(localRecord);
+        await db.putAll('chapterComments', [localRecord]);
+
+        document.getElementById('or-chapter-comment-input').value = '';
+        renderChapterComments(chapterId);
+    });
+
+    const prayerTypeById = new Map(prayerTypes.map((pt) => [pt.id, pt.name]));
+    const prayerTypeSelect = document.getElementById('or-prayer-type');
+    prayerTypes.forEach((pt) => {
+        const option = document.createElement('option');
+        option.value = pt.id;
+        option.textContent = pt.name;
+        prayerTypeSelect.appendChild(option);
+    });
+
+    function renderPrayers() {
+        const list = document.getElementById('or-prayer-list');
+        list.innerHTML = prayers
+            .slice()
+            .sort((a, b) => (a.date < b.date ? 1 : -1))
+            .map((p) => `<div class="small mb-2"><strong>${p.date}</strong> — ${prayerTypeById.get(p.prayer_type_id) || 'Prayer'}: ${p.content}</div>`)
+            .join('') || '<div class="small text-muted">No prayers yet.</div>';
+    }
+    renderPrayers();
+
+    document.getElementById('or-save-prayer').addEventListener('click', async () => {
+        const content = document.getElementById('or-prayer-content').value.trim();
+        if (!content) return;
+        const typeId = Number(prayerTypeSelect.value);
+        const date = new Date().toISOString().slice(0, 10);
+
+        await syncManager.queue('prayer', { date, [`type${typeId}`]: content });
+
+        prayers.push({ id: `local-${crypto.randomUUID()}`, date, content, prayer_type_id: typeId });
+        document.getElementById('or-prayer-content').value = '';
+        document.getElementById('or-sync-status').textContent = 'Prayer queued — will sync once you\'re back online.';
+        renderPrayers();
+    });
 
     bookSelect.addEventListener('change', () => {
         renderChapterOptions(bookSelect.value);
