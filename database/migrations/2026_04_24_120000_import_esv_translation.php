@@ -9,9 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (app()->environment() !== 'testing') {
-            ImportEsvVerses::dispatchSync();
-        }
+        ImportEsvVerses::dispatchSync();
     }
 
     public function down(): void
