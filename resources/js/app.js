@@ -8,6 +8,18 @@ import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';
 
+import offlineDb from './offline/db.js';
+import bundleSync from './offline/bundle-sync.js';
+
+window.swordOffline = window.swordOffline || {};
+window.swordOffline.db = offlineDb;
+window.swordOffline.bundleSync = bundleSync;
+
+// If Offline Mode is already on, keep the bundle fresh on every load while online.
+if (document.body.dataset.offlineEnabled === 'true' && navigator.onLine) {
+    bundleSync.sync().catch((err) => console.error('Offline bundle sync failed', err));
+}
+
 // Make libraries globally available for inline Blade scripts.
 // window.$ override ensures dev-mode module jQuery and prod-mode vendor jQuery are the same instance.
 window.$ = window.jQuery = $;

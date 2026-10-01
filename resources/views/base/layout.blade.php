@@ -78,7 +78,7 @@
     </style>
 
 </head>
-<body>
+<body data-offline-enabled="{{ auth()->check() && auth()->user()->offline_enabled ? 'true' : 'false' }}">
     <div class="container-scroller">
 		
         @include('base.navbar')
