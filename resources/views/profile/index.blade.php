@@ -247,10 +247,10 @@
                 <h4 class="card-title mb-0"><i class="mdi mdi-cloud-off-outline me-2"></i>Offline Mode</h4>
             </div>
             <div class="card-body">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="offline_enabled"
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <input class="form-check-input m-0" type="checkbox" id="offline_enabled"
                            {{ auth()->user()->offline_enabled ? 'checked' : '' }}>
-                    <label class="form-check-label fw-semibold" for="offline_enabled">
+                    <label class="fw-semibold mb-0" for="offline_enabled" style="cursor: pointer;">
                         Enable offline access
                     </label>
                 </div>
@@ -328,7 +328,7 @@ $(document).ready(function () {
             $.ajax({
                 url: '{{ route("profile.offline-mode") }}',
                 type: 'PATCH',
-                data: { _token: '{{ csrf_token() }}', offline_enabled: enabled },
+                data: { _token: '{{ csrf_token() }}', offline_enabled: enabled ? 1 : 0 },
                 success: function () {
                     $('#offline-mode-status').text(enabled ? 'Offline Mode enabled.' : 'Offline Mode disabled.');
                     if (enabled && window.swordOffline) {
@@ -337,6 +337,10 @@ $(document).ready(function () {
                     if (!enabled && window.swordOffline) {
                         window.swordOffline.db.clearAll();
                     }
+                },
+                error: function () {
+                    $('#offline-mode-status').text('Could not save — please try again.');
+                    checkbox.prop('checked', !enabled);
                 }
             });
         }

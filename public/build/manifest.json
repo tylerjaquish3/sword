@@ -1,4 +1,8 @@
 {
+  "_sync-manager-DugwGLO8.js": {
+    "file": "assets/sync-manager-DugwGLO8.js",
+    "name": "sync-manager"
+  },
   "resources/css/landing.css": {
     "file": "css/landing.css",
     "src": "resources/css/landing.css",
@@ -118,10 +122,13 @@
     "src": "resources/fonts/sourcesanspro/SourceSansPro-SemiBold.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-CgIRH5Jb.js",
+    "file": "assets/app-CS_n_BBx.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js"
+    ],
     "css": [
       "css/app.css"
     ],
@@ -153,6 +160,15 @@
       "assets/SourceSansPro-Regular-BZboCXhv.woff2",
       "assets/SourceSansPro-Regular-CSsrcCmc.woff",
       "assets/SourceSansPro-Regular-C9OP-xpW.ttf"
+    ]
+  },
+  "resources/js/offline/offline-reader.js": {
+    "file": "assets/offline-reader-Sz9a7ErP.js",
+    "name": "offline-reader",
+    "src": "resources/js/offline/offline-reader.js",
+    "isEntry": true,
+    "imports": [
+      "_sync-manager-DugwGLO8.js"
     ]
   }
 }
