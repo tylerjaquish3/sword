@@ -16,10 +16,7 @@ function queue(type, payload) {
     return db.putAll('outbox', [record]).then(() => record);
 }
 
-async function sendOne(record) {
-    const endpoint = ENDPOINTS[record.type];
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
+async function sendOne(record, endpoint, csrfToken) {
     const body = { ...record.payload, client_uuid: record.uuid };
 
     const response = await fetch(endpoint.url, {
@@ -39,10 +36,30 @@ async function drain() {
     const items = (await db.getAll('outbox')).sort((a, b) => a.created_at - b.created_at);
     const failed = [];
 
+    // Check CSRF token once at the start — this is a precondition, not a network error
+    const csrfElement = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfElement) {
+        console.error('Missing CSRF token meta tag — cannot sync outbox');
+        // Mark all items as failed since we cannot proceed without CSRF token
+        for (const record of items) {
+            failed.push(record.uuid);
+        }
+        return { remaining: items.length, failed: failed.length };
+    }
+    const csrfToken = csrfElement.getAttribute('content');
+
     for (const record of items) {
+        // Check if endpoint type is registered — this is a precondition, not a network error
+        const endpoint = ENDPOINTS[record.type];
+        if (!endpoint) {
+            console.error(`Unknown outbox item type: ${record.type}`);
+            failed.push(record.uuid);
+            continue;
+        }
+
         let response;
         try {
-            response = await sendOne(record);
+            response = await sendOne(record, endpoint, csrfToken);
         } catch (networkError) {
             // Network failure (not a server response at all) — stop draining; the rest
             // stay queued for the next online event. Retrying now would likely just fail again.
