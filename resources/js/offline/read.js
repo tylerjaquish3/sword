@@ -1,8 +1,16 @@
 // resources/js/offline/read.js — entry point for the Offline Reader's Read page
-// (/offline-reader): Bible text, verse/chapter comments, and highlights.
+// (/offline-reader): Bible text, verse/chapter comments, and highlights. Styled to match
+// the online reading page (resources/views/translations/index.blade.php): a flowing verse
+// paragraph with inline highlight tints + an underline for verses with comments, and the
+// shared .sword-modal design for the comment/highlight panel.
 import db from './db.js';
 import syncManager from './sync-manager.js';
 import emptyState from './empty-state.js';
+
+// Matches the online reading page's inline highlight tint colors exactly (translations/index.blade.php).
+const HIGHLIGHT_BG = { yellow: '#fef9c3', blue: '#dbeafe', green: '#dcfce7', red: '#fee2e2' };
+// Matches the comment/highlight modal's swatch border colors when a color is active.
+const HIGHLIGHT_BORDER = { yellow: '#ca8a04', blue: '#2563eb', green: '#16a34a', red: '#dc2626' };
 
 async function init() {
     const [translations, chapters, verses, highlights, verseComments, chapterComments] = await Promise.all([
@@ -83,26 +91,31 @@ async function init() {
         const translationId = Number(translationSelect.value);
         const chapterId = Number(chapterSelect.value);
         const list = document.getElementById('or-verse-list');
-        list.innerHTML = '';
 
-        verses
+        const matching = verses
             .filter((v) => v.translation_id === translationId && v.chapter_id === chapterId)
-            .sort((a, b) => a.number - b.number)
-            .forEach((v) => {
-                const key = `${v.chapter_id}:${v.number}`;
-                const color = highlightByKey.get(key);
-                const comments = commentsByVerseKey.get(key) || [];
+            .sort((a, b) => a.number - b.number);
 
-                const row = document.createElement('div');
-                row.className = 'or-verse mb-2 ps-2';
-                row.style.borderLeft = color ? `4px solid ${color}` : '4px solid transparent';
-                row.dataset.chapterId = v.chapter_id;
-                row.dataset.verseNumber = v.number;
-                row.dataset.verseId = v.id;
-                row.innerHTML = `<strong>${v.number}</strong> ${v.text}` +
-                    comments.map((c) => `<div class="text-muted small">${c.comment}</div>`).join('');
-                list.appendChild(row);
-            });
+        let html = '<p>';
+        matching.forEach((v) => {
+            const key = `${v.chapter_id}:${v.number}`;
+            const color = highlightByKey.get(key);
+            const hasComments = (commentsByVerseKey.get(key) || []).length > 0;
+
+            let style = 'cursor:pointer;';
+            if (color && HIGHLIGHT_BG[color]) {
+                style += `background-color:${HIGHLIGHT_BG[color]};padding:0px 4px 2px;border-radius:3px;`;
+            }
+            if (hasComments) {
+                style += 'text-decoration:underline dotted #94a3b8;text-underline-offset:3px;';
+            }
+
+            html += `<span class="or-verse" data-chapter-id="${v.chapter_id}" data-verse-number="${v.number}" data-verse-id="${v.id}" style="${style}">`;
+            html += `<sup class="text-muted">${v.number}</sup> ${v.text}`;
+            html += '</span> ';
+        });
+        html += '</p>';
+        list.innerHTML = html;
 
         renderChapterComments(chapterId);
     }
@@ -110,9 +123,25 @@ async function init() {
     function renderChapterComments(chapterId) {
         const list = document.getElementById('or-chapter-comments-list');
         if (!list) return;
-        list.innerHTML = (chapterCommentsById.get(chapterId) || [])
-            .map((c) => `<div class="small text-muted mb-1">${c.comment}</div>`)
-            .join('') || '<div class="small text-muted">No chapter notes yet.</div>';
+        const entries = chapterCommentsById.get(chapterId) || [];
+        list.innerHTML = entries.length
+            ? entries.map((c) => `<p class="mb-2">${c.comment}</p>`).join('')
+            : '<p class="reading-notes-empty mb-0">No chapter notes yet.</p>';
+    }
+
+    function renderPanelComments(chapterId, verseNumber) {
+        const list = document.getElementById('or-panel-comments-list');
+        const entries = commentsByVerseKey.get(`${chapterId}:${verseNumber}`) || [];
+        list.innerHTML = entries.length
+            ? entries.map((c) => `<p class="mb-2">${c.comment}</p>`).join('')
+            : '<p class="text-muted mb-0">No comments yet.</p>';
+    }
+
+    function setHighlightButtons(activeColor) {
+        document.querySelectorAll('.or-color-btn').forEach((btn) => {
+            const color = btn.dataset.color;
+            btn.style.borderColor = color === activeColor ? HIGHLIGHT_BORDER[color] : 'transparent';
+        });
     }
 
     document.getElementById('or-verse-list').addEventListener('click', (event) => {
@@ -126,6 +155,8 @@ async function init() {
         };
         document.getElementById('or-panel-reference').textContent = `Verse ${activeVerseKey.verseNumber}`;
         document.getElementById('or-comment-input').value = '';
+        renderPanelComments(activeVerseKey.chapterId, activeVerseKey.verseNumber);
+        setHighlightButtons(currentHighlightColor(activeVerseKey.chapterId, activeVerseKey.verseNumber));
         new window.bootstrap.Modal(document.getElementById('or-verse-panel')).show();
     });
 
@@ -138,6 +169,7 @@ async function init() {
             const newColor = current === clickedColor ? null : clickedColor;
 
             highlightByKey.set(key, newColor);
+            setHighlightButtons(newColor);
             await db.putAll('highlights', [{ chapter_id: activeVerseKey.chapterId, verse_number: activeVerseKey.verseNumber, highlight_color: newColor }]);
             await syncManager.queue('highlight', {
                 chapter_id: activeVerseKey.chapterId,
@@ -167,8 +199,9 @@ async function init() {
         commentsByVerseKey.get(key).push(localRecord);
         await db.putAll('verseComments', [localRecord]);
 
+        document.getElementById('or-comment-input').value = '';
+        renderPanelComments(activeVerseKey.chapterId, activeVerseKey.verseNumber);
         renderVerses();
-        window.bootstrap.Modal.getInstance(document.getElementById('or-verse-panel')).hide();
     });
 
     document.getElementById('or-save-chapter-comment').addEventListener('click', async () => {
