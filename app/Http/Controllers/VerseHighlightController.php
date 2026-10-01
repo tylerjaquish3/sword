@@ -11,30 +11,47 @@ class VerseHighlightController extends Controller
 {
     public function toggle(Request $request)
     {
+        $explicit = $request->boolean('explicit');
+
         $request->validate([
-            'verse_id'         => 'required|exists:verses,id',
-            'color'            => 'required|in:yellow,blue,green,red',
+            'verse_id'         => 'required_without_all:chapter_id,verse_number|exists:verses,id',
+            'chapter_id'       => 'required_without:verse_id|exists:chapters,id',
+            'verse_number'     => 'required_without:verse_id|integer',
+            'color'            => $explicit ? 'nullable|in:yellow,blue,green,red' : 'required|in:yellow,blue,green,red',
             'end_verse_number' => 'nullable|integer',
         ]);
 
-        $verse = Verse::find($request->verse_id);
-
-        $pref = UserVersePreference::where('user_id', Auth::id())
-            ->where('chapter_id', $verse->chapter_id)
-            ->where('verse_number', $verse->number)
-            ->first();
-
-        $endVerseNumber = $request->end_verse_number ? (int) $request->end_verse_number : null;
-        if (! $endVerseNumber || $endVerseNumber < $verse->number) {
-            $endVerseNumber = $verse->number;
+        if ($request->filled('verse_id')) {
+            $verse = Verse::find($request->verse_id);
+            $chapterId = $verse->chapter_id;
+            $verseNumber = $verse->number;
+        } else {
+            $chapterId = (int) $request->chapter_id;
+            $verseNumber = (int) $request->verse_number;
         }
 
-        // Same color as the range's starting verse → remove highlight from the whole range (toggle off)
-        $newColor = ($pref && $pref->highlight_color === $request->color) ? null : $request->color;
+        $endVerseNumber = $request->end_verse_number ? (int) $request->end_verse_number : null;
+        if (! $endVerseNumber || $endVerseNumber < $verseNumber) {
+            $endVerseNumber = $verseNumber;
+        }
 
-        for ($number = $verse->number; $number <= $endVerseNumber; $number++) {
+        if ($explicit) {
+            // Offline sync path: the client already computed the desired end state locally,
+            // so apply it as-is rather than toggling against whatever the server currently has.
+            $newColor = $request->input('color') ?: null;
+        } else {
+            $pref = UserVersePreference::where('user_id', Auth::id())
+                ->where('chapter_id', $chapterId)
+                ->where('verse_number', $verseNumber)
+                ->first();
+
+            // Same color as the range's starting verse → remove highlight from the whole range (toggle off)
+            $newColor = ($pref && $pref->highlight_color === $request->color) ? null : $request->color;
+        }
+
+        for ($number = $verseNumber; $number <= $endVerseNumber; $number++) {
             UserVersePreference::updateOrCreate(
-                ['user_id' => Auth::id(), 'chapter_id' => $verse->chapter_id, 'verse_number' => $number],
+                ['user_id' => Auth::id(), 'chapter_id' => $chapterId, 'verse_number' => $number],
                 ['highlight_color' => $newColor]
             );
         }
