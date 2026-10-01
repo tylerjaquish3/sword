@@ -218,7 +218,9 @@ async function init() {
 
         await syncManager.queue('prayer', { date, [`type${typeId}`]: content });
 
-        prayers.push({ id: `local-${crypto.randomUUID()}`, date, content, prayer_type_id: typeId });
+        const localRecord = { id: `local-${crypto.randomUUID()}`, date, content, prayer_type_id: typeId };
+        prayers.push(localRecord);
+        await db.putAll('prayers', [localRecord]);
         document.getElementById('or-prayer-content').value = '';
         document.getElementById('or-sync-status').textContent = 'Prayer queued — will sync once you\'re back online.';
         renderPrayers();
