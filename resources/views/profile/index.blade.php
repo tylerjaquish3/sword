@@ -240,6 +240,32 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0"><i class="mdi mdi-cloud-off-outline me-2"></i>Offline Mode</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="offline_enabled"
+                           {{ auth()->user()->offline_enabled ? 'checked' : '' }}>
+                    <label class="form-check-label fw-semibold" for="offline_enabled">
+                        Enable offline access
+                    </label>
+                </div>
+                <div class="form-text">
+                    Downloads Bible text (all translations) plus your comments, prayers,
+                    and highlights for offline reading. New comments, prayers, highlights,
+                    accountability check-ins, and digests created while offline will sync
+                    once you're back online.
+                </div>
+                <div id="offline-mode-status" class="small mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('commentary.modals.verse')
 
 @push('js')
@@ -294,6 +320,24 @@ $(document).ready(function () {
 
     applyFilter(7);
     @endif
+
+    $('#offline_enabled').on('change', function () {
+        var enabled = $(this).is(':checked');
+        $.ajax({
+            url: '{{ route("profile.offline-mode") }}',
+            type: 'PATCH',
+            data: { _token: '{{ csrf_token() }}', offline_enabled: enabled },
+            success: function () {
+                $('#offline-mode-status').text(enabled ? 'Offline Mode enabled.' : 'Offline Mode disabled.');
+                if (enabled && window.swordOffline) {
+                    window.swordOffline.bundleSync.sync();
+                }
+                if (!enabled && window.swordOffline) {
+                    window.swordOffline.db.clearAll();
+                }
+            }
+        });
+    });
 });
 </script>
 @endpush

@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
+    Route::patch('/profile/offline-mode', [ProfileController::class, 'updateOfflineMode'])->name('profile.offline-mode');
 
     // Book routes
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
