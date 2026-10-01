@@ -320,6 +320,24 @@ $(document).ready(function () {
     applyFilter(7);
     @endif
 
+    // Loads the Offline Reader in a hidden iframe so the service worker caches its page and
+    // the JS/CSS it needs — a real navigation, not a bare fetch, so sub-resource requests
+    // (the Offline Reader's build assets) go through the same runtime-caching the service
+    // worker already does for any normal page visit. Without this, nothing would warm the
+    // offline fallback until the user happened to visit /offline-reader manually.
+    function warmOfflineReaderCache() {
+        if (!('serviceWorker' in navigator)) {
+            return;
+        }
+        var iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = '{{ route("offline-reader.index") }}';
+        iframe.onload = function () {
+            setTimeout(function () { iframe.remove(); }, 1000);
+        };
+        document.body.appendChild(iframe);
+    }
+
     $('#offline_enabled').on('change', function () {
         var enabled = $(this).is(':checked');
         var checkbox = $(this);
@@ -332,7 +350,7 @@ $(document).ready(function () {
                 success: function () {
                     $('#offline-mode-status').text(enabled ? 'Offline Mode enabled.' : 'Offline Mode disabled.');
                     if (enabled && window.swordOffline) {
-                        window.swordOffline.bundleSync.sync();
+                        window.swordOffline.bundleSync.sync().then(warmOfflineReaderCache);
                     }
                     if (!enabled && window.swordOffline) {
                         window.swordOffline.db.clearAll();
