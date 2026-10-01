@@ -27,6 +27,7 @@ use App\Http\Controllers\VerseHighlightController;
 use App\Http\Controllers\VerseLinkController;
 use App\Http\Controllers\BookStudyController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\OfflineBundleController;
 use Illuminate\Support\Facades\Route;
 
 // Mail preview (local development only)
@@ -76,6 +77,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
     Route::patch('/profile/offline-mode', [ProfileController::class, 'updateOfflineMode'])->name('profile.offline-mode');
+
+    // Offline API routes
+    Route::get('/api/offline/bundle', [OfflineBundleController::class, 'show'])->name('offline.bundle');
 
     // Book routes
     Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');

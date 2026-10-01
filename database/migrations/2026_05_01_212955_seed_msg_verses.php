@@ -7,6 +7,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         $existing = DB::table('translations')->where('name', 'MSG')->first();
         $translationId = $existing
             ? $existing->id
