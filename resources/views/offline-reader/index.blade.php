@@ -9,7 +9,7 @@
 @section('content')
 <div id="offline-reader-root">
     <div id="offline-reader-empty-state" class="d-none text-center py-5">
-        <p class="mb-3">Offline Mode isn't set up on this device yet.</p>
+        <p class="mb-3" id="offline-reader-empty-message">Offline Mode isn't set up on this device yet.</p>
         <a href="{{ route('profile.index') }}" class="btn btn-primary btn-sm">Go to Profile Settings</a>
     </div>
 

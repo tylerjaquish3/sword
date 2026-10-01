@@ -2,6 +2,7 @@
 // (/offline-reader/prayers): view past prayers and add new ones offline.
 import db from './db.js';
 import syncManager from './sync-manager.js';
+import emptyState from './empty-state.js';
 
 // Format a Date as MM/DD/YYYY using LOCAL date components — matches the online prayer
 // form's PHP `Carbon::now()->format('m/d/Y')`, since prayers.date is stored verbatim and
@@ -23,7 +24,7 @@ async function init() {
     // Same "has Offline Mode ever synced" signal the Read page uses, so the empty state is
     // consistent across all offline pages regardless of which one you land on first.
     if (translations.length === 0) {
-        document.getElementById('offline-reader-empty-state').classList.remove('d-none');
+        emptyState.showEmptyState();
         return;
     }
 

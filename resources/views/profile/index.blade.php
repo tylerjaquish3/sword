@@ -339,11 +339,27 @@ $(document).ready(function () {
                 type: 'PATCH',
                 data: { _token: '{{ csrf_token() }}', offline_enabled: enabled ? 1 : 0 },
                 success: function () {
-                    $('#offline-mode-status').text(enabled ? 'Offline Mode enabled.' : 'Offline Mode disabled.');
                     if (enabled && window.swordOffline) {
-                        window.swordOffline.bundleSync.sync().then(warmOfflineReaderCache);
+                        // The initial download can take 15-20+ seconds (all Bible
+                        // translations plus your comments/prayers/highlights) — say so
+                        // plainly, since the toggle itself saves instantly but the actual
+                        // offline data isn't ready until this finishes. Stay on this page
+                        // until it says "ready" to be sure the first sync completes;
+                        // navigating away before then will also eventually finish it on a
+                        // later page load, but this is the fastest, most reliable way.
+                        $('#offline-mode-status').text('Offline Mode enabled — downloading Bible text and your data now (usually 15-20 seconds, stay on this page until it says "ready")…');
+                        window.swordOffline.bundleSync.sync()
+                            .then(function () {
+                                $('#offline-mode-status').text('Offline Mode is ready — you can now read and add content with no connection.');
+                                warmOfflineReaderCache();
+                            })
+                            .catch(function (err) {
+                                console.error('Offline bundle sync failed', err);
+                                $('#offline-mode-status').text('Offline Mode is on, but the initial download failed — it will retry automatically the next time you load a page while online.');
+                            });
                     }
                     if (!enabled && window.swordOffline) {
+                        $('#offline-mode-status').text('Offline Mode disabled.');
                         window.swordOffline.db.clearAll();
                     }
                 },

@@ -1,4 +1,8 @@
 {
+  "_empty-state-Cgc_LYLQ.js": {
+    "file": "assets/empty-state-Cgc_LYLQ.js",
+    "name": "empty-state"
+  },
   "_sync-manager-DugwGLO8.js": {
     "file": "assets/sync-manager-DugwGLO8.js",
     "name": "sync-manager"
@@ -163,30 +167,33 @@
     ]
   },
   "resources/js/offline/digest.js": {
-    "file": "assets/digest-C7qYmvJP.js",
+    "file": "assets/digest-BztX2r2f.js",
     "name": "digest",
     "src": "resources/js/offline/digest.js",
     "isEntry": true,
     "imports": [
-      "_sync-manager-DugwGLO8.js"
+      "_sync-manager-DugwGLO8.js",
+      "_empty-state-Cgc_LYLQ.js"
     ]
   },
   "resources/js/offline/prayers.js": {
-    "file": "assets/prayers-C_PcpzKu.js",
+    "file": "assets/prayers-DZeF_ay9.js",
     "name": "prayers",
     "src": "resources/js/offline/prayers.js",
     "isEntry": true,
     "imports": [
-      "_sync-manager-DugwGLO8.js"
+      "_sync-manager-DugwGLO8.js",
+      "_empty-state-Cgc_LYLQ.js"
     ]
   },
   "resources/js/offline/read.js": {
-    "file": "assets/read-2k7okNe1.js",
+    "file": "assets/read-DPQfvo4L.js",
     "name": "read",
     "src": "resources/js/offline/read.js",
     "isEntry": true,
     "imports": [
-      "_sync-manager-DugwGLO8.js"
+      "_sync-manager-DugwGLO8.js",
+      "_empty-state-Cgc_LYLQ.js"
     ]
   }
 }

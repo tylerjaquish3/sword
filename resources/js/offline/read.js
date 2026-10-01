@@ -2,6 +2,7 @@
 // (/offline-reader): Bible text, verse/chapter comments, and highlights.
 import db from './db.js';
 import syncManager from './sync-manager.js';
+import emptyState from './empty-state.js';
 
 async function init() {
     const [translations, chapters, verses, highlights, verseComments, chapterComments] = await Promise.all([
@@ -14,7 +15,7 @@ async function init() {
     ]);
 
     if (translations.length === 0 || verses.length === 0) {
-        document.getElementById('offline-reader-empty-state').classList.remove('d-none');
+        emptyState.showEmptyState();
         return;
     }
 

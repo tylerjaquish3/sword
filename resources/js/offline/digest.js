@@ -2,6 +2,7 @@
 // (/offline-reader/digest): queue a weekly digest reflection while offline.
 import db from './db.js';
 import syncManager from './sync-manager.js';
+import emptyState from './empty-state.js';
 
 // Format a Date as YYYY-MM-DD using LOCAL date components, not UTC — see the server's
 // 'week_start' => 'nullable|date' validation and Carbon::parse() in SharedDigestController.
@@ -48,7 +49,7 @@ async function init() {
     const translations = await db.getAll('translations');
 
     if (translations.length === 0) {
-        document.getElementById('offline-reader-empty-state').classList.remove('d-none');
+        emptyState.showEmptyState();
         return;
     }
 
