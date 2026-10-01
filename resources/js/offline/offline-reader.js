@@ -2,6 +2,14 @@
 import db from './db.js';
 import syncManager from './sync-manager.js';
 
+// Format a Date as YYYY-MM-DD using LOCAL date components, not UTC.
+function toLocalDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 async function init() {
     const [translations, chapters, verses, highlights, verseComments, prayers, prayerTypes] = await Promise.all([
         db.getAll('translations'),
@@ -214,7 +222,7 @@ async function init() {
         const content = document.getElementById('or-prayer-content').value.trim();
         if (!content) return;
         const typeId = Number(prayerTypeSelect.value);
-        const date = new Date().toISOString().slice(0, 10);
+        const date = toLocalDateString(new Date());
 
         await syncManager.queue('prayer', { date, [`type${typeId}`]: content });
 
@@ -243,7 +251,7 @@ function currentWeekStartISO() {
     const diffToMonday = day === 0 ? -6 : 1 - day;
     const monday = new Date(now);
     monday.setDate(now.getDate() + diffToMonday);
-    return monday.toISOString().slice(0, 10);
+    return toLocalDateString(monday);
 }
 
 async function submitDigest(submitAction) {
