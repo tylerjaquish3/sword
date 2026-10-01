@@ -39,6 +39,13 @@ if (app()->environment('local')) {
     });
 }
 
+// PWA manifest
+Route::get('/manifest.json', function () {
+    return response(file_get_contents(public_path('manifest.json')), 200, [
+        'Content-Type' => 'application/manifest+json',
+    ]);
+});
+
 // Auth routes (guest only)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
