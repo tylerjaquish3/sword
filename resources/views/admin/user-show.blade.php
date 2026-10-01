@@ -55,34 +55,36 @@
     <div class="col">
         <div class="card" style="border-top: 3px solid var(--sword-gold);">
             <div class="card-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead style="background: rgba(201,168,76,0.06);">
-                        <tr>
-                            <th class="ps-4 py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Month</th>
-                            @foreach($columns as $label)
-                                <th class="py-3 text-center" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">{{ $label }}</th>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead style="background: rgba(201,168,76,0.06);">
+                            <tr>
+                                <th class="ps-4 py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy); white-space: nowrap;">Month</th>
+                                @foreach($columns as $label)
+                                    <th class="py-3 text-center" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy); white-space: nowrap;">{{ $label }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($months as $month)
+                            <tr>
+                                <td class="ps-4 py-3 align-middle fw-semibold" style="color: var(--sword-navy); white-space: nowrap;">{{ $month['label'] }}</td>
+                                @foreach(array_keys($columns) as $key)
+                                    <td class="py-3 align-middle text-center">{{ $month[$key] }}</td>
+                                @endforeach
+                            </tr>
                             @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($months as $month)
-                        <tr>
-                            <td class="ps-4 py-3 align-middle fw-semibold" style="color: var(--sword-navy);">{{ $month['label'] }}</td>
-                            @foreach(array_keys($columns) as $key)
-                                <td class="py-3 align-middle text-center">{{ $month[$key] }}</td>
-                            @endforeach
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr style="background: rgba(201,168,76,0.08); border-top: 2px solid var(--sword-gold);">
-                            <td class="ps-4 py-3 fw-bold" style="color: var(--sword-navy);">All-Time</td>
-                            @foreach(array_keys($columns) as $key)
-                                <td class="py-3 text-center fw-bold" style="color: var(--sword-navy);">{{ $allTime[$key] }}</td>
-                            @endforeach
-                        </tr>
-                    </tfoot>
-                </table>
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: rgba(201,168,76,0.08); border-top: 2px solid var(--sword-gold);">
+                                <td class="ps-4 py-3 fw-bold" style="color: var(--sword-navy); white-space: nowrap;">All-Time</td>
+                                @foreach(array_keys($columns) as $key)
+                                    <td class="py-3 text-center fw-bold" style="color: var(--sword-navy);">{{ $allTime[$key] }}</td>
+                                @endforeach
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
         @if($months->lastPage() > 1)

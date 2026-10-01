@@ -263,8 +263,6 @@
         </li>
     </ul>
 
-    </div>{{-- /mob-drawer-scroll --}}
-
     {{-- Footer area --}}
     <div class="mob-drawer-footer">
         <div class="mob-drawer-divider"></div>
@@ -310,6 +308,8 @@
             </li>
         </ul>
     </div>
+
+    </div>{{-- /mob-drawer-scroll --}}
 </nav>
 
 <style>
@@ -606,7 +606,7 @@ body.mob-nav-open { overflow: hidden; }
 
 /* ── Drawer footer ────────────────────────────────────────────── */
 .mob-drawer-footer {
-    flex-shrink: 0;
+    padding-bottom: 8px;
 }
 
 .mob-drawer-divider {

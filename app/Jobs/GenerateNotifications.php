@@ -64,6 +64,11 @@ class GenerateNotifications implements ShouldQueue
             $streak++;
             $checkDate->subDay();
         }
+        // $checkDate is now the day before the streak began, so the streak
+        // started the day after it. Used to key milestones per streak run
+        // rather than per calendar month, so a plateaued streak (e.g. sitting
+        // at 151 days) doesn't re-notify the 100-day milestone every month.
+        $streakStartDate = $checkDate->copy()->addDay()->toDateString();
 
         $milestones = [
             7   => ['title' => '7-day reading streak!',       'message' => "You've read the Bible 7 days in a row. Keep it up!",                          'icon' => 'mdi-fire',   'icon_color' => 'bg-warning'],
@@ -78,7 +83,6 @@ class GenerateNotifications implements ShouldQueue
 
         // Only notify for the single highest milestone reached so that hitting 14 days
         // doesn't also trigger the 7-day notification on the same run.
-        $monthKey = now()->format('Y-m');
         $highestMilestone = null;
         foreach ($milestones as $days => $meta) {
             if ($streak >= $days) {
@@ -88,7 +92,7 @@ class GenerateNotifications implements ShouldQueue
 
         if ($highestMilestone !== null) {
             [$days, $meta] = $highestMilestone;
-            $key = "reading_streak_{$days}_{$monthKey}";
+            $key = "reading_streak_{$days}_{$streakStartDate}";
             $this->createIfNotExists($user->id, 'reading_streak', $key, $meta['title'], $meta['message'], $meta['icon'], $meta['icon_color'], route('translations.index'));
         }
     }
