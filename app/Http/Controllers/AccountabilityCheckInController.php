@@ -23,15 +23,26 @@ class AccountabilityCheckInController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
+        $clientUuid = $data['client_uuid'] ?? null;
+        unset($data['client_uuid']);
 
         $isSharing = Auth::check() ? $request->input('submit_action') === 'share' : true;
 
-        $checkIn = AccountabilityCheckIn::create(array_merge($data, [
+        $attributes = array_merge($data, [
             'uuid' => Str::uuid()->toString(),
             'user_id' => Auth::id(),
             'sharer_name' => Auth::check() ? Auth::user()->name : $request->input('sharer_name'),
             'is_shared' => $isSharing,
-        ]));
+        ]);
+
+        if ($clientUuid && Auth::check()) {
+            $checkIn = AccountabilityCheckIn::firstOrCreate(
+                ['user_id' => Auth::id(), 'client_uuid' => $clientUuid],
+                $attributes + ['client_uuid' => $clientUuid]
+            );
+        } else {
+            $checkIn = AccountabilityCheckIn::create($attributes);
+        }
 
         if ($isSharing) {
             return redirect()->route('accountability.share.link', $checkIn->uuid);
@@ -137,6 +148,7 @@ class AccountabilityCheckInController extends Controller
             'overall_why' => 'nullable|string|max:2000',
             'one_praise' => 'nullable|string|max:2000',
             'one_prayer' => 'nullable|string|max:2000',
+            'client_uuid' => 'nullable|uuid',
         ]);
 
         foreach (['corner_man_prayer_request', 'corner_man_asked_how_to_pray', 'corner_man_encouragement', 'corner_man_multiple_touchpoints'] as $field) {
