@@ -74,25 +74,38 @@ class CommentaryController extends Controller
     public function store()
     {
         $type = request('type');
-        
+        $clientUuid = request('client_uuid');
+
+        request()->validate(['client_uuid' => 'nullable|uuid']);
+
         if ($type === 'chapter') {
             $data = request()->validate([
                 'chapter_id' => 'required|exists:chapters,id',
                 'comment' => 'required',
             ]);
-            ChapterComment::create($data);
+
+            if ($clientUuid) {
+                ChapterComment::firstOrCreate(['client_uuid' => $clientUuid], $data + ['client_uuid' => $clientUuid]);
+            } else {
+                ChapterComment::create($data);
+            }
         } else {
             $data = request()->validate([
                 'verse_id' => 'required|exists:verses,id',
                 'comment' => 'required',
             ]);
-            
+
             // Get the verse to extract chapter_id and verse_number
             $verse = Verse::find($data['verse_id']);
-            
+
             $data['chapter_id'] = $verse->chapter_id;
             $data['verse_number'] = $verse->number;
-            VerseComment::create($data);
+
+            if ($clientUuid) {
+                VerseComment::firstOrCreate(['client_uuid' => $clientUuid], $data + ['client_uuid' => $clientUuid]);
+            } else {
+                VerseComment::create($data);
+            }
         }
 
         if (request()->ajax()) {
