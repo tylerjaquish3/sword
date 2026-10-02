@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\OfflineBundleController;
 use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\Translation;
@@ -13,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class KeplinVerses implements ShouldQueue
@@ -155,6 +157,7 @@ class KeplinVerses implements ShouldQueue
         }
 
         if ($success) {
+            Cache::forget(OfflineBundleController::STATIC_BUNDLE_CACHE_KEY);
             Log::info('KeplinVerses job finished successfully!');
         } else {
             Log::error('KeplinVerses job finished with errors: ' . $message);

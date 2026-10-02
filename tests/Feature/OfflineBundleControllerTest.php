@@ -21,7 +21,7 @@ class OfflineBundleControllerTest extends TestCase
 
     public function test_bundle_includes_all_translations_and_verse_text(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['offline_enabled' => true]);
         $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
         $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
         $translation = Translation::create(['name' => 'KJV']);
@@ -39,7 +39,7 @@ class OfflineBundleControllerTest extends TestCase
 
     public function test_bundle_only_includes_the_authenticated_users_own_content(): void
     {
-        $me = User::factory()->create();
+        $me = User::factory()->create(['offline_enabled' => true]);
         $other = User::factory()->create();
         $book = Book::create(['name' => 'John', 'abbr' => 'JHN', 'new_testament' => 1, 'sort_order' => 43]);
         $chapter = Chapter::create(['book_id' => $book->id, 'number' => 1]);
@@ -68,5 +68,14 @@ class OfflineBundleControllerTest extends TestCase
         $response = $this->getJson(route('offline.bundle'));
 
         $response->assertStatus(401);
+    }
+
+    public function test_bundle_is_forbidden_when_offline_mode_is_not_enabled(): void
+    {
+        $user = User::factory()->create(['offline_enabled' => false]);
+
+        $response = $this->actingAs($user)->getJson(route('offline.bundle'));
+
+        $response->assertStatus(403);
     }
 }
