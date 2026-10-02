@@ -48,6 +48,12 @@ class OfflineBundleController extends Controller
 
     private function staticBundle(): array
     {
+        // Assembling and caching ~137k verses across every translation in one pass peaks well
+        // above a typical 128M php-fpm memory_limit even using the query builder (not Eloquent).
+        // Only the first request after a cache miss pays this cost, so raise the ceiling for
+        // just this one action rather than the whole php-fpm pool.
+        ini_set('memory_limit', '512M');
+
         return Cache::rememberForever(self::STATIC_BUNDLE_CACHE_KEY, function () {
             $books = DB::table('books')->select('id', 'name', 'sort_order')->get()->keyBy('id');
 
