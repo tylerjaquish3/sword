@@ -7,6 +7,7 @@ use App\Models\Prayer;
 use App\Models\PrayerType;
 use App\Models\UserVersePreference;
 use App\Models\VerseComment;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -48,13 +49,34 @@ class OfflineBundleController extends Controller
 
     private function staticBundle(): array
     {
-        // Assembling and caching ~137k verses across every translation in one pass peaks well
-        // above a typical 128M php-fpm memory_limit even using the query builder (not Eloquent).
-        // Only the first request after a cache miss pays this cost, so raise the ceiling for
-        // just this one action rather than the whole php-fpm pool.
-        ini_set('memory_limit', '512M');
+        // Cache::rememberForever() has no built-in lock: a plain cache miss (e.g. right after
+        // deploy's cache:clear) means every concurrent request independently rebuilds the full
+        // ~137k-row dataset at once. On a memory-constrained box, a handful of those running
+        // in parallel is what actually causes OOM crashes — not the size of any one request
+        // (measured peak is ~160MB). A lock makes only one process pay that cost at a time;
+        // everyone else either reads the cache it just populated or (on timeout) builds it
+        // themselves rather than hanging forever.
+        $cached = Cache::get(self::STATIC_BUNDLE_CACHE_KEY);
+        if ($cached !== null) {
+            return $cached;
+        }
 
+        try {
+            return Cache::lock(self::STATIC_BUNDLE_CACHE_KEY . ':lock', 60)
+                ->block(30, fn () => $this->buildAndCacheStaticBundle());
+        } catch (LockTimeoutException) {
+            return Cache::get(self::STATIC_BUNDLE_CACHE_KEY) ?? $this->buildAndCacheStaticBundle();
+        }
+    }
+
+    private function buildAndCacheStaticBundle(): array
+    {
         return Cache::rememberForever(self::STATIC_BUNDLE_CACHE_KEY, function () {
+            // Safety ceiling only — measured peak usage for the full dataset is ~160MB, well
+            // under the default 128M php-fpm limit but still over it, so this just gives that
+            // one in-progress build (guarded by the lock above) room to finish.
+            ini_set('memory_limit', '256M');
+
             $books = DB::table('books')->select('id', 'name', 'sort_order')->get()->keyBy('id');
 
             $chapters = DB::table('chapters')

@@ -96,6 +96,22 @@ self.addEventListener('fetch', (event) => {
                 }
                 return response;
             })
-            .catch(() => caches.match(offlineFallbackFor(url.pathname)))
+            .catch(() =>
+                caches.match(offlineFallbackFor(url.pathname)).then((cached) => {
+                    // Nothing cached (e.g. Offline Mode was never enabled on this browser, so
+                    // these pages were never warmed) — surface a plain error instead of
+                    // resolving with `undefined`, which breaks the navigation outright and
+                    // looks like the page is just hung.
+                    return (
+                        cached ||
+                        new Response(
+                            '<!doctype html><title>Connection problem</title>' +
+                                '<p>Sword couldn\'t reach the server and no offline copy of this page is saved. ' +
+                                'Check your connection and try again.</p>',
+                            { status: 503, headers: { 'Content-Type': 'text/html' } }
+                        )
+                    );
+                })
+            )
     );
 });
