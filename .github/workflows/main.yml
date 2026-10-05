@@ -14,15 +14,15 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v1
 
-      - name: Deploy to my EC2 instance
+      - name: Deploy to Lightsail
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           SOURCE: ""
           REMOTE_HOST: ${{ secrets.EC2_SSH_HOST }}
           REMOTE_USER: ${{ secrets.EC2_SSH_USER }}
-          TARGET: "/home/tyler_admin/sword"
-          EXCLUDE: ".env, database/database.sqlite"
+          TARGET: "/var/www/sword"
+          EXCLUDE: ".env, .git, storage, node_modules, database/database.sqlite"
           ARGS: "-rlzvc --no-perms --no-owner --no-group"
 
       - name: Run post-deploy steps
@@ -32,11 +32,10 @@ jobs:
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/tyler_admin/sword
-
+            cd /var/www/sword
             npm ci
             npm run build
-            composer update --no-dev --optimize-autoloader --no-interaction
+            composer install --no-dev --optimize-autoloader --no-interaction
             php artisan migrate --force
             php artisan route:clear
             php artisan view:clear
