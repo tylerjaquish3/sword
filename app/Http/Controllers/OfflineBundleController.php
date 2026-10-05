@@ -49,13 +49,21 @@ class OfflineBundleController extends Controller
 
     private function staticBundle(): array
     {
+        // Unserializing the cached ~137k-row payload back into PHP arrays takes as much memory
+        // as building it in the first place (measured peak ~160MB), so every request that hits
+        // this method — not just the one that builds the cache — needs the raised ceiling.
+        // Without this, only the first build succeeded under the bump below; every normal
+        // request afterward took the Cache::get() fast path under the stock 128M default and
+        // fatal-errored in FileStore::unserialize().
+        ini_set('memory_limit', '256M');
+
         // Cache::rememberForever() has no built-in lock: a plain cache miss (e.g. right after
         // deploy's cache:clear) means every concurrent request independently rebuilds the full
         // ~137k-row dataset at once. On a memory-constrained box, a handful of those running
-        // in parallel is what actually causes OOM crashes — not the size of any one request
-        // (measured peak is ~160MB). A lock makes only one process pay that cost at a time;
-        // everyone else either reads the cache it just populated or (on timeout) builds it
-        // themselves rather than hanging forever.
+        // in parallel is what actually causes OOM crashes — not the size of any one request.
+        // A lock makes only one process pay that cost at a time; everyone else either reads
+        // the cache it just populated or (on timeout) builds it themselves rather than hanging
+        // forever.
         $cached = Cache::get(self::STATIC_BUNDLE_CACHE_KEY);
         if ($cached !== null) {
             return $cached;
@@ -72,11 +80,6 @@ class OfflineBundleController extends Controller
     private function buildAndCacheStaticBundle(): array
     {
         return Cache::rememberForever(self::STATIC_BUNDLE_CACHE_KEY, function () {
-            // Safety ceiling only — measured peak usage for the full dataset is ~160MB, well
-            // under the default 128M php-fpm limit but still over it, so this just gives that
-            // one in-progress build (guarded by the lock above) room to finish.
-            ini_set('memory_limit', '256M');
-
             $books = DB::table('books')->select('id', 'name', 'sort_order')->get()->keyBy('id');
 
             $chapters = DB::table('chapters')
