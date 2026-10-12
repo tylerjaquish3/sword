@@ -15,7 +15,7 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 
 ## Tech Stack
 
-- **Backend:** Laravel 11, PHP 8.3+
+- **Backend:** Laravel 12, PHP 8.4+
 - **Database:** SQLite (`database/database.sqlite`)
 - **Frontend:** Blade templates, Bootstrap 5, jQuery 4, DataTables, Chart.js, Moment.js
 - **Build tool:** Vite
@@ -58,7 +58,7 @@ https://www.navigators.org/resource/prayer-tools/
 
 ### Prerequisites
 
-- PHP 8.3+
+- PHP 8.4+
 - Composer
 - Node.js & npm
 - [Laravel Valet](https://laravel.com/docs/valet)

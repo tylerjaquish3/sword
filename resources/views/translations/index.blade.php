@@ -309,7 +309,12 @@
                         <thead>
                             <tr>
                                 <th style="min-width:200px;">Section Title</th>
-                                <th style="width:110px;" class="text-center">New Paragraph</th>
+                                <th style="width:110px;" class="text-center">
+                                    New Paragraph
+                                    <div class="form-check form-check-inline ms-1 mb-0" title="Toggle all">
+                                        <input type="checkbox" class="form-check-input" id="section-editor-select-all">
+                                    </div>
+                                </th>
                                 <th>Verse Text</th>
                             </tr>
                         </thead>
@@ -1202,6 +1207,7 @@ $(document).ready(function() {
 
                     $tbody.append($row);
                 });
+                $('#section-editor-select-all').prop('checked', false);
                 sectionEditorDirty = false;
             }
         });
@@ -1217,6 +1223,13 @@ $(document).ready(function() {
     });
     $(document).on('change', '#section-editor-tbody .line-break-input', function() {
         sectionEditorDirty = true;
+        const $checkboxes = $('#section-editor-tbody .line-break-input');
+        $('#section-editor-select-all').prop('checked', $checkboxes.length > 0 && $checkboxes.length === $checkboxes.filter(':checked').length);
+    });
+
+    $('#section-editor-select-all').on('change', function() {
+        sectionEditorDirty = true;
+        $('#section-editor-tbody .line-break-input').prop('checked', this.checked);
     });
 
     $('#section-editor-close, #section-editor-cancel').on('click', function() {
