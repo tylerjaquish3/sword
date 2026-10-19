@@ -7,6 +7,7 @@ const ENDPOINTS = {
     prayer: { url: '/prayers', method: 'POST' },
     highlight: { url: '/verse-highlights/toggle', method: 'POST' },
     accountability_checkin: { url: '/accountability', method: 'POST' },
+    chapter_read: { url: '/chapters/mark-read', method: 'POST' },
     digest: { url: '/digest/complete', method: 'POST' },
 };
 

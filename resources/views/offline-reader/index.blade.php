@@ -72,6 +72,11 @@
                                 <button type="button" id="or-save-chapter-comment" class="btn btn-sm" style="background: var(--sword-navy); color: var(--sword-gold); border: 1px solid rgba(201,168,76,0.3); white-space: nowrap;">Save</button>
                             </div>
                         </div>
+
+                        <div class="reading-actions">
+                            <button type="button" id="or-mark-read" class="btn btn-outline-success btn-sm"><i class="mdi mdi-check"></i> Mark as Read</button>
+                            <small id="or-read-status" class="reading-read-status"></small>
+                        </div>
                     </div>
                 </div>
             </div>

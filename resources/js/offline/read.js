@@ -118,6 +118,7 @@ async function init() {
         list.innerHTML = html;
 
         renderChapterComments(chapterId);
+        readStatus.textContent = '';
     }
 
     function renderChapterComments(chapterId) {
@@ -222,6 +223,28 @@ async function init() {
 
         document.getElementById('or-chapter-comment-input').value = '';
         renderChapterComments(chapterId);
+    });
+
+    // "Mark as Read" — queued in the outbox and replayed against /chapters/mark-read on
+    // reconnect. The server needs book_id + chapter_number (not chapter_id), which the
+    // cached chapter record carries. read_at preserves when it was actually read.
+    const readStatus = document.getElementById('or-read-status');
+    document.getElementById('or-mark-read').addEventListener('click', async (event) => {
+        const btn = event.currentTarget;
+        const chapter = chapters.find((c) => c.id === Number(chapterSelect.value));
+        if (!chapter) return;
+
+        const readAt = new Date();
+        await syncManager.queue('chapter_read', {
+            book_id: chapter.book.id,
+            chapter_number: chapter.number,
+            translation_id: Number(translationSelect.value),
+            read_at: readAt.toISOString(),
+        });
+
+        btn.classList.replace('btn-outline-success', 'btn-success');
+        setTimeout(() => btn.classList.replace('btn-success', 'btn-outline-success'), 2000);
+        readStatus.textContent = `Last read: ${readAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} (syncs when online)`;
     });
 
     bookSelect.addEventListener('change', () => {

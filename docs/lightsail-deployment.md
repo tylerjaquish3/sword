@@ -22,6 +22,13 @@ Sword needs PHP `^8.4`, Laravel 12 and SQLite, the same as Pockets. It also runs
 
 Already in place: PHP 8.4 with extensions, Composer, nginx, certbot, `/var/www` ownership, FPM socket owner `www-data`, ports 80/443/22 open in the Lightsail firewall.
 
+**`cron` isn't installed on a stock Debian 12 Lightsail image.** Any app that uses Laravel's scheduler (`routes/console.php`) needs it, so install it once per box:
+```bash
+sudo apt update && sudo apt install -y cron
+sudo systemctl enable --now cron
+sudo systemctl status cron   # should show active (running)
+```
+
 **Sword needs one new thing, Node (for Vite):**
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
@@ -171,7 +178,18 @@ The old app lives in `/home/tyler_admin/sword`. Its database is `/home/tyler_adm
 
 This is a snapshot. Repeat the copy right before you switch DNS (step 8), so nothing entered in between is lost. To block writes during that copy, run `php artisan down` on the old server first.
 
-### 8. First deploy and DNS cutover
+### 8. Laravel scheduler (cron)
+If the app registers anything in `routes/console.php` under `Schedule::`, add the scheduler's crontab entry, run as `www-data` since that's who owns `storage/` and `database/`:
+```bash
+sudo crontab -u www-data -e
+```
+Add this line:
+```
+* * * * * cd /var/www/sword && php artisan schedule:run >> /dev/null 2>&1
+```
+Verify after a minute or two: `sudo crontab -l -u www-data` shows the line, and `tail -n 20 /var/www/sword/storage/logs/laravel.log` shows no scheduler errors.
+
+### 9. First deploy and DNS cutover
 1. Push to `main` and watch the run in the Actions tab. Re-run failed jobs after fixing the cause.
 2. Test before touching DNS from your Mac:
    ```bash
@@ -186,7 +204,7 @@ This is a snapshot. Repeat the copy right before you switch DNS (step 8), so not
    ```
    Choose to redirect HTTP to HTTPS. Only list names that already resolve (`www` fails with `NXDOMAIN` if its record is missing). Don't retry a failing request over and over, since Let's Encrypt rate-limits failures. Then confirm `APP_URL=https://mysword.app` in `.env`, and run `php artisan config:clear`.
 
-### 9. Retire the old copy
+### 10. Retire the old copy
 Keep the old app on EC2 for a few days without writes, then stop it. Once you're sure nothing is missing, remove the old Sword folder, release anything you no longer need, and delete the unused GitHub secrets.
 
 ---
@@ -205,3 +223,4 @@ Keep the old app on EC2 for a few days without writes, then stop it. Once you're
 | Certbot: `NXDOMAIN` | The domain has no DNS record yet. Add it, wait, then retry |
 | Wrong site appears | `server_name` doesn't match the domain you requested, so nginx falls back to the first server block. Check `grep server_name /etc/nginx/conf.d/*.conf` |
 | Static IP changed after a restart | The instance wasn't using a Lightsail static IP. Attach one under Networking |
+| Scheduled jobs (`Schedule::` in `routes/console.php`) silently never run | `crontab` isn't installed or the `schedule:run` entry is missing. `crontab: command not found` means run `sudo apt install -y cron && sudo systemctl enable --now cron`, then add the entry from step 8 |

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chapter;
 use App\Models\ChapterComment;
 use App\Models\UserRead;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,13 +71,17 @@ class ChapterController extends Controller
             'book_id'        => 'required|exists:books,id',
             'chapter_number' => 'required|integer|min:1',
             'translation_id' => 'required|exists:translations,id',
+            // Offline Reader sends when the chapter was actually read, since the sync happens later.
+            'read_at'        => 'nullable|date|before_or_equal:+1 day',
         ]);
+
+        $readAt = $request->filled('read_at') ? Carbon::parse($request->read_at) : now();
 
         $existing = UserRead::where('user_id', Auth::id())
             ->where('book_id', $request->book_id)
             ->where('chapter_number', $request->chapter_number)
             ->where('translation_id', $request->translation_id)
-            ->whereDate('read_at', now()->toDateString())
+            ->whereDate('read_at', $readAt->toDateString())
             ->first();
 
         if ($existing) {
@@ -88,7 +93,7 @@ class ChapterController extends Controller
             'book_id'        => $request->book_id,
             'chapter_number' => $request->chapter_number,
             'translation_id' => $request->translation_id,
-            'read_at'        => now(),
+            'read_at'        => $readAt,
         ]);
 
         return response()->json(['success' => true]);
