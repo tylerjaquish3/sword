@@ -96,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile/default-translation', [ProfileController::class, 'updateDefaultTranslation'])->name('profile.default-translation');
     Route::patch('/profile/offline-mode', [ProfileController::class, 'updateOfflineMode'])->name('profile.offline-mode');
+    Route::patch('/profile/reads/{read}', [ProfileController::class, 'updateReadDate'])->name('profile.reads.update');
 
     // Offline API routes
     Route::get('/api/offline/bundle', [OfflineBundleController::class, 'show'])->name('offline.bundle');

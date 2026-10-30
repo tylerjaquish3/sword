@@ -38,6 +38,9 @@ Sword is a personal Bible study application built with Laravel. It lets you read
 - upgrade php and laravel
 - login page, add screenshots of page with highlights, underlines, etc. and what they mean
 - page for sorting/searching highlighted verses
+- need to fix some text typos
+   luke 9:13
+
 
 https://www.navigators.org/resource/prayer-tools/
 

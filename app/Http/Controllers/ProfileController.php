@@ -10,6 +10,7 @@ use App\Models\UserRead;
 use App\Models\UserVersePreference;
 use App\Models\Verse;
 use App\Models\VerseComment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -84,6 +85,19 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', 'Default translation saved.');
+    }
+
+    public function updateReadDate(Request $request, UserRead $read)
+    {
+        abort_unless($read->user_id === Auth::id(), 403);
+
+        $request->validate(['read_date' => 'required|date_format:Y-m-d|before_or_equal:today']);
+
+        // Change only the day; keep the original time of day.
+        $date = Carbon::createFromFormat('Y-m-d', $request->read_date);
+        $read->update(['read_at' => $read->read_at->copy()->setDate($date->year, $date->month, $date->day)]);
+
+        return back()->with('read_success', 'Read date updated.');
     }
 
     public function updateOfflineMode(Request $request)

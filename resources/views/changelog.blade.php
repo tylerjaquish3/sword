@@ -14,6 +14,28 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.20.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.20</span>
+                <div>
+                    <div class="changelog-title">Edit Read Dates</div>
+                    <div class="changelog-date">October 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            You can now edit the date of an entry in your Profile's Reading History — handy when you read but forgot to mark it, so your streak stays intact
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.19.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +44,6 @@
                     <div class="changelog-title">Install Sword & Offline Mode</div>
                     <div class="changelog-date">October 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

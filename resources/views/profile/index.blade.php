@@ -64,6 +64,12 @@
                 <h4 class="card-title mb-0"><i class="mdi mdi-book-open-page-variant me-2"></i>Reading History</h4>
             </div>
             <div class="card-body p-0">
+                @if(session('read_success'))
+                    <div class="alert alert-success py-2 m-3">{{ session('read_success') }}</div>
+                @endif
+                @if($errors->has('read_date'))
+                    <div class="alert alert-danger py-2 m-3">{{ $errors->first('read_date') }}</div>
+                @endif
                 @if($reads->isEmpty())
                     <p class="text-muted p-4 mb-0">No chapters marked as read yet.</p>
                 @else
@@ -75,6 +81,7 @@
                                 <th>Chapter</th>
                                 <th>Translation</th>
                                 <th>Last Read</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,6 +98,14 @@
                                     <span title="{{ $read->read_at->format('F j, Y g:i A') }}">
                                         {{ $read->read_at->format('M j, Y') }}
                                     </span>
+                                </td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-edit-read"
+                                            title="Edit read date"
+                                            data-url="{{ route('profile.reads.update', $read) }}"
+                                            data-date="{{ $read->read_at->format('Y-m-d') }}">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </button>
                                 </td>
                             </tr>
                             @endforeach
@@ -267,6 +282,27 @@
 
 @include('commentary.modals.verse')
 
+<div class="modal fade" id="editReadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <form method="POST" id="edit-read-form" class="modal-content">
+            @csrf
+            @method('PATCH')
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Read Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="edit-read-date" class="form-label">Date read</label>
+                <input type="date" class="form-control" id="edit-read-date" name="read_date" max="{{ now()->toDateString() }}" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('js')
 <script>
 $(document).ready(function () {
@@ -284,6 +320,12 @@ $(document).ready(function () {
 
     @if(!$reads->isEmpty())
     $('#table-reads').DataTable(dtOpts);
+
+    $('#table-reads').on('click', '.btn-edit-read', function () {
+        $('#edit-read-form').attr('action', $(this).data('url'));
+        $('#edit-read-date').val($(this).data('date'));
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('editReadModal')).show();
+    });
     @endif
 
     @if(!$digests->isEmpty())
