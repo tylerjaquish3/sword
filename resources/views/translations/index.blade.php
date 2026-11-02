@@ -933,6 +933,7 @@ $(document).ready(function() {
     }
 
     $('#btn-prev-chapter').on('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         var $chapterSelect = $('#chapter_select');
         var $bookSelect    = $('#book_select');
 
@@ -958,6 +959,7 @@ $(document).ready(function() {
     });
 
     $('#btn-next-chapter').on('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         var $chapterSelect = $('#chapter_select');
         var $bookSelect    = $('#book_select');
 
