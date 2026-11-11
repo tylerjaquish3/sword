@@ -4,12 +4,13 @@
 
 @section('content')
 
-<div class="row mb-4">
+<div class="row mb-3">
     <div class="col">
-        <h3 class="font-weight-bold mb-1" style="color: var(--sword-navy);">User Management</h3>
-        <p class="text-muted mb-0">Activate, deactivate, or remove user accounts.</p>
+        <h3 class="font-weight-bold mb-1" style="color: var(--sword-navy);">Admin</h3>
     </div>
 </div>
+
+@include('admin.partials.tabs', ['active' => 'users'])
 
 @if(session('status'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -25,6 +26,9 @@
     </div>
 @endif
 
+@php
+    $activityCols = ['chapters_read' => 'Chapters', 'prayers' => 'Prayers', 'commentary' => 'Comments', 'topics' => 'Topics', 'memory_completed' => 'Memory', 'digests' => 'Digests'];
+@endphp
 {{-- Desktop table --}}
 <div class="row d-none d-md-flex">
     <div class="col">
@@ -37,6 +41,9 @@
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Email</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Referred By</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Joined</th>
+                            @foreach($activityCols as $label)
+                            <th class="py-3 text-center" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">{{ $label }}</th>
+                            @endforeach
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Status</th>
                             <th class="py-3" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Role</th>
                             <th class="pe-4 py-3 text-end" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sword-navy);">Actions</th>
@@ -54,6 +61,9 @@
                             <td class="py-3 align-middle text-muted">{{ $user->email }}</td>
                             <td class="py-3 align-middle text-muted" style="font-size: 0.85rem;">{{ $user->referred_by ?: '—' }}</td>
                             <td class="py-3 align-middle text-muted" style="font-size: 0.85rem;">{{ $user->created_at->format('M j, Y') }}</td>
+                            @foreach($activityCols as $key => $label)
+                            <td class="py-3 align-middle text-center fw-semibold" style="color: var(--sword-navy);">{{ $user->activity[$key] }}</td>
+                            @endforeach
                             <td class="py-3 align-middle">
                                 @if($user->is_active)
                                     <span class="badge" style="background: rgba(16,185,129,0.12); color: #059669; font-size: 0.72rem; padding: 5px 10px;">Active</span>
@@ -104,10 +114,21 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">No users found.</td>
+                            <td colspan="13" class="text-center py-5 text-muted">No users found.</td>
                         </tr>
                         @endforelse
                     </tbody>
+                    @if($users->isNotEmpty())
+                    <tfoot style="background: rgba(201,168,76,0.06); border-top: 2px solid var(--sword-gold);">
+                        <tr>
+                            <td class="ps-4 py-3 fw-bold" colspan="4" style="color: var(--sword-navy);">Total ({{ $users->count() }} users)</td>
+                            @foreach($activityCols as $key => $label)
+                            <td class="py-3 text-center fw-bold" style="color: var(--sword-navy);">{{ $users->sum(fn ($u) => $u->activity[$key]) }}</td>
+                            @endforeach
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
@@ -130,6 +151,9 @@
                         <div class="text-muted" style="font-size: 0.78rem;">Referred by: {{ $user->referred_by }}</div>
                     @endif
                     <div class="text-muted" style="font-size: 0.78rem;">Joined {{ $user->created_at->format('M j, Y') }}</div>
+                    <div class="text-muted mt-1" style="font-size: 0.78rem;">
+                        @foreach($activityCols as $key => $label){{ $label }} {{ $user->activity[$key] }}{{ $loop->last ? '' : ' · ' }}@endforeach
+                    </div>
                 </div>
                 <div class="d-flex flex-column align-items-end gap-1">
                     @if($user->is_active)

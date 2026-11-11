@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AccountActivated;
+use App\Models\Book;
 use App\Models\ChapterComment;
 use App\Models\Memory;
 use App\Models\Prayer;
@@ -13,6 +14,7 @@ use App\Models\UserLogin;
 use App\Models\VerseComment;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
@@ -23,7 +25,71 @@ class AdminController extends Controller
     {
         $users = User::orderBy('created_at', 'desc')->get();
 
+        foreach ($users as $user) {
+            $user->activity = $this->metricsFor($user);
+        }
+
         return view('admin.users', compact('users'));
+    }
+
+    public function formatting()
+    {
+        // Prefixes are shared across translations, so aggregate per chapter by distinct verse number.
+        $stats = DB::table('verses')
+            ->select('chapter_id')
+            ->selectRaw('COUNT(DISTINCT number) AS verse_count')
+            ->selectRaw("COUNT(DISTINCT CASE WHEN prefix LIKE '%</p>%' OR prefix LIKE '%<br>%' THEN number END) AS break_count")
+            ->selectRaw("COUNT(DISTINCT CASE WHEN prefix LIKE '%<h5%' THEN number END) AS header_count")
+            ->groupBy('chapter_id')
+            ->get()
+            ->keyBy('chapter_id');
+
+        $books = Book::with(['chapters' => fn ($q) => $q->orderBy('number')])
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(function (Book $book) use ($stats) {
+                $chapters = $book->chapters->map(function ($chapter) use ($stats) {
+                    $s = $stats->get($chapter->id);
+
+                    return [
+                        'number' => $chapter->number,
+                        'verses' => (int) ($s->verse_count ?? 0),
+                        'breaks' => (int) ($s->break_count ?? 0),
+                        'headers' => (int) ($s->header_count ?? 0),
+                    ];
+                });
+
+                $total = $chapters->count();
+                $withBreaks = $chapters->where('breaks', '>', 0)->count();
+                $withHeaders = $chapters->where('headers', '>', 0)->count();
+
+                return [
+                    'name' => $book->name,
+                    'new_testament' => (bool) $book->new_testament,
+                    'chapters' => $chapters,
+                    'total' => $total,
+                    'with_breaks' => $withBreaks,
+                    'with_headers' => $withHeaders,
+                    'state' => match (true) {
+                        $total > 0 && $withBreaks === $total => 'complete',
+                        $withBreaks > 0 || $withHeaders > 0 => 'partial',
+                        default => 'none',
+                    },
+                ];
+            });
+
+        $summary = [
+            'books' => $books->count(),
+            'complete' => $books->where('state', 'complete')->count(),
+            'partial' => $books->where('state', 'partial')->count(),
+            'none' => $books->where('state', 'none')->count(),
+            'chapters' => $books->sum('total'),
+            'chapters_with_breaks' => $books->sum('with_breaks'),
+            'chapters_with_headers' => $books->sum('with_headers'),
+        ];
+
+        return view('admin.formatting', compact('books', 'summary'));
     }
 
     public function show(User $user, Request $request)
