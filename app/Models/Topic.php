@@ -12,4 +12,9 @@ class Topic extends Model
     {
         return $this->hasMany(TopicNote::class)->latest();
     }
+
+    public function excludedReferences()
+    {
+        return $this->hasMany(TopicExcludedReference::class);
+    }
 }

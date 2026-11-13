@@ -115,6 +115,7 @@
                                 <th>Text</th>
                                 <th>Translation</th>
                                 <th>Testament</th>
+                                <th style="width:36px;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,6 +152,11 @@
                                     <td><span class="verse-clickable" data-verse-id="{{ $first->id }}" style="cursor:pointer;">{{ $first->text }}</span></td>
                                     <td>{{ $first->translation->name ?? 'N/A' }}</td>
                                     <td><span class="badge {{ $first->chapter->book->new_testament ? 'btn-info' : 'btn-warning' }}">{{ $first->chapter->book->new_testament ? 'NT' : 'OT' }}</span></td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-link text-muted p-0 exclude-ref-btn" data-reference="{{ $reference }}" title="Not relevant — remove from this topic">
+                                            <i class="mdi mdi-eye-off-outline"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -367,6 +373,7 @@
             "pageLength": 25,
             "columnDefs": [
                 { "orderable": false, "targets": 0, "width": "32px" },
+                { "orderable": false, "searchable": false, "targets": 6, "width": "36px" },
                 { "width": "10%", "targets": 1 },
                 { "width": "1%", "targets": 2 },
                 { "width": "52%", "targets": 3 },
@@ -402,6 +409,7 @@
                           + '<td style="width:52%;"><span class="verse-clickable" data-verse-id="' + t.verse_id + '" style="cursor:pointer;">' + $('<div>').text(t.text).html() + '</span></td>'
                           + '<td style="width:10%;">' + $('<div>').text(t.translation).html() + '</td>'
                           + '<td style="width:8%;"></td>'
+                          + '<td style="width:36px;"></td>'
                           + '</tr>';
                 });
                 html += '</tbody></table></div>';
@@ -409,6 +417,24 @@
                 tr.addClass('shown');
                 tr.find('.toggle-icon').text('−');
             }
+        });
+
+        // Mark a reference as not relevant to this topic (persisted, hidden on reload)
+        $('#datatable-matching-verses').on('click', '.exclude-ref-btn', function() {
+            var ref = $(this).data('reference');
+            var row = table.row($(this).closest('tr'));
+            $.ajax({
+                url: '{{ route('topics.exclude-reference', $topic->id) }}',
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}', reference: ref },
+                success: function() {
+                    row.child.hide();
+                    row.remove().draw(false);
+                },
+                error: function() {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Could not remove verse from topic.' });
+                }
+            });
         });
 
         dbg('DataTable initialized OK');

@@ -8,6 +8,7 @@ use App\Models\Chapter;
 use App\Models\ProverbsGroup;
 use App\Models\ProverbsVerseGroup;
 use App\Models\Topic;
+use App\Models\TopicExcludedReference;
 use App\Models\TopicNote;
 use App\Models\Translation;
 use App\Models\UserRead;
@@ -122,6 +123,12 @@ class TopicController extends Controller
 
             // Remove duplicates based on verse id, keeping first match
             $matchingVerses = $matchingVerses->unique('id');
+
+            // Drop references the user marked as not relevant to this topic
+            $excluded = $topic->excludedReferences()->pluck('reference')->all();
+            if ($excluded) {
+                $matchingVerses = $matchingVerses->reject(fn($v) => in_array($v->reference, $excluded, true));
+            }
         }
         
         $notes = $topic->notes()->with('verses.chapter.book')->get();
@@ -175,6 +182,26 @@ class TopicController extends Controller
                              . '&chapter=' . $v->chapter->number,
             ]),
         ]);
+    }
+
+    public function excludeReference(Request $request, Topic $topic)
+    {
+        abort_unless($topic->user_id === Auth::id(), 403);
+        $data = $request->validate(['reference' => 'required|string|max:255']);
+
+        $topic->excludedReferences()->firstOrCreate(['reference' => $data['reference']]);
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function restoreReference(Request $request, Topic $topic)
+    {
+        abort_unless($topic->user_id === Auth::id(), 403);
+        $data = $request->validate(['reference' => 'required|string|max:255']);
+
+        $topic->excludedReferences()->where('reference', $data['reference'])->delete();
+
+        return response()->json(['ok' => true]);
     }
 
     public function destroyNote(TopicNote $note)

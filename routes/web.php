@@ -138,6 +138,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/topics/verse-search', [TopicController::class, 'verseSearch'])->name('topics.verse-search');
     Route::resource('topics', TopicController::class);
     Route::post('/topics/{topic}/notes', [TopicController::class, 'storeNote'])->name('topics.notes.store');
+    Route::post('/topics/{topic}/exclude-reference', [TopicController::class, 'excludeReference'])->name('topics.exclude-reference');
+    Route::delete('/topics/{topic}/exclude-reference', [TopicController::class, 'restoreReference'])->name('topics.restore-reference');
     Route::delete('/topics/notes/{note}', [TopicController::class, 'destroyNote'])->name('topics.notes.destroy');
 
     Route::post('/book-studies', [BookStudyController::class, 'store'])->name('book-studies.store');
