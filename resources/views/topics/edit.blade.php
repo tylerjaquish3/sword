@@ -12,7 +12,13 @@
             </a>
         </div>
         <h3 class="topic-hero-title mb-0">{{ $topic->name }}</h3>
+        <small id="topic-finished-date" class="text-muted {{ $topic->completed_at ? '' : 'd-none' }}">
+            Finished <span id="topic-finished-date-value">{{ $topic->completed_at?->format('M j, Y') }}</span>
+        </small>
     </div>
+    <button type="button" id="toggle-complete-btn" class="btn btn-sm {{ $topic->completed_at ? 'btn-success' : 'btn-outline-success' }}" style="font-weight:600;">
+        <i class="mdi {{ $topic->completed_at ? 'mdi-check-circle' : 'mdi-check-circle-outline' }} me-1"></i><span>{{ $topic->completed_at ? 'Finished' : 'Mark as Finished' }}</span>
+    </button>
 </div>
 
 <div class="row">
@@ -73,13 +79,14 @@
                             </button>
                         </div>
                         @if($note->verses->isNotEmpty())
-                            <div class="mt-1">
+                            <div class="mt-2 mb-2">
                                 @foreach($note->verses as $verse)
-                                    <a class="sword-link badge btn-outline-secondary me-1"
-                                       href="{{ route('translations.index') }}?translation={{ $verse->translation_id }}&book={{ $verse->chapter->book->id }}&chapter={{ $verse->chapter->number }}"
-                                       style="font-size:0.8rem;">
-                                        {{ $verse->reference }}
-                                    </a>
+                                    <div class="mb-2 ps-3" style="border-left:3px solid rgba(201,168,76,0.6);">
+                                        <a class="sword-link fw-semibold"
+                                           href="{{ route('translations.index') }}?translation={{ $verse->translation_id }}&book={{ $verse->chapter->book->id }}&chapter={{ $verse->chapter->number }}"
+                                           style="font-size:0.85rem;">{{ $verse->reference }}</a>
+                                        <div style="font-style:italic;font-size:0.9rem;color:#374151;">{{ $verse->text }}</div>
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
@@ -443,6 +450,26 @@
             console.error(e);
         }
 
+        // ── Mark finished ────────────────────────────────────────────
+        var topicFinished = {{ $topic->completed_at ? 'true' : 'false' }};
+        function renderFinished(date) {
+            topicFinished = !!date;
+            $('#toggle-complete-btn')
+                .toggleClass('btn-success', topicFinished).toggleClass('btn-outline-success', !topicFinished)
+                .find('i').toggleClass('mdi-check-circle', topicFinished).toggleClass('mdi-check-circle-outline', !topicFinished)
+                .end().find('span').text(topicFinished ? 'Finished' : 'Mark as Finished');
+            $('#topic-finished-date-value').text(date || '');
+            $('#topic-finished-date').toggleClass('d-none', !topicFinished);
+        }
+        $('#toggle-complete-btn').on('click', function() {
+            var $btn = $(this).prop('disabled', true);
+            $.post(topicFinished ? '{{ route('topics.uncomplete', $topic->id) }}' : '{{ route('topics.complete', $topic->id) }}',
+                { _token: '{{ csrf_token() }}' })
+                .done(function(r) { renderFinished(r.completed_at); })
+                .fail(function() { Swal.fire({ icon: 'error', title: 'Error', text: 'Could not update topic.' }); })
+                .always(function() { $btn.prop('disabled', false); });
+        });
+
         // ── Notes ────────────────────────────────────────────────────
         var linkedVerses = {};
 
@@ -534,10 +561,13 @@
 
                     var versesHtml = '';
                     if (data.verses && data.verses.length) {
-                        versesHtml = '<div class="mt-1">';
+                        versesHtml = '<div class="mt-2 mb-2">';
                         data.verses.forEach(function(v) {
-                            versesHtml += '<a class="sword-link me-1" href="' + v.url + '" style="font-size:0.85rem;">'
-                                + $('<span>').text(v.reference).html() + '</a>';
+                            versesHtml += '<div class="mb-2 ps-3" style="border-left:3px solid rgba(201,168,76,0.6);">'
+                                + '<a class="sword-link fw-semibold" href="' + v.url + '" style="font-size:0.85rem;">'
+                                + $('<span>').text(v.reference).html() + '</a>'
+                                + '<div style="font-style:italic;font-size:0.9rem;color:#374151;">'
+                                + $('<span>').text(v.text).html() + '</div></div>';
                         });
                         versesHtml += '</div>';
                     }

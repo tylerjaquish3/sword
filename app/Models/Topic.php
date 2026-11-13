@@ -8,6 +8,10 @@ class Topic extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'completed_at' => 'datetime',
+    ];
+
     public function notes()
     {
         return $this->hasMany(TopicNote::class)->latest();

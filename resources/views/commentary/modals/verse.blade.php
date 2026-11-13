@@ -7,8 +7,10 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="sword-modal-icon"><i class="mdi mdi-book-open-variant"></i></div>
                     <div>
-                        <h5 class="modal-title mb-0" id="verseModalLabel">Verse</h5>
-                        <p class="sword-modal-subtitle mb-0">Commentary &amp; formatting</p>
+                        <h5 class="modal-title mb-0 d-flex align-items-center gap-2">
+                            <span id="verseModalLabel">Verse</span>
+                            <span id="modal_translation_badge" class="badge d-none" style="font-size:0.65rem;font-weight:600;letter-spacing:0.04em;background:rgba(201,168,76,0.2);color:#e6c767;border:1px solid rgba(201,168,76,0.5);"></span>
+                        </h5>
                     </div>
                 </div>
                 <button type="button" class="sword-modal-close" data-bs-dismiss="modal" aria-label="Close">
@@ -27,6 +29,9 @@
                     <div class="sword-modal-section-body">
                         <div id="modal_verse_text" class="mb-2 sword-modal-preview" style="font-style:italic;"></div>
                         <div class="d-flex gap-2 mt-1">
+                            <button type="button" id="verse_copy_btn" class="btn btn-sm btn-outline-secondary" title="Copy verse text" style="font-size:0.75rem;padding:2px 8px;">
+                                <i class="mdi mdi-content-copy"></i>
+                            </button>
                             <button type="button" id="verse_range_add" class="btn btn-sm btn-outline-secondary" title="Add next verse to range" style="font-size:0.75rem;padding:2px 8px;">
                                 <i class="mdi mdi-plus"></i>
                             </button>
@@ -61,7 +66,7 @@
                         <span class="sword-modal-section-icon"><i class="mdi mdi-palette"></i></span>
                         <span class="sword-modal-section-title">Highlight</span>
                         <div class="d-flex gap-2 ms-auto">
-                            <button type="button" id="verse_memory_btn" class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;" title="Add to Memory">
+                            <button type="button" id="verse_memory_btn" class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;color:#374151;border-color:#6b7280;" title="Add to Memory">
                                 <i class="mdi mdi-brain me-1"></i><span>Memory</span>
                             </button>
                             <button type="button" id="modal_favorite_btn" class="btn btn-sm" style="font-size:0.78rem;">
@@ -86,26 +91,9 @@
                     </div>
                 </div>
 
-                <div class="sword-modal-section mb-2">
-                    <div class="sword-modal-section-header">
-                        <span class="sword-modal-section-icon"><i class="mdi mdi-format-text"></i></span>
-                        <span class="sword-modal-section-title">Formatting</span>
-                    </div>
-                    <div class="sword-modal-section-body">
-                        <div class="mb-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <input class="form-check-input mt-0" type="checkbox" id="modal_line_break">
-                                <label class="form-check-label" for="modal_line_break" style="font-size:0.88rem;color:#374151;">
-                                    Start new paragraph before this verse
-                                </label>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="modal_section_title" class="sword-modal-label">Section Title <span class="sword-modal-optional">optional</span></label>
-                            <input type="text" class="form-control sword-modal-input" id="modal_section_title" placeholder="e.g., The Beatitudes">
-                        </div>
-                    </div>
-                </div>
+                {{-- Preserved (not user-editable here) so saving doesn't wipe existing paragraph/section formatting --}}
+                <input type="checkbox" id="modal_line_break" class="d-none">
+                <input type="hidden" id="modal_section_title">
 
             </div>
 
@@ -233,6 +221,7 @@
                     $('#modal_book_name').val(response.book_name);
                     $('#modal_book_id').val(response.verse.chapter.book.id);
                     $('#modal_chapter_number').val(response.chapter_number);
+                    $('#modal_translation_badge').text(response.translation_name || '').toggleClass('d-none', !response.translation_name);
                     $('#modal_commentary').val('');
 
                     updateVerseRangeUI();
@@ -284,6 +273,25 @@
             if (endNum > startNum) {
                 $('#modal_end_verse_number').val(endNum - 1);
                 updateVerseRangeUI();
+            }
+        });
+
+        // Copy verse text to clipboard
+        $('#verse_copy_btn').on('click', function() {
+            const btn  = $(this);
+            const icon = btn.find('i');
+            const text = $('#modal_verse_text').text().replace(/\s+/g, ' ').trim();
+            const done = function() {
+                icon.removeClass('mdi-content-copy').addClass('mdi-check');
+                setTimeout(function() { icon.removeClass('mdi-check').addClass('mdi-content-copy'); }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done);
+            } else {
+                const ta = $('<textarea>').val(text).appendTo('body').select();
+                document.execCommand('copy');
+                ta.remove();
+                done();
             }
         });
 

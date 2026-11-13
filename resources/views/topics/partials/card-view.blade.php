@@ -11,6 +11,9 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <span class="badge bg-secondary">{{ $topic->keywords ? count(explode(',', $topic->keywords)) : 0 }} keywords</span>
+                            @if($topic->completed_at)
+                                <span class="badge bg-success ms-auto me-2"><i class="mdi mdi-check-circle me-1"></i>Finished {{ $topic->completed_at->format('M j, Y') }}</span>
+                            @endif
                             <i class="mdi mdi-chevron-right text-muted"></i>
                         </div>
                     </div>

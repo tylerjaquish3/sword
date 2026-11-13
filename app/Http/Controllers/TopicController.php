@@ -156,6 +156,22 @@ class TopicController extends Controller
         return redirect()->route('topics.edit', $topic)->with('success', 'Topic updated successfully.');
     }
 
+    public function complete(Topic $topic)
+    {
+        abort_unless($topic->user_id === Auth::id(), 403);
+        $topic->update(['completed_at' => now()]);
+
+        return response()->json(['completed_at' => $topic->completed_at->format('M j, Y')]);
+    }
+
+    public function uncomplete(Topic $topic)
+    {
+        abort_unless($topic->user_id === Auth::id(), 403);
+        $topic->update(['completed_at' => null]);
+
+        return response()->json(['completed_at' => null]);
+    }
+
     public function storeNote(Request $request, Topic $topic)
     {
         $request->validate(['note' => 'required|string']);
@@ -177,6 +193,7 @@ class TopicController extends Controller
             'verses'     => $note->verses->map(fn($v) => [
                 'id'        => $v->id,
                 'reference' => $v->reference,
+                'text'      => $v->text,
                 'url'       => route('translations.index') . '?translation=' . $v->translation_id
                              . '&book=' . $v->chapter->book->id
                              . '&chapter=' . $v->chapter->number,

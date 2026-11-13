@@ -137,6 +137,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/prayer-prompts/sync', [PrayerPromptController::class, 'sync'])->name('prayer-prompts.sync');
     Route::get('/topics/verse-search', [TopicController::class, 'verseSearch'])->name('topics.verse-search');
     Route::resource('topics', TopicController::class);
+    Route::post('/topics/{topic}/complete', [TopicController::class, 'complete'])->name('topics.complete');
+    Route::post('/topics/{topic}/uncomplete', [TopicController::class, 'uncomplete'])->name('topics.uncomplete');
     Route::post('/topics/{topic}/notes', [TopicController::class, 'storeNote'])->name('topics.notes.store');
     Route::post('/topics/{topic}/exclude-reference', [TopicController::class, 'excludeReference'])->name('topics.exclude-reference');
     Route::delete('/topics/{topic}/exclude-reference', [TopicController::class, 'restoreReference'])->name('topics.restore-reference');

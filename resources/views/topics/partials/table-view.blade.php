@@ -10,6 +10,7 @@
                                 <th>Topic</th>
                                 <th>Description</th>
                                 <th>Keywords</th>
+                                <th>Finished</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -19,6 +20,7 @@
                                     <td>{{ $topic->name }}</td>
                                     <td>{{ Str::limit($topic->description, 50) }}</td>
                                     <td>{{ $topic->keywords }}</td>
+                                    <td data-order="{{ $topic->completed_at?->timestamp }}">{{ $topic->completed_at?->format('M j, Y') }}</td>
                                     <td>
                                         <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-outline-primary" style="padding: 1px 6px; font-size: 0.75rem; line-height: 1.4;">
                                             <i class="mdi mdi-pencil"></i>

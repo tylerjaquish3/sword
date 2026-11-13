@@ -19,7 +19,7 @@
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
                 <span class="changelog-version">v1.21</span>
                 <div>
-                    <div class="changelog-title">Hide Irrelevant Topic Verses</div>
+                    <div class="changelog-title">Topic Study &amp; Verse Modal Updates</div>
                     <div class="changelog-date">November 2026</div>
                 </div>
                 <span class="badge changelog-badge-latest ms-auto">Latest</span>
@@ -30,6 +30,22 @@
                         <li>
                             <span class="changelog-tag tag-new">New</span>
                             Related Verses on a topic now have a button on the right to remove verses that match a keyword out of context — they stay hidden when you refresh
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Mark a topic study as finished (and undo it) — it's saved for your user only
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Notes on a topic study now show the full text of each linked verse, not just the reference
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Copy button in the verse modal copies the verse text (including any added verses) to your clipboard
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Simplified the verse modal: removed the Formatting section
                         </li>
                     </ul>
                 </div>

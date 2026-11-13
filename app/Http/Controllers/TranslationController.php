@@ -89,7 +89,7 @@ class TranslationController extends Controller
      */
     public function getVerse(Verse $verse)
     {
-        $verse->load('chapter.book');
+        $verse->load('chapter.book', 'translation');
 
         // Get comments anchored to this verse OR whose range covers this verse
         $comments = VerseComment::where('chapter_id', $verse->chapter_id)
@@ -128,6 +128,7 @@ class TranslationController extends Controller
             'chapter_verses'   => $chapterVerses,
             'book_name'        => $verse->chapter->book->name,
             'chapter_number'   => $verse->chapter->number,
+            'translation_name' => $verse->translation?->name,
             'end_verse_number' => $maxEndVerse,
         ]);
     }
