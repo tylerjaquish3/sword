@@ -36,6 +36,10 @@
                             Mark a topic study as finished (and undo it) — it's saved for your user only
                         </li>
                         <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Add your topic study notes (with their linked verses) to your weekly digest with the new "Topic Study Notes" toggle
+                        </li>
+                        <li>
                             <span class="changelog-tag tag-improved">Improved</span>
                             Notes on a topic study now show the full text of each linked verse, not just the reference
                         </li>

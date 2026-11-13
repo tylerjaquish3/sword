@@ -7,6 +7,7 @@ use App\Models\DigestGuestComment;
 use App\Models\Memory;
 use App\Models\Prayer;
 use App\Models\SharedDigest;
+use App\Models\TopicNote;
 use App\Models\UserNotification;
 use App\Models\UserRead;
 use App\Models\VerseComment;
@@ -36,6 +37,7 @@ class SharedDigestController extends Controller
             'show_prayers' => 'nullable|boolean',
             'show_commentary' => 'nullable|boolean',
             'show_memory' => 'nullable|boolean',
+            'show_topic_notes' => 'nullable|boolean',
             'show_past_note' => 'nullable|boolean',
             'fruits_needing_prayer' => 'nullable|array',
             'fruits_needing_prayer.*' => 'string',
@@ -79,6 +81,7 @@ class SharedDigestController extends Controller
             'show_prayers' => $request->boolean('show_prayers'),
             'show_commentary' => $request->boolean('show_commentary'),
             'show_memory' => $request->boolean('show_memory'),
+            'show_topic_notes' => $request->boolean('show_topic_notes'),
             'show_past_note' => $request->boolean('show_past_note'),
             'fruits_needing_prayer' => $request->input('fruits_needing_prayer', []),
             'fruits_description' => $request->input('fruits_description'),
@@ -125,6 +128,7 @@ class SharedDigestController extends Controller
             'show_prayers' => 'nullable|boolean',
             'show_commentary' => 'nullable|boolean',
             'show_memory' => 'nullable|boolean',
+            'show_topic_notes' => 'nullable|boolean',
             'show_past_note' => 'nullable|boolean',
             'fruits_needing_prayer' => 'nullable|array',
             'fruits_needing_prayer.*' => 'string',
@@ -160,6 +164,7 @@ class SharedDigestController extends Controller
             'show_prayers' => $request->boolean('show_prayers'),
             'show_commentary' => $request->boolean('show_commentary'),
             'show_memory' => $request->boolean('show_memory'),
+            'show_topic_notes' => $request->boolean('show_topic_notes'),
             'show_past_note' => $request->boolean('show_past_note'),
             'fruits_needing_prayer' => $request->input('fruits_needing_prayer', []),
             'fruits_description' => $request->input('fruits_description'),
@@ -252,6 +257,12 @@ class SharedDigestController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        $topicNotes = TopicNote::where('user_id', Auth::id())
+            ->whereBetween('created_at', [$weekStart, $weekEnd])
+            ->with(['topic', 'verses'])
+            ->orderBy('created_at')
+            ->get();
+
         $activeMemories = Memory::active()->withCount('verses')->get();
 
         $completedMemories = Memory::completed()
@@ -294,6 +305,7 @@ class SharedDigestController extends Controller
             'prayers',
             'chapterComments',
             'verseComments',
+            'topicNotes',
             'activeMemories',
             'completedMemories',
             'completedThisWeek',
@@ -340,6 +352,18 @@ class SharedDigestController extends Controller
             ];
         }))->sortBy('created_at')->values()->all();
 
+        $topicNotes = $data['topicNotes']->map(function ($n) {
+            return [
+                'topic' => $n->topic?->name ?? 'Topic',
+                'note' => $n->note,
+                'date' => $n->created_at->format('M j'),
+                'verses' => $n->verses->map(fn($v) => [
+                    'reference' => $v->reference,
+                    'text' => $v->text,
+                ])->values()->all(),
+            ];
+        })->values()->all();
+
         $memories = $data['activeMemories']->map(function ($m) {
             return [
                 'title' => $m->title ?? 'Untitled Set',
@@ -370,6 +394,20 @@ class SharedDigestController extends Controller
             ];
         })->all();
 
+        $memoryTimeline = Memory::weeklyTimeline($data['completedMemories'], $data['startedThisWeek'])
+            ->map(function ($e) {
+                $m = $e['memory'];
+                $verses = $m->verses->sortBy(fn($v) => [$v->chapter->book->id ?? 0, $v->chapter->number ?? 0, $v->number]);
+                return [
+                    'type' => $e['type'],
+                    'title' => $m->title ?? 'Untitled Set',
+                    'verses' => $verses->map(fn($v) => array_filter([
+                        'reference' => ($v->chapter->book->name ?? '') . ' ' . ($v->chapter->number ?? '') . ':' . $v->number,
+                        'text' => $e['type'] === 'completed' ? $v->text : null,
+                    ], fn($x) => $x !== null))->values()->all(),
+                ];
+            })->all();
+
         $pastNote = null;
         if ($data['pastNote']) {
             $n = $data['pastNote'];
@@ -395,10 +433,12 @@ class SharedDigestController extends Controller
             'chaptersRead' => $chaptersRead,
             'prayers' => $prayers,
             'commentary' => $commentary,
+            'topicNotes' => $topicNotes,
             'memories' => $memories,
             'completedThisWeek' => $data['completedThisWeek'],
             'completedMemories' => $completedMemoriesSnap,
             'startedThisWeek' => $startedThisWeekSnap,
+            'memoryTimeline' => $memoryTimeline,
             'pastNote' => $pastNote,
         ];
     }

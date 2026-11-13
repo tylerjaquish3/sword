@@ -84,6 +84,16 @@
                     </div>
 
                     <div class="section-toggle">
+                        <input class="form-check-input" type="checkbox" name="show_topic_notes" id="show_topic_notes" value="1"
+                            {{ ($isEditing ? $shared->show_topic_notes : $topicNotes->isNotEmpty()) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="show_topic_notes" style="font-size: 0.85rem; cursor: pointer;">
+                            <i class="mdi mdi-book-search me-1" style="color: var(--sword-gold);"></i>
+                            Topic Study Notes
+                            <span style="color: #9ca3af; font-size: 0.75rem;">({{ $topicNotes->count() }} notes)</span>
+                        </label>
+                    </div>
+
+                    <div class="section-toggle">
                         <input class="form-check-input" type="checkbox" name="show_memory" id="show_memory" value="1"
                             {{ ($isEditing ? $shared->show_memory : $activeMemories->isNotEmpty()) ? 'checked' : '' }}>
                         <label class="form-check-label" for="show_memory" style="font-size: 0.85rem; cursor: pointer;">

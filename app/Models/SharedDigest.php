@@ -16,6 +16,7 @@ class SharedDigest extends Model
         'show_prayers' => 'boolean',
         'show_commentary' => 'boolean',
         'show_memory' => 'boolean',
+        'show_topic_notes' => 'boolean',
         'show_past_note' => 'boolean',
         'is_shared' => 'boolean',
         'week_start' => 'date',

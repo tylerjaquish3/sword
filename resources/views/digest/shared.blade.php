@@ -333,6 +333,30 @@
                 <div class="card-body">
                     <p class="section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
 
+                    @if(!empty($snapshot['memoryTimeline']))
+                        @foreach($snapshot['memoryTimeline'] as $mem)
+                            @if($mem['type'] === 'completed')
+                            <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
+                                <div class="mb-1" style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
+                                    <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
+                                    {{ $mem['title'] }} — completed!
+                                </div>
+                                @foreach($mem['verses'] as $verse)
+                                <div style="font-size: 0.75rem; color: var(--sword-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">{{ $verse['reference'] }}</div>
+                                <p class="mb-1" style="font-size: 0.78rem; line-height: 1.55; color: #4b5563; font-style: italic;">{{ $verse['text'] ?? '' }}</p>
+                                @endforeach
+                            </div>
+                            @else
+                            <div class="digest-item mb-2">
+                                <div style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;">New memory goal started</div>
+                                <span class="digest-ref">{{ $mem['title'] }}</span>
+                                <div style="font-size: 0.78rem; color: #6b7280; margin-top: 2px;">
+                                    {{ collect($mem['verses'])->pluck('reference')->join(' · ') }}
+                                </div>
+                            </div>
+                            @endif
+                        @endforeach
+                    @else
                     @if(!empty($snapshot['completedMemories']))
                         @foreach($snapshot['completedMemories'] as $mem)
                         <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
@@ -366,6 +390,8 @@
                     </div>
                     @endforeach
 
+                    @endif
+
                     @if(!empty($snapshot['memories']))
                         @foreach($snapshot['memories'] as $memory)
                         <div class="digest-item d-flex align-items-center justify-content-between">
@@ -376,6 +402,26 @@
                     @elseif(empty($snapshot['completedMemories']) && ($snapshot['completedThisWeek'] ?? 0) === 0 && empty($snapshot['startedThisWeek']))
                         <div class="digest-empty">No active memory sets</div>
                     @endif
+                </div>
+            </div>
+            @endif
+
+            @if($shared->show_topic_notes && !empty($snapshot['topicNotes']))
+            <div class="digest-card">
+                <div class="card-body">
+                    <p class="section-label"><i class="mdi mdi-book-search me-1"></i>Topic Study Notes</p>
+                    @foreach($snapshot['topicNotes'] as $note)
+                    <div class="digest-item">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="digest-ref">{{ $note['topic'] }}</span>
+                            <span style="font-size: 0.7rem; color: #9ca3af;">{{ $note['date'] }}</span>
+                        </div>
+                        <p class="digest-snippet mb-1" style="white-space: pre-wrap;">{{ $note['note'] }}</p>
+                        @foreach($note['verses'] as $v)
+                        <div class="digest-verse-ref"><strong>{{ $v['reference'] }}</strong> — {{ $v['text'] }}</div>
+                        @endforeach
+                    </div>
+                    @endforeach
                 </div>
             </div>
             @endif

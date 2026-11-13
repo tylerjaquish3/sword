@@ -209,7 +209,9 @@
             <div class="card-body">
                 <p class="digest-section-label"><i class="mdi mdi-brain me-1"></i>Memory Practice</p>
 
-                @foreach($completedMemories as $memory)
+                @foreach(\App\Models\Memory::weeklyTimeline($completedMemories, $startedThisWeek) as $event)
+                    @php $memory = $event['memory']; @endphp
+                    @if($event['type'] === 'completed')
                     <div class="mb-3 p-2 rounded" style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
                         <div class="mb-1" style="font-size: 0.82rem; color: var(--sword-navy); font-weight: 600;">
                             <i class="mdi mdi-trophy" style="color: var(--sword-gold);"></i>
@@ -226,9 +228,7 @@
                             </p>
                         @endforeach
                     </div>
-                @endforeach
-
-                @foreach($startedThisWeek as $memory)
+                    @else
                     <div class="digest-item mb-2">
                         <div style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;">New memory goal started</div>
                         <span class="digest-ref">{{ $memory->title ?? 'Untitled Set' }}</span>
@@ -236,6 +236,7 @@
                             {{ $memory->verses->groupBy(fn($v) => $v->chapter->book->name . ' ' . $v->chapter->number)->map(fn($vs, $ref) => $ref . ':' . $vs->pluck('number')->sort()->values()->join(', '))->values()->join(' · ') }}
                         </div>
                     </div>
+                    @endif
                 @endforeach
 
                 @if($activeMemories->isNotEmpty())
