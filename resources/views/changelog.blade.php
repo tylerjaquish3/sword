@@ -14,6 +14,28 @@
 <div class="row">
     <div class="col-lg-8 col-12">
 
+        {{-- ── v1.22.0 ──────────────────────────────────────────────── --}}
+        <div class="changelog-entry mb-4">
+            <div class="changelog-header d-flex align-items-center gap-3 mb-3">
+                <span class="changelog-version">v1.22</span>
+                <div>
+                    <div class="changelog-title">Noted Verses in Topic Study</div>
+                    <div class="changelog-date">November 2026</div>
+                </div>
+                <span class="badge changelog-badge-latest ms-auto">Latest</span>
+            </div>
+            <div class="card changelog-card">
+                <div class="card-body">
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="changelog-tag tag-new">New</span>
+                            Related Verses on a topic are shaded gray when you've already used that verse in one of your study notes
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- ── v1.21.0 ──────────────────────────────────────────────── --}}
         <div class="changelog-entry mb-4">
             <div class="changelog-header d-flex align-items-center gap-3 mb-3">
@@ -22,7 +44,6 @@
                     <div class="changelog-title">Topic Study &amp; Verse Modal Updates</div>
                     <div class="changelog-date">November 2026</div>
                 </div>
-                <span class="badge changelog-badge-latest ms-auto">Latest</span>
             </div>
             <div class="card changelog-card">
                 <div class="card-body">

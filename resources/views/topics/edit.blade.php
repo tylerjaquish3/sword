@@ -103,6 +103,8 @@
 <!-- Matching Verses Section -->
 @php
     $groupedVerses = $matchingVerses->groupBy('reference');
+    // References this topic's study notes are already attached to (any translation)
+    $notedReferences = $notes->flatMap(fn($n) => $n->verses->pluck('reference'))->unique()->flip();
 @endphp
 <div class="row mt-4">
     <div class="col-12">
@@ -139,7 +141,7 @@
                                         'url'         => route('translations.index') . '?translation=' . $v->translation_id . '&book=' . $v->chapter->book->id . '&chapter=' . $v->chapter->number,
                                     ])->values()->toJson(JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) : '[]'
                                 @endphp
-                                <tr data-extra="{{ $extraTranslations }}">
+                                <tr data-extra="{{ $extraTranslations }}" @if($notedReferences->has($reference)) class="has-note" title="You have a note on this verse" @endif>
                                     <td class="toggle-cell text-center" style="cursor:{{ $hasMultiple ? 'pointer' : 'default' }};">
                                         @if($hasMultiple)
                                             <span class="toggle-icon" style="color:#1a3a6b;font-size:1rem;line-height:1;user-select:none;">+</span>
@@ -320,6 +322,14 @@
         text-shadow:
             1px 2px 0 rgba(0, 0, 0, 0.4),
             2px 5px 12px rgba(0, 0, 0, 0.18);
+    }
+    /* verses already used in a study note */
+    #datatable-matching-verses tbody tr.has-note > td {
+        background-color: #d3d6dc !important;
+        --bs-table-bg: #d3d6dc;
+        --bs-table-accent-bg: #d3d6dc;
+        --bs-table-hover-bg: #c6cad1;
+        box-shadow: inset 0 0 0 9999px #d3d6dc;
     }
     /* child row sub-table */
     .child-translations {
@@ -543,6 +553,22 @@
             $('#linked-verse-ids').val(Object.keys(linkedVerses).join(','));
         }
 
+        // Shade Related Verses rows whose reference is used in any listed note
+        function refreshNotedRows() {
+            if (!table) return;
+            var noted = {};
+            $('#notes-list .note-item a.sword-link').each(function() {
+                noted[$(this).text().trim()] = true;
+            });
+            table.rows().every(function() {
+                var $tr = $(this.node());
+                var ref = $tr.find('td:nth-child(3) a.sword-link').first().text().trim();
+                var has = !!noted[ref];
+                $tr.toggleClass('has-note', has);
+                if (has) { $tr.attr('title', 'You have a note on this verse'); } else { $tr.removeAttr('title'); }
+            });
+        }
+
         $('#save-note-btn').on('click', function() {
             var note = $('#note-text').val().trim();
             if (!note) { $('#note-text').addClass('is-invalid'); return; }
@@ -581,6 +607,7 @@
                         + '<small class="text-muted">' + $('<span>').text(data.created_at).html() + '</small></div>';
 
                     $('#notes-list').prepend(html);
+                    refreshNotedRows();
                     Swal.fire({ icon: 'success', title: 'Saved!', timer: 1200, showConfirmButton: false });
                 },
                 error: function() {
@@ -609,6 +636,7 @@
                     success: function() {
                         $item.fadeOut(200, function() {
                             $(this).remove();
+                            refreshNotedRows();
                             if (!$('#notes-list .note-item').length) {
                                 $('#notes-list').html('<p class="text-muted mb-0" id="no-notes-msg">No notes yet.</p>');
                             }
