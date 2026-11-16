@@ -80,12 +80,13 @@
                         </div>
                         @if($note->verses->isNotEmpty())
                             <div class="mt-2 mb-2">
-                                @foreach($note->verses as $verse)
+                                @foreach($note->verseGroups() as $group)
                                     <div class="mb-2 ps-3" style="border-left:3px solid rgba(201,168,76,0.6);">
                                         <a class="sword-link fw-semibold"
-                                           href="{{ route('translations.index') }}?translation={{ $verse->translation_id }}&book={{ $verse->chapter->book->id }}&chapter={{ $verse->chapter->number }}"
-                                           style="font-size:0.85rem;">{{ $verse->reference }}</a>
-                                        <div style="font-style:italic;font-size:0.9rem;color:#374151;">{{ $verse->text }}</div>
+                                           href="{{ $group['url'] }}"
+                                           data-refs="{{ implode('|', $group['references']) }}"
+                                           style="font-size:0.85rem;">{{ $group['reference'] }}</a>
+                                        <div style="font-style:italic;font-size:0.9rem;color:#374151;">{{ $group['text'] }}</div>
                                     </div>
                                 @endforeach
                             </div>
@@ -561,7 +562,7 @@
             if (!table) return;
             var noted = {};
             $('#notes-list .note-item a.sword-link').each(function() {
-                noted[$(this).text().trim()] = true;
+                ($(this).attr('data-refs') || $(this).text()).split('|').forEach(function(r) { noted[r.trim()] = true; });
             });
             table.rows().every(function() {
                 var $tr = $(this.node());
@@ -593,7 +594,7 @@
                         versesHtml = '<div class="mt-2 mb-2">';
                         data.verses.forEach(function(v) {
                             versesHtml += '<div class="mb-2 ps-3" style="border-left:3px solid rgba(201,168,76,0.6);">'
-                                + '<a class="sword-link fw-semibold" href="' + v.url + '" style="font-size:0.85rem;">'
+                                + '<a class="sword-link fw-semibold" href="' + v.url + '" data-refs="' + $('<span>').text((v.references || []).join('|')).html().replace(/"/g, '&quot;') + '" style="font-size:0.85rem;">'
                                 + $('<span>').text(v.reference).html() + '</a>'
                                 + '<div style="font-style:italic;font-size:0.9rem;color:#374151;">'
                                 + $('<span>').text(v.text).html() + '</div></div>';

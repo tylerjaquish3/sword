@@ -35,6 +35,14 @@
                             <span class="changelog-tag tag-improved">Improved</span>
                             Verses you link in the Add Note window now show their full text, so you can read them while you write
                         </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Verses in a topic note now appear in Bible order, and consecutive verses (like Hebrews 9:26, 27 and 28) are combined into one passage — "Hebrews 9:26-28" — with the text as a single paragraph
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Verse search now matches references from the start (typing "john" no longer returns 1, 2 and 3 John) and lists every translation of an exact verse before longer matches
+                        </li>
                     </ul>
                 </div>
             </div>

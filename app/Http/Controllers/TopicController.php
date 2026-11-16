@@ -190,14 +190,7 @@ class TopicController extends Controller
             'id'         => $note->id,
             'note'       => $note->note,
             'created_at' => $note->created_at->format('M j, Y g:i A'),
-            'verses'     => $note->verses->map(fn($v) => [
-                'id'        => $v->id,
-                'reference' => $v->reference,
-                'text'      => $v->text,
-                'url'       => route('translations.index') . '?translation=' . $v->translation_id
-                             . '&book=' . $v->chapter->book->id
-                             . '&chapter=' . $v->chapter->number,
-            ]),
+            'verses'     => $note->verseGroups(),
         ]);
     }
 
