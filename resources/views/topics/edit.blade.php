@@ -222,7 +222,7 @@
                             </button>
                         </div>
                         <div id="verse-search-results" class="list-group mb-2" style="max-height:200px;overflow-y:auto;display:none;"></div>
-                        <div id="linked-verses" class="d-flex flex-wrap gap-1"></div>
+                        <div id="linked-verses"></div>
                         <input type="hidden" id="linked-verse-ids">
                     </div>
                 </div>
@@ -517,7 +517,7 @@
                         .addClass('list-group-item list-group-item-action py-2')
                         .html('<strong>' + $('<span>').text(v.reference).html() + '</strong>'
                             + ' <small class="text-muted">' + $('<span>').text(v.translation).html() + '</small>'
-                            + '<br><small class="text-muted">' + $('<span>').text(v.text).html() + '</small>')
+                            + '<br><small class="text-muted">' + $('<span>').text(v.text.length > 120 ? v.text.substring(0, 120) + '…' : v.text).html() + '</small>')
                         .on('click', function() {
                             addLinkedVerse(v);
                             $('#verse-search-results').hide().empty();
@@ -533,12 +533,15 @@
             if (linkedVerses[v.id]) return;
             linkedVerses[v.id] = v;
             updateLinkedVerseIds();
-            $('<span>')
-                .addClass('badge me-1 mb-1 linked-verse-badge')
+            $('<div>')
+                .addClass('linked-verse-badge w-100 mb-2 px-3 py-2')
                 .attr('data-id', v.id)
-                .css({'background':'#e8edf5','color':'#1a3a6b','font-size':'0.85rem','cursor':'default'})
-                .html($('<span>').text(v.reference).html()
-                    + ' <span class="remove-verse" style="cursor:pointer;margin-left:4px;opacity:0.6;">×</span>')
+                .css({'background':'#e8edf5','border-left':'3px solid rgba(201,168,76,0.8)','border-radius':'6px'})
+                .html('<div class="d-flex justify-content-between align-items-start">'
+                    + '<div><strong style="color:#1a3a6b;font-size:0.9rem;">' + $('<span>').text(v.reference).html() + '</strong>'
+                    + ' <small class="text-muted">' + $('<span>').text(v.translation || '').html() + '</small></div>'
+                    + '<span class="remove-verse ms-2" title="Remove" style="cursor:pointer;opacity:0.6;line-height:1;">×</span></div>'
+                    + '<div style="font-style:italic;font-size:0.9rem;color:#374151;">' + $('<span>').text(v.text).html() + '</div>')
                 .appendTo('#linked-verses');
         }
 

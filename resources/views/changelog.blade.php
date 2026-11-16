@@ -29,7 +29,11 @@
                     <ul class="changelog-list">
                         <li>
                             <span class="changelog-tag tag-new">New</span>
-                            Related Verses on a topic are shaded gray when you've already used that verse in one of your study notes
+                            Related Verses on a topic are shaded gray when you've already used that verse in one of your study notes — and it updates live as you add or delete notes
+                        </li>
+                        <li>
+                            <span class="changelog-tag tag-improved">Improved</span>
+                            Verses you link in the Add Note window now show their full text, so you can read them while you write
                         </li>
                     </ul>
                 </div>

@@ -234,18 +234,30 @@ class TopicController extends Controller
             return response()->json([]);
         }
 
+        $q = preg_replace('/\s+/', ' ', $q);
+
+        // References match from the start ("john" must not pull in "1 John"), and an
+        // exact reference ("John 1:1", every translation) sorts ahead of longer ones
+        // that merely start with it ("John 1:10"). Text matches come last.
         $verses = Verse::with(['chapter.book', 'translation'])
             ->where(function ($query) use ($q) {
-                $query->where('reference', 'LIKE', '%' . $q . '%')
+                $query->where('reference', 'LIKE', $q . '%')
                       ->orWhere('text', 'LIKE', '%' . $q . '%');
             })
-            ->limit(20)
+            ->orderByRaw(
+                'CASE WHEN LOWER(reference) = ? THEN 0 WHEN reference LIKE ? THEN 1 ELSE 2 END',
+                [mb_strtolower($q), $q . '%']
+            )
+            ->orderBy('chapter_id')
+            ->orderBy('number')
+            ->orderBy('translation_id')
+            ->limit(30)
             ->get()
             ->map(fn($v) => [
                 'id'          => $v->id,
                 'reference'   => $v->reference,
                 'translation' => $v->translation->name ?? '',
-                'text'        => mb_strimwidth($v->text, 0, 120, '…'),
+                'text'        => $v->text,
                 'url'         => route('translations.index') . '?translation=' . $v->translation_id
                                . '&book=' . $v->chapter->book->id
                                . '&chapter=' . $v->chapter->number,
